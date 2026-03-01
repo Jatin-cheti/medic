@@ -9,31 +9,32 @@ import type { Server as HttpServer } from 'http';
 const JWT_SECRET = process.env.JWT_SECRET || 'please_change_me';
 
 export async function initSocket(server: HttpServer) {
-  // configure Redis adapter if REDIS_URL provided
-  let io: Server;
-  const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+  // Create Socket.IO server first
+  const io = new Server(server, {
+    path: '/ws',
+    cors: { origin: process.env.FRONTEND_ORIGIN || '*' }
+  });
 
-  if (redisUrl) {
-    const pubClient = createClient({ url: redisUrl });
-    const subClient = pubClient.duplicate();
+  // Try to configure Redis adapter if REDIS_URL provided
+  const redisUrl = process.env.REDIS_URL;
+  
+  if (redisUrl && redisUrl.trim() !== '' && !redisUrl.includes('localhost')) {
+    try {
+      const pubClient = createClient({ url: redisUrl });
+      const subClient = pubClient.duplicate();
 
-    await pubClient.connect().catch((err: Error) => {
-      console.warn('Redis connect warning:', err.message || err);
-    });
-    await subClient.connect().catch(() => {});
+      await pubClient.connect();
+      await subClient.connect();
 
-    io = new Server(server, {
-      path: '/ws',
-      cors: { origin: process.env.FRONTEND_ORIGIN || '*' }
-    });
-
-    io.adapter(createAdapter(pubClient, subClient));
-    console.log('Socket.IO using Redis adapter (if connected)');
+      io.adapter(createAdapter(pubClient, subClient));
+      console.log('✅ Socket.IO using Redis adapter');
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : String(err);
+      console.warn('⚠️  Redis connection failed:', errorMsg);
+      console.log('⚠️  Socket.IO running without Redis (single-server mode)');
+    }
   } else {
-    io = new Server(server, {
-      path: '/ws',
-      cors: { origin: process.env.FRONTEND_ORIGIN || '*' }
-    });
+    console.log('✅ Socket.IO initialized (single-server mode, no Redis)');
   }
 
   // middleware: authenticate on handshake via token query param or header
