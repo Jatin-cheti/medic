@@ -7,7 +7,11 @@ const mysql = require('mysql2/promise');
 const { v4: uuidv4 } = require('uuid');
 require('dotenv').config();
 
-const DATABASE_URL = process.env.MIGRATION_DATABASE_URL || 'mysql://root:password@127.0.0.1:3307/medicdb';
+// Priority: MIGRATION_DATABASE_URL > MYSQL_URL > DATABASE_URL > localhost fallback
+const DATABASE_URL = process.env.MIGRATION_DATABASE_URL 
+  || process.env.MYSQL_URL 
+  || process.env.DATABASE_URL 
+  || 'mysql://root:password@127.0.0.1:3307/medicdb';
 
 async function seedData() {
   console.log('Connecting to database...');
