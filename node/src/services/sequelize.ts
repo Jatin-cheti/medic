@@ -5,24 +5,43 @@ import fs from 'fs';
 
 dotenv.config();
 
+const firstNonEmpty = (...values: Array<string | undefined>): string | undefined => {
+  for (const value of values) {
+    if (value && value.trim() !== '') {
+      return value;
+    }
+  }
+  return undefined;
+};
+
 // Prefer a supplied DATABASE_URL, otherwise build one from individual env vars
-const envDatabaseUrl = process.env.DATABASE_URL;
-const dbHost = process.env.DB_HOST || '127.0.0.1';
-const dbPort = process.env.DB_PORT || '3306';
-const dbUser = process.env.DB_USER || process.env.DB_USERNAME || 'root';
-const dbPass = process.env.DB_PASS || process.env.DB_PASSWORD || 'password';
-const dbName = process.env.DB_NAME || process.env.DB_DATABASE || 'chatdb';
+const envDatabaseUrl = firstNonEmpty(
+  process.env.DATABASE_URL,
+  process.env.MYSQL_URL,
+  process.env.MYSQLDATABASE_URL
+);
+
+const dbHost = firstNonEmpty(process.env.DB_HOST, process.env.MYSQLHOST) || '127.0.0.1';
+const dbPort = firstNonEmpty(process.env.DB_PORT, process.env.MYSQLPORT) || '3306';
+const dbUser = firstNonEmpty(process.env.DB_USER, process.env.DB_USERNAME, process.env.MYSQLUSER) || 'root';
+const dbPass = firstNonEmpty(process.env.DB_PASS, process.env.DB_PASSWORD, process.env.MYSQLPASSWORD) || 'password';
+const dbName = firstNonEmpty(process.env.DB_NAME, process.env.DB_DATABASE, process.env.MYSQLDATABASE) || 'chatdb';
 
 let sequelize: SequelizeType;
 
-if (envDatabaseUrl && envDatabaseUrl.trim() !== '') {
-  console.log('Using DATABASE_URL:', envDatabaseUrl);
+if (envDatabaseUrl) {
+  console.log('Using database URL from environment.');
   sequelize = new SequelizeType(envDatabaseUrl, {
     dialect: 'mysql',
     logging: process.env.SEQUELIZE_LOG === 'true' ? console.log : false,
     dialectOptions: {}
   });
 } else {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error(
+      'Database configuration missing in production. Set one of DATABASE_URL / MYSQL_URL / MYSQLDATABASE_URL, or MYSQLHOST+MYSQLPORT+MYSQLUSER+MYSQLPASSWORD+MYSQLDATABASE.'
+    );
+  }
   const builtUrl = `mysql://${encodeURIComponent(dbUser)}:${encodeURIComponent(dbPass)}@${dbHost}:${dbPort}/${dbName}`;
   console.log('DATABASE_URL not set — built URL from env:', builtUrl);
   sequelize = new SequelizeType(dbName, dbUser, dbPass, {
