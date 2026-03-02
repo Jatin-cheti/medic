@@ -20,8 +20,8 @@ const withUserInfo = async (req: any, res: Response, next: Function) => {
   }
 };
 
-// GET /profile - Get user profile details
-router.get('/profile', withUserInfo, async (req: any, res: Response) => {
+// GET / - Get user profile details
+router.get('/', withUserInfo, async (req: any, res: Response) => {
   try {
     const userId = req.user?.id;
     if (!userId) {
@@ -65,8 +65,8 @@ router.get('/profile', withUserInfo, async (req: any, res: Response) => {
   }
 });
 
-// PUT /profile - Update user profile details
-router.put('/profile', withUserInfo, async (req: any, res: Response) => {
+// PUT / - Update user profile details
+router.put('/', withUserInfo, async (req: any, res: Response) => {
   try {
     const userId = req.user?.id;
     if (!userId) {
@@ -154,8 +154,8 @@ router.put('/profile', withUserInfo, async (req: any, res: Response) => {
   }
 });
 
-// POST /profile/avatar-upload-url - Get presigned URL for avatar upload
-router.post('/profile/avatar-upload-url', withUserInfo, async (req: any, res: Response) => {
+// POST /avatar-upload-url - Get presigned URL for avatar upload
+router.post('/avatar-upload-url', withUserInfo, async (req: any, res: Response) => {
   try {
     const userId = req.user?.id;
     if (!userId) {
@@ -187,8 +187,8 @@ router.post('/profile/avatar-upload-url', withUserInfo, async (req: any, res: Re
   }
 });
 
-// PUT /profile/avatar - Update avatar URL
-router.put('/profile/avatar', withUserInfo, async (req: any, res: Response) => {
+// PUT /avatar - Update avatar URL
+router.put('/avatar', withUserInfo, async (req: any, res: Response) => {
   try {
     const userId = req.user?.id;
     if (!userId) {
