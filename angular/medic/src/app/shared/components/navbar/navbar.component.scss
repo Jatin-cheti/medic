@@ -150,37 +150,37 @@
   background: #1e293b;
   border-bottom-color: #334155;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-  
+
   .logo {
     color: #7FB5FA;
-    
+
     &:hover {
       color: #6da5e9;
     }
   }
-  
+
   .nav-link {
     color: #cbd5e1;
-    
+
     &:hover {
       color: #7FB5FA;
       background: #334155;
     }
-    
+
     &.active {
       color: #7FB5FA;
       background: #334155;
-      
+
       &::after {
         background: #7FB5FA;
       }
     }
   }
-  
+
   .notification-btn {
     background: #334155;
     color: #7FB5FA;
-    
+
     &:hover {
       background: #7FB5FA;
       color: white;

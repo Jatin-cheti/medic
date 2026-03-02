@@ -16,7 +16,7 @@ export class ThemeService {
     // Check localStorage for saved preference
     const savedTheme = localStorage.getItem('theme');
     const prefersDark = savedTheme === 'dark';
-    
+
     this.setDarkMode(prefersDark);
   }
 
@@ -27,7 +27,7 @@ export class ThemeService {
 
   setDarkMode(isDark: boolean): void {
     this.darkModeSubject.next(isDark);
-    
+
     // Update document class
     if (isDark) {
       document.documentElement.classList.add('dark-mode');

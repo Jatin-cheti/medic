@@ -16,7 +16,7 @@ import { SidebarComponent } from '../shared/components/sidebar/sidebar.component
       <!-- Main Content Area (Navbar + Content) -->
       <div class="main-wrapper">
         <app-navbar class="app-navbar"></app-navbar>
-        
+
         <main class="main-content">
           <router-outlet></router-outlet>
         </main>

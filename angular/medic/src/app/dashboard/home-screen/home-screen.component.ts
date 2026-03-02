@@ -5,6 +5,7 @@ import { Router, RouterModule } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { finalize } from 'rxjs';
 import { AppLoaderComponent } from '../../shared/components/app-loader/app-loader.component';
+import { UserService } from '../../core/services/user.service';
 
 interface Appointment {
   id: number;
@@ -79,7 +80,8 @@ export class HomeScreenComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private userService: UserService
   ) {}
 
   ngOnInit() {
@@ -132,14 +134,16 @@ export class HomeScreenComponent implements OnInit {
             recentChats: data?.stats?.recentChats ?? (data?.conversations?.length || 0),
           },
         };
-        
-        // Store patient info in localStorage for sidebar
+
+        // Store patient info in localStorage and UserService for sidebar
         if (data?.patient) {
-          if (data.patient.first_name) localStorage.setItem('firstName', data.patient.first_name);
-          if (data.patient.last_name) localStorage.setItem('lastName', data.patient.last_name);
-          if (data.patient.email) localStorage.setItem('userEmail', data.patient.email);
+          this.userService.setUserInfo(
+            data.patient.first_name || '',
+            data.patient.last_name || '',
+            data.patient.email || ''
+          );
         }
-        
+
         this.cdr.markForCheck();
       },
       error: (err) => {

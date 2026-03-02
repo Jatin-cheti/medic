@@ -8,6 +8,11 @@
   overflow-y: auto;
   transition: background-color 0.3s ease, border-color 0.3s ease;
   
+  &.dark-theme {
+    background: #1e293b;
+    border-right-color: #334155;
+  }
+
   /* Custom Scrollbar */
   &::-webkit-scrollbar {
     width: 6px;
@@ -27,19 +32,13 @@
   }
 }
 
-// Dark mode sidebar
-.dark-mode .sidebar {
-  background: #1e293b;
-  border-right-color: #334155;
-}
-
 // User Profile Section
 .user-profile {
   padding: 2rem 1.5rem;
   background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
   color: white;
   text-align: center;
-  
+
   .avatar {
     width: 80px;
     height: 80px;
@@ -201,11 +200,74 @@
   }
 }
 
+// Dark mode - Fix sidebar to be dark and ensure text readability
+.sidebar.dark-theme {
+  background: #1e293b;
+  border-right-color: #334155;
+  
+  .user-profile {
+    background: linear-gradient(135deg, #154E99 0%, #0d3a6d 100%);
+
+    .user-name,
+    .user-email {
+      color: white;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    .user-badge {
+      background: white;
+      color: #154E99;
+      font-weight: 600;
+    }
+
+    .avatar {
+      background: rgba(255, 255, 255, 0.3);
+      color: white;
+      border: 3px solid rgba(255, 255, 255, 0.4);
+    }
+  }
+
+  .sidebar-menu {
+    .section-title {
+      color: #94a3b8;
+    }
+
+    .menu-item {
+      color: #f1f5f9;
+
+      svg {
+        color: #94a3b8;
+      }
+
+      &:hover {
+        background: #334155;
+        color: #7FB5FA;
+
+        svg {
+          color: #7FB5FA;
+        }
+      }
+
+      &.logout-btn {
+        color: #f87171;
+
+        svg {
+          color: #f87171;
+        }
+
+        &:hover {
+          background: rgba(239, 68, 68, 0.1);
+        }
+      }
+    }
+  }
+}
+
 // Dark mode wrapper style
 .dark-mode-wrapper {
   padding: 0.5rem 0.75rem !important;
   cursor: default;
-  
+
   &:hover {
     background: transparent !important;
   }
@@ -232,63 +294,63 @@
   }
 }
 
-// Dark mode - Fix sidebar to be dark and ensure text readability
+// Keep global dark mode styles as fallback
 .dark-mode {
   .sidebar {
     background: #1e293b;
     border-right-color: #334155;
   }
-  
+
   .user-profile {
     background: linear-gradient(135deg, #154E99 0%, #0d3a6d 100%);
-    
+
     .user-name,
     .user-email {
       color: white;
       text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
     }
-    
+
     .user-badge {
       background: white;
       color: #154E99;
       font-weight: 600;
     }
-    
+
     .avatar {
       background: rgba(255, 255, 255, 0.3);
       color: white;
       border: 3px solid rgba(255, 255, 255, 0.4);
     }
   }
-  
+
   .sidebar-menu {
     .section-title {
       color: #94a3b8;
     }
-    
+
     .menu-item {
       color: #f1f5f9;
-      
+
       svg {
         color: #94a3b8;
       }
-      
+
       &:hover {
         background: #334155;
         color: #7FB5FA;
-        
+
         svg {
           color: #7FB5FA;
         }
       }
-      
+
       &.logout-btn {
         color: #f87171;
-        
+
         svg {
           color: #f87171;
         }
-        
+
         &:hover {
           background: rgba(239, 68, 68, 0.1);
         }

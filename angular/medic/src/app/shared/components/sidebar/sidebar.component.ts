@@ -1,8 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ThemeService } from '../../../core/services/theme.service';
+import { UserService, UserInfo } from '../../../core/services/user.service';
 import { DarkModeToggleComponent } from '../dark-mode-toggle/dark-mode-toggle.component';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-sidebar',
@@ -11,55 +14,44 @@ import { DarkModeToggleComponent } from '../dark-mode-toggle/dark-mode-toggle.co
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss']
 })
-export class SidebarComponent implements OnInit {
+export class SidebarComponent implements OnInit, OnDestroy {
   // Permanent sidebar - no toggle needed
 
-  userInfo = {
-    name: '',
+  userInfo: UserInfo = {
+    name: 'Patient',
     email: '',
     role: 'Patient',
     avatar: ''
   };
 
   isDarkMode = false;
+  private destroy$ = new Subject<void>();
 
   constructor(
     private router: Router,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private userService: UserService
   ) {}
 
   ngOnInit() {
-    this.loadUserInfo();
-    
+    // Subscribe to user info changes
+    this.userService.userInfo$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((userInfo: UserInfo) => {
+        this.userInfo = userInfo;
+      });
+
     // Subscribe to theme changes
-    this.themeService.isDarkMode$.subscribe((isDark: boolean) => {
-      this.isDarkMode = isDark;
-    });
-    
-    // Reload user info after a short delay to catch dashboard data
-    setTimeout(() => this.loadUserInfo(), 500);
-    setTimeout(() => this.loadUserInfo(), 1500);
+    this.themeService.isDarkMode$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((isDark: boolean) => {
+        this.isDarkMode = isDark;
+      });
   }
 
-  loadUserInfo() {
-    // Load from localStorage
-    const userEmail = localStorage.getItem('userEmail');
-    const firstName = localStorage.getItem('firstName');
-    const lastName = localStorage.getItem('lastName');
-    const userName = localStorage.getItem('userName');
-
-    if (userEmail) this.userInfo.email = userEmail;
-    
-    // Try to construct full name from firstName and lastName
-    if (firstName && lastName) {
-      this.userInfo.name = `${firstName} ${lastName}`.trim();
-    } else if (userName) {
-      this.userInfo.name = userName;
-    } else if (firstName) {
-      this.userInfo.name = firstName;
-    } else {
-      this.userInfo.name = 'Patient';
-    }
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   getInitials(): string {
