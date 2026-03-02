@@ -8,20 +8,20 @@
   <div class="header-section" *ngIf="dashboardData?.patient">
     <div class="welcome-card">
       <div class="welcome-content">
-        <h1>Welcome back, {{ dashboardData.patient.first_name }}! 👋</h1>
+        <h1>Welcome back, {{ dashboardData!.patient.first_name }}! 👋</h1>
         <p class="subtitle">Your health journey continues here</p>
       </div>
       <div class="stats-row">
         <div class="stat-item">
-          <span class="stat-number">{{ dashboardData.stats.totalAppointments }}</span>
+          <span class="stat-number">{{ dashboardData!.stats.totalAppointments }}</span>
           <span class="stat-label">Appointments</span>
         </div>
         <div class="stat-item">
-          <span class="stat-number">{{ dashboardData.stats.totalDoctors }}</span>
+          <span class="stat-number">{{ dashboardData!.stats.totalDoctors }}</span>
           <span class="stat-label">Doctors</span>
         </div>
         <div class="stat-item">
-          <span class="stat-number">{{ dashboardData.stats.recentChats }}</span>
+          <span class="stat-number">{{ dashboardData!.stats.recentChats }}</span>
           <span class="stat-label">Chats</span>
         </div>
       </div>
@@ -52,13 +52,13 @@
   </div>
 
   <!-- Upcoming Appointments -->
-  <div class="section upcoming-appointments" *ngIf="dashboardData?.appointments.length">
+  <div class="section upcoming-appointments" *ngIf="dashboardData?.appointments && dashboardData!.appointments.length > 0">
     <div class="section-header">
       <h2>Upcoming Appointments</h2>
       <button class="view-all-btn" (click)="navigateToAppointments()">View All →</button>
     </div>
     <div class="appointments-list">
-      <div class="appointment-card" *ngFor="let apt of dashboardData.appointments">
+      <div class="appointment-card" *ngFor="let apt of dashboardData!.appointments">
         <div class="appointment-date-time">
           <div class="date">{{ formatDate(apt.scheduled_at) }}</div>
           <div class="time">{{ formatTime(apt.scheduled_at) }}</div>
@@ -92,13 +92,13 @@
   </div>
 
   <!-- Verified Doctors -->
-  <div class="section verified-doctors" *ngIf="dashboardData?.doctors.length">
+  <div class="section verified-doctors" *ngIf="dashboardData?.doctors && dashboardData!.doctors.length > 0">
     <div class="section-header">
       <h2>Verified Doctors</h2>
       <button class="view-all-btn" (click)="navigateToDoctors()">View All →</button>
     </div>
     <div class="doctors-grid">
-      <div class="doctor-card" *ngFor="let doctor of dashboardData.doctors" (click)="navigateToDoctor(doctor.id)">
+      <div class="doctor-card" *ngFor="let doctor of dashboardData!.doctors" (click)="navigateToDoctor(doctor.id)">
         <div class="doctor-avatar-large">{{ getInitials(doctor.first_name, doctor.last_name) }}</div>
         <div class="doctor-card-header">
           <h3>Dr. {{ doctor.first_name }} {{ doctor.last_name }}</h3>
@@ -109,7 +109,6 @@
         </div>
         <div class="doctor-card-content">
           <p class="specialties" *ngIf="doctor.specialties">{{ doctor.specialties }}</p>
-          <p class="experience">{{ doctor.years_of_experience || 0 }}+ years</p>
           <p class="consultations">{{ doctor.total_consultations }} consultations</p>
         </div>
         <div class="doctor-card-footer">
@@ -123,13 +122,13 @@
   </div>
 
   <!-- Recent Chats -->
-  <div class="section recent-chats" *ngIf="dashboardData?.conversations.length">
+  <div class="section recent-chats" *ngIf="dashboardData?.conversations && dashboardData!.conversations.length > 0">
     <div class="section-header">
       <h2>Recent Chats</h2>
       <button class="view-all-btn">View All →</button>
     </div>
     <div class="chats-list">
-      <div class="chat-item" *ngFor="let chat of dashboardData.conversations" (click)="navigateToChat(chat.uuid)">
+      <div class="chat-item" *ngFor="let chat of dashboardData!.conversations" (click)="navigateToChat(chat.uuid)">
         <div class="chat-avatar">{{ getInitials(chat.first_name, chat.last_name) }}</div>
         <div class="chat-content">
           <div class="chat-header">
