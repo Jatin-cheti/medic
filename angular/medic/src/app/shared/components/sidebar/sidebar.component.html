@@ -3,7 +3,8 @@
   <!-- User Profile Section -->
   <div class="user-profile">
     <div class="avatar">
-      {{ getInitials() }}
+      <img *ngIf="userInfo.avatar" [src]="userInfo.avatar" [alt]="userInfo.name" class="avatar-image">
+      <span *ngIf="!userInfo.avatar" class="avatar-initials">{{ getInitials() }}</span>
     </div>
     <div class="user-info">
       <h3 class="user-name">{{ userInfo.name }}</h3>

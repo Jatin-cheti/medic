@@ -68,11 +68,13 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('userEmail');
-    localStorage.removeItem('userName');
-    localStorage.removeItem('firstName');
-    localStorage.removeItem('lastName');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('refreshToken');
+    sessionStorage.removeItem('role');
+    sessionStorage.removeItem('userEmail');
+    sessionStorage.removeItem('userName');
+    sessionStorage.removeItem('firstName');
+    sessionStorage.removeItem('lastName');
     this.router.navigate(['/patient-login']);
   }
 

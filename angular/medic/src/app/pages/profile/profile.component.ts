@@ -1,9 +1,10 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, Injector } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators, FormGroup } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { AppLoaderComponent } from '../../shared/components/app-loader/app-loader.component';
+import { UserService } from '../../core/services/user.service';
 import { finalize } from 'rxjs';
 
 interface UserProfile {
@@ -46,7 +47,8 @@ export class ProfileComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private http: HttpClient,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private injector: Injector
   ) {
     this.profileForm = this.fb.group({
       firstName: ['', [Validators.required, Validators.minLength(2)]],
@@ -60,7 +62,7 @@ export class ProfileComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log('ProfileComponent ngOnInit - Token:', localStorage.getItem('token') ? 'Present' : 'Missing');
+    console.log('ProfileComponent ngOnInit - Token:', sessionStorage.getItem('token') ? 'Present' : 'Missing');
     this.loadProfile();
   }
 
@@ -69,7 +71,7 @@ export class ProfileComponent implements OnInit {
     this.errorMessage = '';
     this.cdr.markForCheck();
 
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     console.log('loadProfile - Making request to:', this.apiUrl);
     console.log('loadProfile - Token present:', !!token);
 
@@ -83,6 +85,17 @@ export class ProfileComponent implements OnInit {
           console.log('Profile loaded successfully:', data);
           this.profile = data;
           this.previewUrl = data.avatarUrl || null;
+          
+          // Update sidebar with avatar
+          const userService = this.injector?.get(UserService);
+          if (userService) {
+            userService.setUserInfo(
+              data.firstName,
+              data.lastName,
+              data.email,
+              data.avatarUrl || ''
+            );
+          }
           this.profileForm.patchValue({
             firstName: data.firstName,
             lastName: data.lastName,

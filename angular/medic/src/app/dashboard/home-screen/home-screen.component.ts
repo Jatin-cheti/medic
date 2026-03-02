@@ -93,7 +93,7 @@ export class HomeScreenComponent implements OnInit {
     this.error = null;
     this.cdr.markForCheck();
 
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     if (!token) {
       this.loading = false;
       this.cdr.markForCheck();
