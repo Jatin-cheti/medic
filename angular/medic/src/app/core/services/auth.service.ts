@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
-  private api = 'http://localhost:3000/api/auth';
+  private api = `${environment.apiUrl}/api/auth`;
 
   private hasStorage(): boolean {
     return typeof window !== 'undefined' && typeof localStorage !== 'undefined';
