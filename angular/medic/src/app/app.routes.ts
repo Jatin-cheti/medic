@@ -19,8 +19,10 @@ import { NotificationsComponent } from './pages/notifications/notifications.comp
 import { AuthGuard } from './core/guards/auth-guard';
 
 export const routes: Routes = [
+  // Root redirect - will be handled by App component based on auth state
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
+  
   // Auth routes
-  { path: '', redirectTo: 'patient-login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'signup', component: PatientSignupComponent },
   { path: 'patient-signup', component: PatientSignupComponent },
@@ -37,6 +39,7 @@ export const routes: Routes = [
     children: [
       { path: 'home', component: HomeScreenComponent },
       { path: 'dashboard', redirectTo: 'home', pathMatch: 'full' },
+      { path: 'patient-dashboard', redirectTo: 'home', pathMatch: 'full' },
       { path: 'doctors', component: DoctorsComponent },
       { path: 'appointments', component: AppointmentsComponent },
       { path: 'symptom-checker', component: SymptomCheckerComponent },
@@ -48,5 +51,8 @@ export const routes: Routes = [
       { path: 'change-password', component: ChangePasswordComponent },
       { path: 'notifications', component: NotificationsComponent }
     ]
-  }
+  },
+
+  // Fallback for unknown routes
+  { path: '**', redirectTo: 'home', pathMatch: 'full' }
 ];

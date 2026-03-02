@@ -1,18 +1,44 @@
 import { Injectable } from '@angular/core';
 import { HttpErrorResponse, HttpClient } from '@angular/common/http';
-import { catchError, throwError, tap } from 'rxjs';
+import { catchError, throwError, tap, BehaviorSubject, Observable } from 'rxjs';
+import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
   private api = `${environment.apiUrl}/api/auth`;
+  private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.hasValidToken());
+  public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
 
   private hasStorage(): boolean {
-    return typeof window !== 'undefined' && typeof localStorage !== 'undefined';
+    return typeof window !== 'undefined' && typeof sessionStorage !== 'undefined';
   }
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {
+    // Initialize auth state on service creation
+    this.checkAuthState();
+  }
+
+  private checkAuthState(): void {
+    const isValid = this.hasValidToken();
+    this.isAuthenticatedSubject.next(isValid);
+  }
+
+  private hasValidToken(): boolean {
+    if (!this.hasStorage()) return false;
+    
+    const token = sessionStorage.getItem('token');
+    if (!token) return false;
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const exp = payload.exp * 1000;
+      return Date.now() < exp;
+    } catch {
+      return false;
+    }
+  }
 
   private handleApiError(error: HttpErrorResponse) {
     const message = this.getErrorMessage(error);
@@ -50,8 +76,10 @@ export class AuthService {
       .pipe(
         tap((res: any) => {
           if (this.hasStorage()) {
-            if (res.token) localStorage.setItem('token', res.token);
-            if (res.refreshToken) localStorage.setItem('refreshToken', res.refreshToken);
+            if (res.token) sessionStorage.setItem('token', res.token);
+            if (res.refreshToken) sessionStorage.setItem('refreshToken', res.refreshToken);
+            if (res.role) sessionStorage.setItem('role', res.role);
+            this.isAuthenticatedSubject.next(true);
           }
         }),
         catchError((error) => this.handleApiError(error))
@@ -63,8 +91,10 @@ export class AuthService {
       .pipe(
         tap((res: any) => {
           if (this.hasStorage()) {
-            if (res.token) localStorage.setItem('token', res.token);
-            if (res.refreshToken) localStorage.setItem('refreshToken', res.refreshToken);
+            if (res.token) sessionStorage.setItem('token', res.token);
+            if (res.refreshToken) sessionStorage.setItem('refreshToken', res.refreshToken);
+            if (res.role) sessionStorage.setItem('role', res.role);
+            this.isAuthenticatedSubject.next(true);
           }
         }),
         catchError((error) => this.handleApiError(error))
@@ -76,8 +106,10 @@ export class AuthService {
       .pipe(
         tap((res: any) => {
           if (this.hasStorage()) {
-            if (res.token) localStorage.setItem('token', res.token);
-            if (res.refreshToken) localStorage.setItem('refreshToken', res.refreshToken);
+            if (res.token) sessionStorage.setItem('token', res.token);
+            if (res.refreshToken) sessionStorage.setItem('refreshToken', res.refreshToken);
+            if (res.role) sessionStorage.setItem('role', res.role);
+            this.isAuthenticatedSubject.next(true);
           }
         }),
         catchError((error) => this.handleApiError(error))
@@ -89,8 +121,10 @@ export class AuthService {
       .pipe(
         tap((res: any) => {
           if (this.hasStorage()) {
-            if (res.token) localStorage.setItem('token', res.token);
-            if (res.refreshToken) localStorage.setItem('refreshToken', res.refreshToken);
+            if (res.token) sessionStorage.setItem('token', res.token);
+            if (res.refreshToken) sessionStorage.setItem('refreshToken', res.refreshToken);
+            if (res.role) sessionStorage.setItem('role', res.role);
+            this.isAuthenticatedSubject.next(true);
           }
         }),
         catchError((error) => this.handleApiError(error))
@@ -102,8 +136,10 @@ export class AuthService {
       .pipe(
         tap((res: any) => {
           if (this.hasStorage()) {
-            if (res.token) localStorage.setItem('token', res.token);
-            if (res.refreshToken) localStorage.setItem('refreshToken', res.refreshToken);
+            if (res.token) sessionStorage.setItem('token', res.token);
+            if (res.refreshToken) sessionStorage.setItem('refreshToken', res.refreshToken);
+            if (res.role) sessionStorage.setItem('role', res.role);
+            this.isAuthenticatedSubject.next(true);
           }
         }),
         catchError((error) => this.handleApiError(error))
@@ -113,14 +149,15 @@ export class AuthService {
   refreshToken() {
     if (!this.hasStorage()) return null;
 
-    const refreshToken = localStorage.getItem('refreshToken');
+    const refreshToken = sessionStorage.getItem('refreshToken');
     if (!refreshToken) return null;
 
     return this.http.post(`${this.api}/refresh-token`, { refreshToken })
       .pipe(
         tap((res: any) => {
-          if (res.token) localStorage.setItem('token', res.token);
-          if (res.refreshToken) localStorage.setItem('refreshToken', res.refreshToken);
+          if (res.token) sessionStorage.setItem('token', res.token);
+          if (res.refreshToken) sessionStorage.setItem('refreshToken', res.refreshToken);
+          this.isAuthenticatedSubject.next(true);
         }),
         catchError((error) => this.handleApiError(error))
       );
@@ -131,8 +168,10 @@ export class AuthService {
       .pipe(
         tap((res: any) => {
           if (this.hasStorage()) {
-            if (res.token) localStorage.setItem('token', res.token);
-            if (res.refreshToken) localStorage.setItem('refreshToken', res.refreshToken);
+            if (res.token) sessionStorage.setItem('token', res.token);
+            if (res.refreshToken) sessionStorage.setItem('refreshToken', res.refreshToken);
+            if (res.role) sessionStorage.setItem('role', res.role);
+            this.isAuthenticatedSubject.next(true);
           }
         }),
         catchError((error) => this.handleApiError(error))
@@ -144,8 +183,10 @@ export class AuthService {
       .pipe(
         tap((res: any) => {
           if (this.hasStorage()) {
-            if (res.token) localStorage.setItem('token', res.token);
-            if (res.refreshToken) localStorage.setItem('refreshToken', res.refreshToken);
+            if (res.token) sessionStorage.setItem('token', res.token);
+            if (res.refreshToken) sessionStorage.setItem('refreshToken', res.refreshToken);
+            if (res.role) sessionStorage.setItem('role', res.role);
+            this.isAuthenticatedSubject.next(true);
           }
         }),
         catchError((error) => this.handleApiError(error))
@@ -157,8 +198,10 @@ export class AuthService {
       .pipe(
         tap((res: any) => {
           if (this.hasStorage()) {
-            if (res.token) localStorage.setItem('token', res.token);
-            if (res.refreshToken) localStorage.setItem('refreshToken', res.refreshToken);
+            if (res.token) sessionStorage.setItem('token', res.token);
+            if (res.refreshToken) sessionStorage.setItem('refreshToken', res.refreshToken);
+            if (res.role) sessionStorage.setItem('role', res.role);
+            this.isAuthenticatedSubject.next(true);
           }
         }),
         catchError((error) => this.handleApiError(error))
@@ -168,8 +211,11 @@ export class AuthService {
   isLoggedIn(): boolean {
     if (!this.hasStorage()) return false;
     
-    const token = localStorage.getItem('token');
-    if (!token) return false;
+    const token = sessionStorage.getItem('token');
+    if (!token) {
+      this.isAuthenticatedSubject.next(false);
+      return false;
+    }
 
     // Validate token is not expired
     try {
@@ -184,6 +230,7 @@ export class AuthService {
         return false;
       }
       
+      this.isAuthenticatedSubject.next(true);
       return true;
     } catch (e) {
       // Invalid token format
@@ -195,18 +242,42 @@ export class AuthService {
 
   logout() {
     if (this.hasStorage()) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('role');
+      sessionStorage.removeItem('token');
+      sessionStorage.removeItem('refreshToken');
+      sessionStorage.removeItem('role');
     }
+    this.isAuthenticatedSubject.next(false);
+    this.router.navigate(['/patient-login']);
   }
 
   getToken(): string | null {
-    return this.hasStorage() ? localStorage.getItem('token') : null;
+    return this.hasStorage() ? sessionStorage.getItem('token') : null;
   }
 
   getRefreshToken(): string | null {
-    return this.hasStorage() ? localStorage.getItem('refreshToken') : null;
+    return this.hasStorage() ? sessionStorage.getItem('refreshToken') : null;
+  }
+
+  getRole(): string | null {
+    return this.hasStorage() ? sessionStorage.getItem('role') : null;
+  }
+
+  getUserFromToken(): any {
+    const token = this.getToken();
+    if (!token) return null;
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return {
+        userId: payload.userId,
+        uuid: payload.uuid,
+        email: payload.email,
+        phone: payload.phone,
+        role: payload.role
+      };
+    } catch {
+      return null;
+    }
   }
 
   getBackendUrl(): string {
