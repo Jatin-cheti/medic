@@ -1,3 +1,6 @@
+<!-- Loader -->
+<app-loader [show]="loading" [text]="'Loading your dashboard...'"></app-loader>
+
 <div class="home-screen-container" *ngIf="!loading">
   <!-- Error Message -->
   <div class="error-banner" *ngIf="error">

@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { finalize } from 'rxjs';
+import { AppLoaderComponent } from '../../shared/components/app-loader/app-loader.component';
 
 interface Appointment {
   id: number;
@@ -65,7 +66,7 @@ interface DashboardData {
 @Component({
   selector: 'app-home-screen',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, AppLoaderComponent],
   templateUrl: './home-screen.component.html',
   styleUrls: ['./home-screen.component.scss']
 })
