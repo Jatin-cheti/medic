@@ -58,14 +58,14 @@
   </section>
 
   <!-- Quick Actions Grid -->
-  <section class="quick-actions">
-    <div class="section-title">
+  <section class="quick-actions mb-4">
+    <div class="section-title mb-4">
       <h2>Quick Actions</h2>
       <p>What would you like to do today?</p>
     </div>
 
-    <div class="actions-grid">
-      <button class="action-card purple" routerLink="/doctors">
+    <div class="grid-auto-fit">
+      <button class="card action-card border-0" routerLink="/doctors">
         <div class="action-icon">
           <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="11" cy="11" r="8"></circle>
@@ -78,7 +78,7 @@
         </div>
       </button>
 
-      <button class="action-card blue" routerLink="/appointments">
+      <button class="card action-card border-0" routerLink="/appointments">
         <div class="action-icon">
           <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -93,7 +93,7 @@
         </div>
       </button>
 
-      <button class="action-card green" routerLink="/symptom-checker">
+      <button class="card action-card border-0" routerLink="/symptom-checker">
         <div class="action-icon">
           <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
@@ -106,7 +106,7 @@
         </div>
       </button>
 
-      <button class="action-card orange" routerLink="/chat-history">
+      <button class="card action-card border-0" routerLink="/chat-history">
         <div class="action-icon">
           <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
@@ -135,8 +135,8 @@
       </button>
     </div>
 
-    <div class="appointments-grid">
-      <div class="appointment-card" *ngFor="let apt of dashboardData!.appointments">
+    <div class="grid-auto-fill">
+      <div class="card appointment-card" *ngFor="let apt of dashboardData!.appointments">
         <div class="appointment-header">
           <div class="doctor-section">
             <div class="doctor-avatar">{{ getInitials(apt.doctor_first_name, apt.doctor_last_name) }}</div>
@@ -175,16 +175,16 @@
         </div>
 
         <div class="appointment-actions">
-          <button class="btn-secondary">Reschedule</button>
-          <button class="btn-primary">Join Call</button>
+          <button class="btn btn-secondary">Reschedule</button>
+          <button class="btn btn-primary">Join Call</button>
         </div>
       </div>
     </div>
   </section>
 
   <!-- Empty State -->
-  <section class="empty-appointments" *ngIf="dashboardData && !dashboardData.appointments.length">
-    <div class="empty-content">
+  <section *ngIf="dashboardData && !dashboardData.appointments.length">
+    <div class="empty-state">
       <div class="empty-icon">
         <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -195,7 +195,7 @@
       </div>
       <h3>No Upcoming Appointments</h3>
       <p>Start your health journey by booking an appointment with a qualified doctor</p>
-      <button class="btn-primary-large" routerLink="/doctors">
+      <button class="btn btn-primary btn-lg" routerLink="/doctors">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="11" cy="11" r="8"></circle>
           <path d="m21 21-4.35-4.35"></path>
@@ -220,17 +220,17 @@
       </button>
     </div>
 
-    <div class="doctors-grid">
-      <div class="doctor-card" *ngFor="let doctor of dashboardData!.doctors">
+    <div class="grid-auto-fill">
+      <div class="card doctor-card" *ngFor="let doctor of dashboardData!.doctors">
         <div class="verified-badge">✓ Verified</div>
         <div class="doctor-avatar-large">{{ getInitials(doctor.first_name, doctor.last_name) }}</div>
 
         <div class="doctor-info">
           <h3>Dr. {{ doctor.first_name }} {{ doctor.last_name }}</h3>
-          <p class="specialty" *ngIf="doctor.specialties">{{ doctor.specialties }}</p>
+          <p class="specialty text-muted" *ngIf="doctor.specialties">{{ doctor.specialties }}</p>
 
-          <div class="rating-section">
-            <div class="stars">
+          <div class="rating-section my-3">
+            <div class="rating-stars">
               <span *ngFor="let i of [1,2,3,4,5]" class="star" [class.filled]="i <= doctor.rating">★</span>
             </div>
             <span class="rating-text">{{ doctor.rating }}/5</span>
@@ -248,7 +248,7 @@
           </div>
         </div>
 
-        <button class="book-button" (click)="bookAppointment(doctor.id)">
+        <button class="btn btn-primary book-button" (click)="bookAppointment(doctor.id)">
           Book Appointment
         </button>
       </div>
@@ -270,8 +270,8 @@
       </button>
     </div>
 
-    <div class="chats-list">
-      <div class="chat-card" *ngFor="let chat of dashboardData!.conversations" (click)="navigateToChat(chat.uuid)">
+    <div class="d-flex flex-column gap-3">
+      <div class="card chat-card" *ngFor="let chat of dashboardData!.conversations" (click)="navigateToChat(chat.uuid)">
         <div class="chat-avatar">{{ getInitials(chat.first_name, chat.last_name) }}</div>
         <div class="chat-details">
           <div class="chat-header">

@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { ThemeService } from '../../../core/services/theme.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -9,7 +10,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss']
 })
-export class SidebarComponent {
+export class SidebarComponent implements OnInit {
   // Permanent sidebar - no toggle needed
 
   userInfo = {
@@ -21,18 +22,37 @@ export class SidebarComponent {
 
   isDarkMode = false;
 
-  constructor(private router: Router) {
+  constructor(
+    private router: Router,
+    private themeService: ThemeService
+  ) {}
+
+  ngOnInit() {
     this.loadUserInfo();
+    
+    // Subscribe to theme changes
+    this.themeService.isDarkMode$.subscribe((isDark: boolean) => {
+      this.isDarkMode = isDark;
+    });
   }
 
   loadUserInfo() {
-    // Load from localStorage or service
-    const token = localStorage.getItem('token');
+    // Load from localStorage
     const userEmail = localStorage.getItem('userEmail');
+    const firstName = localStorage.getItem('firstName');
+    const lastName = localStorage.getItem('lastName');
     const userName = localStorage.getItem('userName');
 
     if (userEmail) this.userInfo.email = userEmail;
-    if (userName) this.userInfo.name = userName;
+    
+    // Try to construct full name from firstName and lastName
+    if (firstName && lastName) {
+      this.userInfo.name = `${firstName} ${lastName}`;
+    } else if (userName) {
+      this.userInfo.name = userName;
+    } else if (firstName) {
+      this.userInfo.name = firstName;
+    }
   }
 
   getInitials(): string {
@@ -45,9 +65,7 @@ export class SidebarComponent {
   }
 
   toggleDarkMode() {
-    this.isDarkMode = !this.isDarkMode;
-    document.body.classList.toggle('dark-mode', this.isDarkMode);
-    localStorage.setItem('darkMode', this.isDarkMode.toString());
+    this.themeService.toggleTheme();
   }
 
   navigateTo(route: string) {
@@ -58,6 +76,8 @@ export class SidebarComponent {
     localStorage.removeItem('token');
     localStorage.removeItem('userEmail');
     localStorage.removeItem('userName');
+    localStorage.removeItem('firstName');
+    localStorage.removeItem('lastName');
     this.router.navigate(['/patient-login']);
   }
 

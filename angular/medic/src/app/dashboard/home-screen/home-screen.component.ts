@@ -132,6 +132,14 @@ export class HomeScreenComponent implements OnInit {
             recentChats: data?.stats?.recentChats ?? (data?.conversations?.length || 0),
           },
         };
+        
+        // Store patient info in localStorage for sidebar
+        if (data?.patient) {
+          if (data.patient.first_name) localStorage.setItem('firstName', data.patient.first_name);
+          if (data.patient.last_name) localStorage.setItem('lastName', data.patient.last_name);
+          if (data.patient.email) localStorage.setItem('userEmail', data.patient.email);
+        }
+        
         this.cdr.markForCheck();
       },
       error: (err) => {

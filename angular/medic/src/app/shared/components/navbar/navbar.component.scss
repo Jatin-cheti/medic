@@ -4,6 +4,7 @@
   border-bottom: 1px solid #e5e7eb;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   height: 70px;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 
   .navbar-container {
     height: 100%;
@@ -142,6 +143,13 @@
       box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
     }
   }
+}
+
+// Dark mode navbar
+.dark-mode .navbar {
+  background: #1e293b;
+  border-bottom-color: #334155;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 // Responsive adjustments
