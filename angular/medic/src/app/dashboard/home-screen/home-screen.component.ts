@@ -3,11 +3,13 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
+import { finalize } from 'rxjs';
 
 interface Appointment {
   id: number;
   uuid: string;
   scheduled_at: string;
+  appointment_date?: string;
   status: string;
   doctor_first_name: string;
   doctor_last_name: string;
@@ -88,16 +90,43 @@ export class HomeScreenComponent implements OnInit {
 
     const token = localStorage.getItem('token');
     if (!token) {
-      this.router.navigate(['/auth/login']);
+      this.loading = false;
+      this.router.navigate(['/patient-login']);
       return;
     }
 
     this.http.get<DashboardData>(`${this.apiUrl}/api/patient/dashboard`, {
       headers: { Authorization: `Bearer ${token}` }
-    }).subscribe({
-      next: (data) => {
-        this.dashboardData = data;
+    }).pipe(
+      finalize(() => {
         this.loading = false;
+      })
+    ).subscribe({
+      next: (data) => {
+        this.dashboardData = {
+          patient: data?.patient || {
+            id: 0,
+            first_name: 'Patient',
+            last_name: '',
+            email: '',
+            phone: '',
+            gender: '',
+            preferred_language: 'en',
+          },
+          appointments: Array.isArray(data?.appointments)
+            ? data.appointments.map((appointment) => ({
+                ...appointment,
+                scheduled_at: appointment.scheduled_at || appointment.appointment_date || '',
+              }))
+            : [],
+          doctors: Array.isArray(data?.doctors) ? data.doctors : [],
+          conversations: Array.isArray(data?.conversations) ? data.conversations : [],
+          stats: {
+            totalAppointments: data?.stats?.totalAppointments ?? (data?.appointments?.length || 0),
+            totalDoctors: data?.stats?.totalDoctors ?? (data?.doctors?.length || 0),
+            recentChats: data?.stats?.recentChats ?? (data?.conversations?.length || 0),
+          },
+        };
       },
       error: (err) => {
         console.error('Dashboard load error:', err);
@@ -106,17 +135,21 @@ export class HomeScreenComponent implements OnInit {
         } else {
           this.error = err?.error?.message || err?.error?.error || 'Failed to load dashboard';
         }
-        this.loading = false;
       }
     });
   }
 
-  getInitials(firstName: string, lastName: string): string {
-    return (firstName.charAt(0) + lastName.charAt(0)).toUpperCase();
+  getInitials(firstName?: string, lastName?: string): string {
+    const firstInitial = String(firstName || '').trim().charAt(0);
+    const lastInitial = String(lastName || '').trim().charAt(0);
+    const initials = `${firstInitial}${lastInitial}`.trim();
+    return (initials || 'U').toUpperCase();
   }
 
   formatDate(dateString: string): string {
+    if (!dateString) return '--';
     const date = new Date(dateString);
+    if (Number.isNaN(date.getTime())) return '--';
     return date.toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
@@ -125,7 +158,9 @@ export class HomeScreenComponent implements OnInit {
   }
 
   formatTime(dateString: string): string {
+    if (!dateString) return '--';
     const date = new Date(dateString);
+    if (Number.isNaN(date.getTime())) return '--';
     return date.toLocaleTimeString('en-US', {
       hour: '2-digit',
       minute: '2-digit'
