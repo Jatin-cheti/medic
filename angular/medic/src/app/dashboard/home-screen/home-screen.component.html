@@ -1,0 +1,150 @@
+<div class="home-screen-container" *ngIf="!loading">
+  <!-- Error Message -->
+  <div class="error-banner" *ngIf="error">
+    {{ error }}
+  </div>
+
+  <!-- Header Section -->
+  <div class="header-section" *ngIf="dashboardData?.patient">
+    <div class="welcome-card">
+      <div class="welcome-content">
+        <h1>Welcome back, {{ dashboardData.patient.first_name }}! 👋</h1>
+        <p class="subtitle">Your health journey continues here</p>
+      </div>
+      <div class="stats-row">
+        <div class="stat-item">
+          <span class="stat-number">{{ dashboardData.stats.totalAppointments }}</span>
+          <span class="stat-label">Appointments</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">{{ dashboardData.stats.totalDoctors }}</span>
+          <span class="stat-label">Doctors</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">{{ dashboardData.stats.recentChats }}</span>
+          <span class="stat-label">Chats</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="quick-actions-section">
+    <h2>Quick Actions</h2>
+    <div class="actions-grid">
+      <button class="action-btn" (click)="navigateToDoctors()">
+        <span class="action-icon">🔍</span>
+        <span class="action-text">Find Doctors</span>
+      </button>
+      <button class="action-btn" (click)="navigateToAppointments()">
+        <span class="action-icon">📅</span>
+        <span class="action-text">My Appointments</span>
+      </button>
+      <button class="action-btn">
+        <span class="action-icon">🩺</span>
+        <span class="action-text">Symptom Checker</span>
+      </button>
+      <button class="action-btn">
+        <span class="action-icon">💬</span>
+        <span class="action-text">Chat History</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Upcoming Appointments -->
+  <div class="section upcoming-appointments" *ngIf="dashboardData?.appointments.length">
+    <div class="section-header">
+      <h2>Upcoming Appointments</h2>
+      <button class="view-all-btn" (click)="navigateToAppointments()">View All →</button>
+    </div>
+    <div class="appointments-list">
+      <div class="appointment-card" *ngFor="let apt of dashboardData.appointments">
+        <div class="appointment-date-time">
+          <div class="date">{{ formatDate(apt.scheduled_at) }}</div>
+          <div class="time">{{ formatTime(apt.scheduled_at) }}</div>
+        </div>
+        <div class="appointment-details">
+          <div class="doctor-info">
+            <div class="doctor-avatar">{{ getInitials(apt.doctor_first_name, apt.doctor_last_name) }}</div>
+            <div class="doctor-details">
+              <h3>Dr. {{ apt.doctor_first_name }} {{ apt.doctor_last_name }}</h3>
+              <p class="specialty" *ngIf="apt.specialty">{{ apt.specialty }}</p>
+              <p class="fee">₹{{ apt.consultation_fee }}/consultation</p>
+            </div>
+          </div>
+          <div class="status-badge" [ngClass]="apt.status">
+            {{ apt.status }}
+          </div>
+        </div>
+        <div class="appointment-action">
+          <button class="action-link">Reschedule</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- No Upcoming Appointments -->
+  <div class="section empty-state" *ngIf="dashboardData && !dashboardData.appointments.length">
+    <div class="empty-icon">📅</div>
+    <h3>No upcoming appointments</h3>
+    <p>Book your first appointment with a doctor today</p>
+    <button class="primary-btn" (click)="navigateToDoctors()">Find a Doctor</button>
+  </div>
+
+  <!-- Verified Doctors -->
+  <div class="section verified-doctors" *ngIf="dashboardData?.doctors.length">
+    <div class="section-header">
+      <h2>Verified Doctors</h2>
+      <button class="view-all-btn" (click)="navigateToDoctors()">View All →</button>
+    </div>
+    <div class="doctors-grid">
+      <div class="doctor-card" *ngFor="let doctor of dashboardData.doctors" (click)="navigateToDoctor(doctor.id)">
+        <div class="doctor-avatar-large">{{ getInitials(doctor.first_name, doctor.last_name) }}</div>
+        <div class="doctor-card-header">
+          <h3>Dr. {{ doctor.first_name }} {{ doctor.last_name }}</h3>
+          <div class="rating">
+            <span class="stars" *ngFor="let i of [1,2,3,4,5]" [class.filled]="i <= doctor.rating">⭐</span>
+            <span class="rating-value">({{ doctor.rating }}/5)</span>
+          </div>
+        </div>
+        <div class="doctor-card-content">
+          <p class="specialties" *ngIf="doctor.specialties">{{ doctor.specialties }}</p>
+          <p class="experience">{{ doctor.years_of_experience || 0 }}+ years</p>
+          <p class="consultations">{{ doctor.total_consultations }} consultations</p>
+        </div>
+        <div class="doctor-card-footer">
+          <div class="fee">₹{{ doctor.consultation_fee }}</div>
+          <button class="book-btn" (click)="bookAppointment(doctor.id); $event.stopPropagation()">
+            Book Now
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Chats -->
+  <div class="section recent-chats" *ngIf="dashboardData?.conversations.length">
+    <div class="section-header">
+      <h2>Recent Chats</h2>
+      <button class="view-all-btn">View All →</button>
+    </div>
+    <div class="chats-list">
+      <div class="chat-item" *ngFor="let chat of dashboardData.conversations" (click)="navigateToChat(chat.uuid)">
+        <div class="chat-avatar">{{ getInitials(chat.first_name, chat.last_name) }}</div>
+        <div class="chat-content">
+          <div class="chat-header">
+            <h4>{{ chat.first_name }} {{ chat.last_name }}</h4>
+            <span class="chat-time">{{ formatDate(chat.updated_at) }}</span>
+          </div>
+          <p class="chat-message">{{ chat.last_message || 'No messages yet' }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Loading State -->
+<div class="loading-state" *ngIf="loading">
+  <div class="spinner"></div>
+  <p>Loading your dashboard...</p>
+</div>

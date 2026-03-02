@@ -1,0 +1,151 @@
+<div class="background">
+  <div class="login-wrapper">
+    <div class="left-section">
+      <div class="header">
+        <img class="logo" src="logo.svg" alt="Medic Logo">
+        <h1 class="title">Medic</h1>
+      </div>
+      <div class="welcome-content">
+        <h2>Create Doctor Account</h2>
+        <p>Register as a verified doctor and upload your credentials for approval.</p>
+        <div class="features">
+          <div class="feature"><span class="icon">✓</span><span>Practice Profile Setup</span></div>
+          <div class="feature"><span class="icon">✓</span><span>Patient Consultations</span></div>
+          <div class="feature"><span class="icon">✓</span><span>Prescription Management</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="right-section">
+      <div class="login-container">
+        <h3 class="login-title">Doctor Signup</h3>
+
+        <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+          <div class="form-group">
+            <label for="firstName">First Name</label>
+            <div class="input-wrapper">
+              <span class="input-icon">👤</span>
+              <input id="firstName" type="text" formControlName="firstName" placeholder="Dr. John" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="lastName">Last Name</label>
+            <div class="input-wrapper">
+              <span class="input-icon">👤</span>
+              <input id="lastName" type="text" formControlName="lastName" placeholder="Doe">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email</label>
+            <div class="input-wrapper">
+              <span class="input-icon">✉</span>
+              <input id="email" type="email" formControlName="email" placeholder="doctor@medic.com">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="phone">Phone</label>
+            <div class="input-wrapper">
+              <span class="input-icon">📱</span>
+              <input id="phone" type="text" formControlName="phone" placeholder="+91...">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="registrationNumber">Medical Registration Number</label>
+            <div class="input-wrapper">
+              <span class="input-icon">🪪</span>
+              <input id="registrationNumber" type="text" formControlName="registrationNumber" placeholder="REG-12345" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="yearsOfExperience">Years of Experience</label>
+            <div class="input-wrapper">
+              <span class="input-icon">📈</span>
+              <input id="yearsOfExperience" type="number" formControlName="yearsOfExperience" min="0" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="consultationFee">Consultation Fee (₹)</label>
+            <div class="input-wrapper">
+              <span class="input-icon">₹</span>
+              <input id="consultationFee" type="number" formControlName="consultationFee" min="0" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="gender">Gender</label>
+            <div class="input-wrapper select-wrapper">
+              <span class="input-icon">⚧</span>
+              <select id="gender" formControlName="gender">
+                <option value="">Select Gender</option>
+                <option *ngFor="let gender of genders" [value]="gender">{{ gender }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="preferredLanguage">Preferred Language</label>
+            <div class="input-wrapper select-wrapper">
+              <span class="input-icon">🌐</span>
+              <select id="preferredLanguage" formControlName="preferredLanguage">
+                <option *ngFor="let lang of languages" [value]="lang.code">{{ lang.name }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="degreeFile">Degree Certificate</label>
+            <div class="input-wrapper file-input-wrapper">
+              <label for="degreeFile" class="file-label">
+                <span class="file-icon">📄</span>
+                <span class="file-text">{{ degreeFileName || 'Choose Degree Certificate (PDF, PNG, JPG)' }}</span>
+                <input id="degreeFile" type="file" accept=".pdf,.png,.jpg,.jpeg" (change)="onDegreeFileChange($event)" required>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="experienceFile">Experience Certificate</label>
+            <div class="input-wrapper file-input-wrapper">
+              <label for="experienceFile" class="file-label">
+                <span class="file-icon">📄</span>
+                <span class="file-text">{{ experienceFileName || 'Choose Experience Certificate (PDF, PNG, JPG)' }}</span>
+                <input id="experienceFile" type="file" accept=".pdf,.png,.jpg,.jpeg" (change)="onExperienceFileChange($event)" required>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            <div class="input-wrapper">
+              <span class="input-icon">🔒</span>
+              <input id="password" type="password" formControlName="password" placeholder="Minimum 6 characters" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="confirmPassword">Confirm Password</label>
+            <div class="input-wrapper">
+              <span class="input-icon">🔒</span>
+              <input id="confirmPassword" type="password" formControlName="confirmPassword" placeholder="Re-enter password" required>
+            </div>
+          </div>
+
+          <p *ngIf="errorMessage" class="text-danger small mb-3">{{ errorMessage }}</p>
+
+          <button type="submit" class="login-btn">Submit for Verification</button>
+        </form>
+
+        <p class="signup-link">Already have an account? <a routerLink="/doctor-login">Login as Doctor</a></p>
+        <div class="patient-login-link">
+          <a routerLink="/patient-signup" class="login-as-patient">Register as Patient</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -27,11 +27,15 @@ const server = http_1.default.createServer(app);
 async function start() {
     try {
         await (0, sequelize_1.initSequelize)();
-        await (0, mongo_1.initMongo)();
+        await (0, mongo_1.initMongo)(); // MongoDB is now optional - won't crash if unavailable
     }
     catch (err) {
         console.error('DB init failed', err);
-        process.exit(1);
+        // Only exit if MySQL (Sequelize) failed - app cannot work without it
+        if (err instanceof Error && err.name && err.name.includes('Sequelize')) {
+            process.exit(1);
+        }
+        console.log('⚠️  Continuing despite DB errors...');
     }
     // initialize WebSocket
     await (0, websocket_1.initSocket)(server).catch(err => {

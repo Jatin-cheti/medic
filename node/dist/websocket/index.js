@@ -40,28 +40,30 @@ const redis_1 = require("redis");
 const redis_adapter_1 = require("@socket.io/redis-adapter");
 const JWT_SECRET = process.env.JWT_SECRET || 'please_change_me';
 async function initSocket(server) {
-    // configure Redis adapter if REDIS_URL provided
-    let io;
-    const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
-    if (redisUrl) {
-        const pubClient = (0, redis_1.createClient)({ url: redisUrl });
-        const subClient = pubClient.duplicate();
-        await pubClient.connect().catch((err) => {
-            console.warn('Redis connect warning:', err.message || err);
-        });
-        await subClient.connect().catch(() => { });
-        io = new socket_io_1.Server(server, {
-            path: '/ws',
-            cors: { origin: process.env.FRONTEND_ORIGIN || '*' }
-        });
-        io.adapter((0, redis_adapter_1.createAdapter)(pubClient, subClient));
-        console.log('Socket.IO using Redis adapter (if connected)');
+    // Create Socket.IO server first
+    const io = new socket_io_1.Server(server, {
+        path: '/ws',
+        cors: { origin: process.env.FRONTEND_ORIGIN || '*' }
+    });
+    // Try to configure Redis adapter if REDIS_URL provided
+    const redisUrl = process.env.REDIS_URL;
+    if (redisUrl && redisUrl.trim() !== '' && !redisUrl.includes('localhost')) {
+        try {
+            const pubClient = (0, redis_1.createClient)({ url: redisUrl });
+            const subClient = pubClient.duplicate();
+            await pubClient.connect();
+            await subClient.connect();
+            io.adapter((0, redis_adapter_1.createAdapter)(pubClient, subClient));
+            console.log('✅ Socket.IO using Redis adapter');
+        }
+        catch (err) {
+            const errorMsg = err instanceof Error ? err.message : String(err);
+            console.warn('⚠️  Redis connection failed:', errorMsg);
+            console.log('⚠️  Socket.IO running without Redis (single-server mode)');
+        }
     }
     else {
-        io = new socket_io_1.Server(server, {
-            path: '/ws',
-            cors: { origin: process.env.FRONTEND_ORIGIN || '*' }
-        });
+        console.log('✅ Socket.IO initialized (single-server mode, no Redis)');
     }
     // middleware: authenticate on handshake via token query param or header
     io.use((socket, next) => {

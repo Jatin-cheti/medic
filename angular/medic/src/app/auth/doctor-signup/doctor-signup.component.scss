@@ -1,0 +1,206 @@
+.select-wrapper {
+  select {
+    width: 100%;
+    padding: 14px 16px 14px 48px;
+    border: 2px solid #e0e7ef;
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: 'Poppins', sans-serif;
+    background: #f8fafc;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    appearance: none;
+
+    &::placeholder {
+      color: #a8b5c5;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: #154E99;
+      background: white;
+      box-shadow: 0 0 12px rgba(21, 78, 153, 0.2);
+    }
+
+    &:hover {
+      border-color: #154E99;
+    }
+
+    option {
+      padding: 10px;
+      background: white;
+      color: #333;
+    }
+  }
+
+  // Custom arrow for select
+  &::after {
+    content: '▼';
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #154E99;
+    font-size: 12px;
+    pointer-events: none;
+  }
+}
+
+.file-input-wrapper {
+  position: relative;
+
+  .file-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px dashed #154E99;
+    border-radius: 10px;
+    background: linear-gradient(135deg, rgba(21, 78, 153, 0.05) 0%, rgba(127, 181, 250, 0.05) 100%);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-height: 56px;
+    font-size: 14px;
+    color: #333;
+
+    .file-icon {
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .file-text {
+      flex-grow: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-weight: 500;
+    }
+
+    input[type='file'] {
+      display: none;
+    }
+
+    &:hover {
+      background: linear-gradient(135deg, rgba(21, 78, 153, 0.1) 0%, rgba(127, 181, 250, 0.1) 100%);
+      border-color: #154E99;
+      box-shadow: 0 0 12px rgba(21, 78, 153, 0.15);
+    }
+
+    &:active {
+      background: linear-gradient(135deg, rgba(21, 78, 153, 0.15) 0%, rgba(127, 181, 250, 0.15) 100%);
+    }
+  }
+}
+
+.patient-login-link {
+  margin-top: 16px;
+  text-align: center;
+}
+
+.login-as-patient {
+  display: inline-block;
+  color: #154E99;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 8px 14px;
+  border: 1px solid #C2DCFF;
+  border-radius: 999px;
+  background: #F0F0F2;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    color: #fff;
+    background: #154E99;
+    border-color: #154E99;
+  }
+}
+
+// Compact form spacing for doctor signup page (has more fields)
+@media (max-height: 900px) {
+  .form-group {
+    margin-bottom: 15px;
+  }
+
+  .login-title {
+    margin-bottom: 18px !important;
+  }
+
+  .signup-link {
+    margin-top: 14px;
+  }
+
+  .patient-login-link {
+    margin-top: 10px;
+  }
+}
+
+@media (max-height: 800px) {
+  .form-group {
+    margin-bottom: 12px;
+
+    label {
+      margin-bottom: 5px;
+      font-size: 13px;
+    }
+  }
+
+  .input-wrapper select,
+  .input-wrapper input {
+    padding: 10px 16px 10px 44px;
+    font-size: 14px;
+  }
+
+  .file-input-wrapper .file-label {
+    padding: 12px 14px;
+    font-size: 13px;
+    min-height: 50px;
+  }
+
+  .login-btn {
+    padding: 11px;
+    font-size: 15px;
+  }
+
+  .signup-link {
+    margin-top: 12px;
+    font-size: 13px;
+  }
+
+  .patient-login-link {
+    margin-top: 8px;
+  }
+}
+
+@media (max-height: 700px) {
+  .form-group {
+    margin-bottom: 10px;
+
+    label {
+      margin-bottom: 4px;
+      font-size: 12px;
+    }
+  }
+
+  .input-wrapper select,
+  .input-wrapper input {
+    padding: 9px 14px 9px 40px;
+    font-size: 13px;
+  }
+
+  .file-input-wrapper .file-label {
+    padding: 10px 12px;
+    font-size: 12px;
+    min-height: 48px;
+
+    .file-icon {
+      font-size: 20px;
+    }
+  }
+
+  .login-btn {
+    padding: 10px;
+    font-size: 14px;
+  }
+}

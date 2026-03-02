@@ -1,0 +1,44 @@
+.doctor-login-link {
+  margin-top: 16px;
+  text-align: center;
+
+  .login-as-doctor {
+    display: inline-block;
+    color: #154E99;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 8px 14px;
+    border: 1px solid #C2DCFF;
+    border-radius: 999px;
+    background: #F0F0F2;
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      color: #fff;
+      background: #154E99;
+      border-color: #154E99;
+    }
+  }
+}
+
+// Responsive adjustments for smaller screens
+@media (max-height: 800px) {
+  .form-group {
+    margin-bottom: 18px;
+  }
+
+  .login-title {
+    margin-bottom: 22px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .doctor-login-link {
+    margin-top: 12px;
+
+    .login-as-doctor {
+      font-size: 13px;
+      padding: 7px 12px;
+    }
+  }
+}

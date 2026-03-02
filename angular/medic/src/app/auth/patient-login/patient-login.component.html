@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,600,700">
+  <title>Medic - Patient Login</title>
+</head>
+<body>
+  <div class="background">
+    <div class="login-wrapper">
+      <div class="left-section">
+        <div class="header">
+          <img class="logo" src="logo.svg" alt="Medic Logo">
+          <h1 class="title">Medic</h1>
+        </div>
+        <div class="welcome-content">
+          <h2>Welcome, Patient</h2>
+          <p>Access your health records and book appointments</p>
+          <div class="features">
+            <div class="feature">
+              <span class="icon">✓</span>
+              <span>View Health Records</span>
+            </div>
+            <div class="feature">
+              <span class="icon">✓</span>
+              <span>Book Appointments</span>
+            </div>
+            <div class="feature">
+              <span class="icon">✓</span>
+              <span>Prescription Access</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="right-section">
+        <div class="login-container">
+          <h3 class="login-title">Patient Login</h3>
+          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+            <div class="form-group">
+              <label for="identifier">Email or Phone</label>
+              <div class="input-wrapper">
+                <span class="input-icon">✉</span>
+                <input type="text" id="identifier" formControlName="identifier" placeholder="your@email.com or +91..." required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="password">Password</label>
+              <div class="input-wrapper">
+                <span class="input-icon">🔒</span>
+                <input type="password" id="password" formControlName="password" placeholder="Enter your password" required>
+              </div>
+            </div>
+
+            <p *ngIf="errorMessage" class="text-danger small mb-3">{{ errorMessage }}</p>
+
+            <div class="form-options">
+              <label class="remember-me">
+                <input type="checkbox">
+                <span>Remember me</span>
+              </label>
+              <a href="#" class="forgot-password">Forgot Password?</a>
+            </div>
+
+            <button type="submit" class="login-btn">Sign In</button>
+          </form>
+
+          <div class="divider">OR</div>
+
+          <button type="button" class="social-btn google-btn" (click)="loginWithGoogle()">
+            <span>Continue with Google</span>
+          </button>
+
+          <p class="signup-link">Don't have an account? <a routerLink="/patient-signup">Register as Patient</a></p>
+
+          <div class="doctor-login-link">
+            <a routerLink="/doctor-login" class="login-as-doctor">Login as Doctor</a>
+          </div>
+          <div class="doctor-login-link">
+            <a routerLink="/doctor-signup" class="login-as-doctor">Register as Doctor</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

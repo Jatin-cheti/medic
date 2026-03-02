@@ -1,0 +1,105 @@
+<div class="background">
+  <div class="login-wrapper">
+    <div class="left-section">
+      <div class="header">
+        <img class="logo" src="logo.svg" alt="Medic Logo">
+        <h1 class="title">Medic</h1>
+      </div>
+      <div class="welcome-content">
+        <h2>Create Patient Account</h2>
+        <p>Join Medic to book consultations, access prescriptions, and track your health records.</p>
+        <div class="features">
+          <div class="feature"><span class="icon">✓</span><span>Online Appointments</span></div>
+          <div class="feature"><span class="icon">✓</span><span>Doctor Chat</span></div>
+          <div class="feature"><span class="icon">✓</span><span>Prescription History</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="right-section">
+      <div class="login-container">
+        <h3 class="login-title">Patient Signup</h3>
+
+        <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+          <div class="form-group">
+            <label for="firstName">First Name</label>
+            <div class="input-wrapper">
+              <span class="input-icon">👤</span>
+              <input id="firstName" type="text" formControlName="firstName" placeholder="John" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="lastName">Last Name</label>
+            <div class="input-wrapper">
+              <span class="input-icon">👤</span>
+              <input id="lastName" type="text" formControlName="lastName" placeholder="Doe">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email</label>
+            <div class="input-wrapper">
+              <span class="input-icon">✉</span>
+              <input id="email" type="email" formControlName="email" placeholder="john@email.com">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="phone">Phone</label>
+            <div class="input-wrapper">
+              <span class="input-icon">📱</span>
+              <input id="phone" type="text" formControlName="phone" placeholder="+91...">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="gender">Gender</label>
+            <div class="input-wrapper select-wrapper">
+              <span class="input-icon">⚧</span>
+              <select id="gender" formControlName="gender">
+                <option value="">Select Gender</option>
+                <option *ngFor="let gender of genders" [value]="gender">{{ gender }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="preferredLanguage">Preferred Language</label>
+            <div class="input-wrapper select-wrapper">
+              <span class="input-icon">🌐</span>
+              <select id="preferredLanguage" formControlName="preferredLanguage">
+                <option *ngFor="let lang of languages" [value]="lang.code">{{ lang.name }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            <div class="input-wrapper">
+              <span class="input-icon">🔒</span>
+              <input id="password" type="password" formControlName="password" placeholder="Minimum 6 characters" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="confirmPassword">Confirm Password</label>
+            <div class="input-wrapper">
+              <span class="input-icon">🔒</span>
+              <input id="confirmPassword" type="password" formControlName="confirmPassword" placeholder="Re-enter password" required>
+            </div>
+          </div>
+
+          <p *ngIf="errorMessage" class="text-danger small mb-3">{{ errorMessage }}</p>
+
+          <button type="submit" class="login-btn">Create Account</button>
+        </form>
+
+        <p class="signup-link">Already have an account? <a routerLink="/patient-login">Login as Patient</a></p>
+        <div class="doctor-login-link">
+          <a routerLink="/doctor-signup" class="login-as-doctor">Register as Doctor</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
