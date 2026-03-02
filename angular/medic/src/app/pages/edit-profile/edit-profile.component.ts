@@ -11,6 +11,6 @@ export class EditProfileComponent implements OnInit {
 
   ngOnInit() {
     // Redirect to profile component where editing is done
-    this.router.navigate(['/profile']);
+    this.router.navigate(['/profile'], { replaceUrl: true });
   }
 }

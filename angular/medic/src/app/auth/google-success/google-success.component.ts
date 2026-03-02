@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AppLoaderComponent } from '../../shared/components/app-loader/app-loader.component';
@@ -9,7 +9,7 @@ import { AppLoaderComponent } from '../../shared/components/app-loader/app-loade
   imports: [CommonModule, AppLoaderComponent],
   template: `
     <div class="google-success-container">
-      <app-loader></app-loader>
+      <app-loader [show]="true"></app-loader>
       <p class="loading-text">Completing Google Sign-In...</p>
     </div>
   `,
@@ -34,16 +34,20 @@ import { AppLoaderComponent } from '../../shared/components/app-loader/app-loade
 export class GoogleSuccessComponent implements OnInit {
   constructor(
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
+    console.log('GoogleSuccessComponent initialized');
     this.route.queryParams.subscribe(params => {
+      console.log('Query params:', params);
       const token = params['token'];
       const refreshToken = params['refreshToken'];
       const role = params['role'];
 
       if (token && refreshToken) {
+        console.log('Tokens found, storing...');
         // Store tokens in localStorage
         if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
           localStorage.setItem('token', token);
@@ -51,16 +55,21 @@ export class GoogleSuccessComponent implements OnInit {
           if (role) {
             localStorage.setItem('role', role);
           }
+          console.log('Tokens stored successfully');
         }
 
+        this.cdr.markForCheck();
         // Redirect to home/dashboard
         setTimeout(() => {
-          this.router.navigate(['/home']);
+          console.log('Navigating to /home');
+          this.router.navigate(['/home'], { replaceUrl: true });
         }, 500);
       } else {
+        console.log('No tokens found in query params');
         // If tokens are missing, redirect to login with error
-        this.router.navigate(['/auth/patient-login'], {
-          queryParams: { error: 'auth_failed' }
+        this.router.navigate(['/patient-login'], {
+          queryParams: { error: 'auth_failed' },
+          replaceUrl: true
         });
       }
     });
