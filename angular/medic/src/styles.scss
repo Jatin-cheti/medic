@@ -6,9 +6,22 @@
   padding: 0;
   box-sizing: border-box;
 }
+/* Global Variables  */
+:root {
+  --primary: #667eea;
+  --primary-dark: #5a67d8;
+  --secondary: #764ba2;
+  --background: #f9fafb;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --border-color: #e5e7eb;
+}
+
 
 body {
   font-family: 'Poppins', sans-serif;
+  background: var(--background);
+  color: var(--text-primary);
 
   // Custom scrollbar styling
   &::-webkit-scrollbar {
@@ -20,11 +33,11 @@ body {
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #154E99;
+    background: var(--primary);
     border-radius: 4px;
 
     &:hover {
-      background: #0d3a6d;
+      background: var(--primary-dark);
     }
   }
 }

@@ -79,7 +79,7 @@ Object.keys(db).forEach(modelName => {
 export async function initSequelize() {
   try {
     await sequelize.authenticate();
-    if (NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV !== 'production') {
       await sequelize.sync({ alter: false });
     }
   } catch (err) {

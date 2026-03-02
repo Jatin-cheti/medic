@@ -3,10 +3,22 @@ import { LoginComponent } from './auth/login/login.component';
 import { PatientLoginComponent } from './auth/patient-login/patient-login.component';
 import { PatientSignupComponent } from './auth/patient-signup/patient-signup.component';
 import { DoctorSignupComponent } from './auth/doctor-signup/doctor-signup.component';
+import { LayoutComponent } from './layout/layout.component';
 import { HomeScreenComponent } from './dashboard/home-screen/home-screen.component';
+import { DoctorsComponent } from './pages/doctors/doctors.component';
+import { AppointmentsComponent } from './pages/appointments/appointments.component';
+import { SymptomCheckerComponent } from './pages/symptom-checker/symptom-checker.component';
+import { ChatHistoryComponent } from './pages/chat-history/chat-history.component';
+import { ProfileComponent } from './pages/profile/profile.component';
+import { EditProfileComponent } from './pages/edit-profile/edit-profile.component';
+import { PaymentsComponent } from './pages/payments/payments.component';
+import { PrescriptionsComponent } from './pages/prescriptions/prescriptions.component';
+import { ChangePasswordComponent } from './pages/change-password/change-password.component';
+import { NotificationsComponent } from './pages/notifications/notifications.component';
 import { AuthGuard } from './core/guards/auth-guard';
 
 export const routes: Routes = [
+  // Auth routes
   { path: '', redirectTo: 'patient-login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'signup', component: PatientSignupComponent },
@@ -14,14 +26,25 @@ export const routes: Routes = [
   { path: 'doctor-signup', component: DoctorSignupComponent },
   { path: 'doctor-login', component: LoginComponent },
   { path: 'patient-login', component: PatientLoginComponent },
+
+  // Protected routes with layout
   {
-    path: 'home',
-    component: HomeScreenComponent,
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'dashboard',
-    redirectTo: 'home',
-    pathMatch: 'full'
+    path: '',
+    component: LayoutComponent,
+    canActivate: [AuthGuard],
+    children: [
+      { path: 'home', component: HomeScreenComponent },
+      { path: 'dashboard', redirectTo: 'home', pathMatch: 'full' },
+      { path: 'doctors', component: DoctorsComponent },
+      { path: 'appointments', component: AppointmentsComponent },
+      { path: 'symptom-checker', component: SymptomCheckerComponent },
+      { path: 'chat-history', component: ChatHistoryComponent },
+      { path: 'profile', component: ProfileComponent },
+      { path: 'edit-profile', component: EditProfileComponent },
+      { path: 'payments', component: PaymentsComponent },
+      { path: 'prescriptions', component: PrescriptionsComponent },
+      { path: 'change-password', component: ChangePasswordComponent },
+      { path: 'notifications', component: NotificationsComponent }
+    ]
   }
 ];

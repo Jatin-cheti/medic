@@ -61,7 +61,7 @@ services:
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
-    command: ["sh", "./start.sh"]
+    command: ["./start.sh"]
 
   frontend:
     build:
