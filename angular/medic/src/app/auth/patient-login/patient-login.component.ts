@@ -5,6 +5,7 @@ import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { AppLoaderComponent } from '../../shared/components/app-loader/app-loader.component';
 import { AppErrorComponent } from '../../shared/components/app-error/app-error.component';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-patient-login',
@@ -52,12 +53,17 @@ export class PatientLoginComponent implements OnInit {
 
     this.isLoading = true;
     this.errorMessage = '';
-    this.auth.loginPatient(payload).subscribe(() => {
-      this.isLoading = false;
-      this.router.navigate(['/home']);
-    }, (err) => {
-      this.isLoading = false;
-      this.errorMessage = this.auth.getErrorMessage(err);
+    this.auth.loginPatient(payload).pipe(
+      finalize(() => {
+        this.isLoading = false;
+      })
+    ).subscribe({
+      next: () => {
+        this.router.navigate(['/home']);
+      },
+      error: (err) => {
+        this.errorMessage = this.auth.getErrorMessage(err);
+      }
     });
   }
 
@@ -72,12 +78,17 @@ export class PatientLoginComponent implements OnInit {
       return;
     }
 
-    this.auth.googleTestLogin(email, 'Test', 'User').subscribe(() => {
-      this.isLoading = false;
-      this.router.navigate(['/home']);
-    }, (err) => {
-      this.isLoading = false;
-      this.errorMessage = this.auth.getErrorMessage(err);
+    this.auth.googleTestLogin(email, 'Test', 'User').pipe(
+      finalize(() => {
+        this.isLoading = false;
+      })
+    ).subscribe({
+      next: () => {
+        this.router.navigate(['/home']);
+      },
+      error: (err) => {
+        this.errorMessage = this.auth.getErrorMessage(err);
+      }
     });
   }
 
@@ -89,12 +100,17 @@ export class PatientLoginComponent implements OnInit {
     }
 
     this.isLoading = true;
-    this.auth.googleLogin(googleId, email, firstName || 'User', lastName || '').subscribe(() => {
-      this.isLoading = false;
-      this.router.navigate(['/home']);
-    }, (err) => {
-      this.isLoading = false;
-      this.errorMessage = this.auth.getErrorMessage(err);
+    this.auth.googleLogin(googleId, email, firstName || 'User', lastName || '').pipe(
+      finalize(() => {
+        this.isLoading = false;
+      })
+    ).subscribe({
+      next: () => {
+        this.router.navigate(['/home']);
+      },
+      error: (err) => {
+        this.errorMessage = this.auth.getErrorMessage(err);
+      }
     });
   }
 

@@ -5,6 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { AppLoaderComponent } from '../../shared/components/app-loader/app-loader.component';
 import { AppErrorComponent } from '../../shared/components/app-error/app-error.component';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-patient-signup',
@@ -78,12 +79,17 @@ export class PatientSignupComponent implements OnInit {
 
     this.errorMessage = '';
     this.isLoading = true;
-    this.auth.signupPatient(payload).subscribe(() => {
-      this.isLoading = false;
-      this.router.navigate(['/patient-login']);
-    }, (err) => {
-      this.isLoading = false;
-      this.errorMessage = this.auth.getErrorMessage(err);
+    this.auth.signupPatient(payload).pipe(
+      finalize(() => {
+        this.isLoading = false;
+      })
+    ).subscribe({
+      next: () => {
+        this.router.navigate(['/patient-login']);
+      },
+      error: (err) => {
+        this.errorMessage = this.auth.getErrorMessage(err);
+      }
     });
   }
 

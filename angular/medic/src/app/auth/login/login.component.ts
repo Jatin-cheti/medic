@@ -6,6 +6,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AppErrorComponent } from '../../shared/components/app-error/app-error.component';
 import { AppLoaderComponent } from '../../shared/components/app-loader/app-loader.component';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -52,14 +53,18 @@ export class LoginComponent {
 
     this.errorMessage = '';
     this.isLoading = true;
-    this.auth.loginDoctor(payload)
-      .subscribe(() => {
+    this.auth.loginDoctor(payload).pipe(
+      finalize(() => {
         this.isLoading = false;
+      })
+    ).subscribe({
+      next: () => {
         this.router.navigate(['/home']);
-      }, (err) => {
-        this.isLoading = false;
+      },
+      error: (err) => {
         this.errorMessage = this.auth.getErrorMessage(err);
-      });
+      }
+    });
   }
 
   clearError() {
