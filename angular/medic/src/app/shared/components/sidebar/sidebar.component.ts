@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
@@ -10,8 +10,7 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./sidebar.component.scss']
 })
 export class SidebarComponent {
-  @Input() isOpen = false;
-  @Output() closeSidebar = new EventEmitter<void>();
+  // Permanent sidebar - no toggle needed
 
   userInfo = {
     name: 'John Doe',
@@ -53,7 +52,6 @@ export class SidebarComponent {
 
   navigateTo(route: string) {
     this.router.navigate([route]);
-    this.closeSidebar.emit();
   }
 
   logout() {
@@ -61,10 +59,9 @@ export class SidebarComponent {
     localStorage.removeItem('userEmail');
     localStorage.removeItem('userName');
     this.router.navigate(['/patient-login']);
-    this.closeSidebar.emit();
   }
 
-  onOverlayClick() {
-    this.closeSidebar.emit();
+  isActive(route: string): boolean {
+    return this.router.url === route;
   }
 }

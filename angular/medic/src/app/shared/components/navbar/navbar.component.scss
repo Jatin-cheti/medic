@@ -1,63 +1,35 @@
+// Navbar - Blue Theme (No Hamburger Menu)
 .navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   height: 70px;
 
   .navbar-container {
-    max-width: 1400px;
-    margin: 0 auto;
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 24px;
-    gap: 32px;
+    padding: 0 2rem;
+    gap: 2rem;
   }
 
   .navbar-left {
     display: flex;
     align-items: center;
-    gap: 16px;
-  }
-
-  .menu-toggle {
-    background: rgba(255, 255, 255, 0.2);
-    border: none;
-    border-radius: 8px;
-    padding: 8px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    color: white;
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.3);
-      transform: scale(1.05);
-    }
-
-    svg {
-      width: 24px;
-      height: 24px;
-    }
   }
 
   .logo {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 0.75rem;
     cursor: pointer;
-    color: white;
+    color: var(--primary);
     transition: all 0.3s ease;
 
     &:hover {
       transform: scale(1.02);
+      color: var(--primary-dark);
     }
 
     svg {
@@ -66,7 +38,7 @@
     }
 
     .logo-text {
-      font-size: 24px;
+      font-size: 1.5rem;
       font-weight: 700;
       letter-spacing: -0.5px;
     }
@@ -75,7 +47,7 @@
   .navbar-center {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 0.5rem;
     flex: 1;
     justify-content: center;
 
@@ -87,48 +59,39 @@
   .nav-link {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
+    gap: 0.5rem;
+    padding: 0.625rem 1.25rem;
     border-radius: 12px;
     text-decoration: none;
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--text-secondary);
     font-weight: 500;
-    font-size: 15px;
+    font-size: 0.9375rem;
     transition: all 0.3s ease;
     position: relative;
 
     svg {
       width: 20px;
       height: 20px;
-      opacity: 0.9;
     }
 
     &:hover {
-      background: rgba(255, 255, 255, 0.2);
-      color: white;
-      transform: translateY(-2px);
-
-      svg {
-        opacity: 1;
-      }
+      background: var(--light);
+      color: var(--primary);
     }
 
     &.active {
-      background: rgba(255, 255, 255, 0.25);
-      color: white;
-
-      svg {
-        opacity: 1;
-      }
+      background: var(--light);
+      color: var(--primary);
+      font-weight: 600;
 
       &::after {
         content: '';
         position: absolute;
-        bottom: -4px;
-        left: 20px;
-        right: 20px;
+        bottom: -1px;
+        left: 1.25rem;
+        right: 1.25rem;
         height: 3px;
-        background: white;
+        background: var(--primary);
         border-radius: 3px 3px 0 0;
       }
     }
@@ -137,24 +100,25 @@
   .navbar-right {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 1rem;
   }
 
   .notification-btn {
     position: relative;
-    background: rgba(255, 255, 255, 0.2);
+    background: var(--light);
     border: none;
     border-radius: 12px;
-    padding: 12px;
+    padding: 0.75rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
-    color: white;
+    color: var(--primary);
 
     &:hover {
-      background: rgba(255, 255, 255, 0.3);
+      background: var(--secondary);
+      color: white;
       transform: scale(1.05);
     }
 
@@ -167,15 +131,28 @@
       position: absolute;
       top: 4px;
       right: 4px;
-      background: #ff4757;
+      background: #ef4444;
       color: white;
-      font-size: 11px;
+      font-size: 0.6875rem;
       font-weight: 700;
       padding: 2px 6px;
       border-radius: 10px;
       min-width: 18px;
       text-align: center;
-      box-shadow: 0 2px 8px rgba(255, 71, 87, 0.4);
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .navbar {
+    .navbar-container {
+      padding: 0 1rem;
+    }
+
+    .logo .logo-text {
+      font-size: 1.25rem;
     }
   }
 }

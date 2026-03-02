@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
@@ -10,13 +10,9 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./navbar.component.scss']
 })
 export class NavbarComponent {
-  @Output() toggleSidebar = new EventEmitter<void>();
+  // No toggle needed - sidebar is permanent
 
   constructor(private router: Router) {}
-
-  onToggleSidebar() {
-    this.toggleSidebar.emit();
-  }
 
   isActive(route: string): boolean {
     return this.router.url === route;
