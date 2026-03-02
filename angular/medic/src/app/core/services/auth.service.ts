@@ -90,11 +90,27 @@ export class AuthService {
     return this.http.post(`${this.api}/patient/login`, data)
       .pipe(
         tap((res: any) => {
+          console.log('🔐 Auth service received login response:', { 
+            hasToken: !!res.token, 
+            hasRefreshToken: !!res.refreshToken,
+            role: res.role 
+          });
+          
           if (this.hasStorage()) {
-            if (res.token) sessionStorage.setItem('token', res.token);
-            if (res.refreshToken) sessionStorage.setItem('refreshToken', res.refreshToken);
-            if (res.role) sessionStorage.setItem('role', res.role);
+            if (res.token) {
+              sessionStorage.setItem('token', res.token);
+              console.log('✅ Token stored in sessionStorage');
+            }
+            if (res.refreshToken) {
+              sessionStorage.setItem('refreshToken', res.refreshToken);
+              console.log('✅ Refresh token stored in sessionStorage');
+            }
+            if (res.role) {
+              sessionStorage.setItem('role', res.role);
+              console.log('✅ Role stored in sessionStorage:', res.role);
+            }
             this.isAuthenticatedSubject.next(true);
+            console.log('✅ Auth state updated to true');
           }
         }),
         catchError((error) => this.handleApiError(error))

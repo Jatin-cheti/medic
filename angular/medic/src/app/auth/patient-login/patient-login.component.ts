@@ -61,18 +61,32 @@ export class PatientLoginComponent implements OnInit {
     this.isLoading = true;
     this.errorMessage = '';
     this.cdr.markForCheck();
+    
+    console.log('🔐 Starting login...');
+    
     this.auth.loginPatient(payload).pipe(
       finalize(() => {
         this.isLoading = false;
         this.cdr.markForCheck();
       })
     ).subscribe({
-      next: () => {
-        this.router.navigate(['/home']);
+      next: (response) => {
+        console.log('✅ Login successful:', { hasToken: !!response });
+        console.log('🏠 Navigating to /home...');
+        
+        // Navigate with replaceUrl to prevent back button issues
+        this.router.navigate(['/home'], { replaceUrl: true }).then(success => {
+          console.log('✅ Navigation result:', success);
+          if (!success) {
+            console.error('❌ Navigation failed');
+          }
+        }).catch(navError => {
+          console.error('❌ Navigation error:', navError);
+        });
       },
       error: (err) => {
+        console.error('❌ Login error:', err);
         this.errorMessage = this.auth.getErrorMessage(err);
-        console.error('Login error:', err);
         this.cdr.markForCheck();
       }
     });

@@ -497,7 +497,7 @@ router.post('/patient/signup', async (req, res) => {
     });
 
     const tokens = signToken(user, 'patient');
-    return res.status(201).json({ user, ...tokens });
+    return res.status(201).json({ user, role: 'patient', ...tokens });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: 'server error' });
@@ -634,6 +634,7 @@ router.post('/doctor/signup', async (req, res) => {
     const token = signToken(user, 'doctor');
     return res.status(201).json({
       user,
+      role: 'doctor',
       doctorProfile: {
         id: doctorProfileId,
         registrationNumber,
@@ -670,7 +671,7 @@ router.post('/patient/login', async (req, res) => {
     if (!ok) return res.status(401).json({ error: 'invalid credentials' });
 
     const tokens = signToken(user, 'patient');
-    return res.json({ user, ...tokens });
+    return res.json({ user, role: 'patient', ...tokens });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: 'server error' });
@@ -710,7 +711,7 @@ router.post('/doctor/login', async (req, res) => {
     ) as Array<any>;
 
     const tokens = signToken(user, 'doctor');
-    return res.json({ user, doctorProfile: doctorProfiles[0] || null, ...tokens });
+    return res.json({ user, role: 'doctor', doctorProfile: doctorProfiles[0] || null, ...tokens });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: 'server error' });
@@ -743,7 +744,7 @@ router.post('/register', async (req, res) => {
     });
 
     const tokens = signToken(user, 'patient');
-    res.status(201).json({ user, ...tokens });
+    res.status(201).json({ user, role: 'patient', ...tokens });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'server error' });
