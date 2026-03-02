@@ -3,6 +3,7 @@ import { LoginComponent } from './auth/login/login.component';
 import { PatientLoginComponent } from './auth/patient-login/patient-login.component';
 import { PatientSignupComponent } from './auth/patient-signup/patient-signup.component';
 import { DoctorSignupComponent } from './auth/doctor-signup/doctor-signup.component';
+import { GoogleSuccessComponent } from './auth/google-success/google-success.component';
 import { LayoutComponent } from './layout/layout.component';
 import { HomeScreenComponent } from './dashboard/home-screen/home-screen.component';
 import { DoctorsComponent } from './pages/doctors/doctors.component';
@@ -26,6 +27,7 @@ export const routes: Routes = [
   { path: 'doctor-signup', component: DoctorSignupComponent },
   { path: 'doctor-login', component: LoginComponent },
   { path: 'patient-login', component: PatientLoginComponent },
+  { path: 'auth/google-success', component: GoogleSuccessComponent },
 
   // Protected routes with layout
   {

@@ -183,4 +183,8 @@ export class AuthService {
   getRefreshToken(): string | null {
     return this.hasStorage() ? localStorage.getItem('refreshToken') : null;
   }
+
+  getBackendUrl(): string {
+    return environment.apiUrl;
+  }
 }

@@ -1,8 +1,9 @@
-import { Router } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
 import { QueryTypes } from 'sequelize';
 import { v4 as uuidv4 } from 'uuid';
+import passport from 'passport';
 import { sequelize } from '../services/sequelize';
 import dotenv from 'dotenv';
 
@@ -211,57 +212,108 @@ router.post('/refresh-token', async (req, res) => {
 });
 
 // Google OAuth GET endpoint - initiates OAuth flow
-router.get('/google', (req, res) => {
-  try {
-    // For development - simulate Google OAuth by opening Google Sign-In popup
-    // In production, integrate with actual Google OAuth 2.0 flow
-    const isProduction = process.env.NODE_ENV === 'production';
-    const clientId = process.env.GOOGLE_CLIENT_ID || 'GOOGLE_CLIENT_ID_PLACEHOLDER';
-    const redirectUri = isProduction 
-      ? `${process.env.FRONTEND_ORIGIN}/auth/patient-login?action=google-callback`
-      : `http://localhost:4200/auth/patient-login?action=google-callback`;
-    
-    // Google OAuth authorization URL
-    const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
-      `client_id=${clientId}&` +
-      `redirect_uri=${encodeURIComponent(redirectUri)}&` +
-      `response_type=code&` +
-      `scope=profile email&` +
-      `access_type=offline&` +
-      `prompt=consent`;
-    
-    res.redirect(googleAuthUrl);
-  } catch (err) {
-    console.error('Google OAuth error:', err);
-    return res.status(500).json({ error: 'Google OAuth initialization failed' });
-  }
-});
+router.get('/google', passport.authenticate('google', { 
+  scope: ['profile', 'email'],
+  session: false 
+}));
 
-// Google OAuth callback for production
-router.get('/google/callback', async (req, res) => {
-  try {
-    const { code, error } = req.query;
-    
-    if (error) {
-      // User cancelled login
-      return res.redirect(`${process.env.FRONTEND_ORIGIN || 'http://localhost:4200'}/auth/patient-login?error=${error}`);
+// Google OAuth callback - handles response from Google
+router.get('/google/callback', 
+  passport.authenticate('google', { 
+    session: false,
+    failureRedirect: '/auth/patient-login?error=auth_failed'
+  }),
+  async (req: Request, res: Response) => {
+    try {
+      const googleUser = req.user as any;
+      
+      if (!googleUser || !googleUser.googleId || !googleUser.email) {
+        const redirectUrl = `${process.env.FRONTEND_ORIGIN || 'http://localhost:4200'}/auth/patient-login?error=invalid_user_data`;
+        return res.redirect(redirectUrl);
+      }
+
+      const { googleId, email, firstName, lastName } = googleUser;
+      
+      // Check if user exists with this google ID
+      let user = await sequelize.query(
+        `SELECT id, uuid, role_id, email, phone, first_name, last_name FROM users WHERE google_id = :googleId LIMIT 1`,
+        {
+          replacements: { googleId },
+          type: QueryTypes.SELECT,
+        }
+      ) as Array<any>;
+
+      // If not, check if email exists
+      if (!user.length) {
+        user = await sequelize.query(
+          `SELECT id, uuid, role_id, email, phone, first_name, last_name FROM users WHERE email = :email LIMIT 1`,
+          {
+            replacements: { email: normalizeEmail(email) },
+            type: QueryTypes.SELECT,
+          }
+        ) as Array<any>;
+
+        // If email exists but no google ID, link the account
+        if (user.length) {
+          await sequelize.query(
+            `UPDATE users SET google_id = :googleId, updated_at = :updatedAt WHERE id = :userId`,
+            {
+              replacements: {
+                googleId,
+                userId: user[0].id,
+                updatedAt: new Date(),
+              },
+              type: QueryTypes.UPDATE,
+            }
+          );
+          // Reload user data
+          user = await sequelize.query(
+            `SELECT id, uuid, role_id, email, phone, first_name, last_name FROM users WHERE id = :userId LIMIT 1`,
+            {
+              replacements: { userId: user[0].id },
+              type: QueryTypes.SELECT,
+            }
+          ) as Array<any>;
+        } else {
+          // Create new patient account with Google
+          const newUser = await createUser({
+            role: 'patient',
+            email: normalizeEmail(email),
+            phone: null,
+            firstName: firstName || 'User',
+            lastName: lastName || '',
+            googleId,
+          });
+          user = [newUser];
+        }
+      }
+
+      if (!user.length) {
+        const redirectUrl = `${process.env.FRONTEND_ORIGIN || 'http://localhost:4200'}/auth/patient-login?error=user_creation_failed`;
+        return res.redirect(redirectUrl);
+      }
+
+      const roleRows = await sequelize.query(
+        'SELECT name FROM roles WHERE id = :roleId LIMIT 1',
+        {
+          replacements: { roleId: user[0].role_id },
+          type: QueryTypes.SELECT,
+        }
+      ) as Array<{ name: RoleName }>;
+
+      const role = roleRows[0]?.name || 'patient';
+      const tokens = signToken(user[0], role);
+
+      // Redirect to frontend with tokens
+      const redirectUrl = `${process.env.FRONTEND_ORIGIN || 'http://localhost:4200'}/auth/google-success?token=${encodeURIComponent(tokens.token)}&refreshToken=${encodeURIComponent(tokens.refreshToken)}&role=${role}`;
+      res.redirect(redirectUrl);
+    } catch (err) {
+      console.error('Google callback error:', err);
+      const redirectUrl = `${process.env.FRONTEND_ORIGIN || 'http://localhost:4200'}/auth/patient-login?error=server_error`;
+      res.redirect(redirectUrl);
     }
-    
-    if (!code) {
-      return res.status(400).json({ error: 'Authorization code not provided' });
-    }
-    
-    // Exchange code for tokens - implement your Google token exchange here
-    // For now, redirect to patient login with placeholder data
-    const redirectUrl = `${process.env.FRONTEND_ORIGIN || 'http://localhost:4200'}/auth/patient-login?` +
-      `googleId=placeholder&email=user@example.com&firstName=User&lastName=`;
-    
-    res.redirect(redirectUrl);
-  } catch (err) {
-    console.error('Google callback error:', err);
-    return res.status(500).json({ error: 'Google authentication failed' });
   }
-});
+);
 
 // Google OAuth callback
 

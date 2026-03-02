@@ -33,10 +33,16 @@ export class PatientLoginComponent implements OnInit {
   }
 
   ngOnInit() {
-    // Check for OAuth callback from URL
+    // Check for OAuth errors from URL
     this.route.queryParams.subscribe(params => {
-      if (params['googleId'] && params['email']) {
-        this.handleGoogleCallback(params);
+      if (params['error']) {
+        const errorMap: Record<string, string> = {
+          'auth_failed': 'Google authentication failed. Please try again.',
+          'invalid_user_data': 'Invalid user data from Google.',
+          'user_creation_failed': 'Failed to create user account.',
+          'server_error': 'Server error occurred. Please try again later.'
+        };
+        this.errorMessage = errorMap[params['error']] || 'Authentication failed. Please try again.';
       }
     });
   }
@@ -73,56 +79,8 @@ export class PatientLoginComponent implements OnInit {
   }
 
   loginWithGoogle() {
-    this.isLoading = true;
-    this.errorMessage = '';
-    this.cdr.markForCheck();
-
-    // Prompt user for email to test Google login
-    const email = prompt('Enter email for Google login test:');
-    if (!email) {
-      this.isLoading = false;
-      this.cdr.markForCheck();
-      return;
-    }
-
-    this.auth.googleTestLogin(email, 'Test', 'User').pipe(
-      finalize(() => {
-        this.isLoading = false;
-        this.cdr.markForCheck();
-      })
-    ).subscribe({
-      next: () => {
-        this.router.navigate(['/home']);
-      },
-      error: (err) => {
-        this.errorMessage = this.auth.getErrorMessage(err);
-        this.cdr.markForCheck();
-      }
-    });
-  }
-
-  handleGoogleCallback(params: any) {
-    const { googleId, email, firstName, lastName } = params;
-    if (!googleId || !email) {
-      this.errorMessage = 'Google authentication failed. Missing required information.';
-      return;
-    }
-
-    this.isLoading = true;
-    this.auth.googleLogin(googleId, email, firstName || 'User', lastName || '').pipe(
-      finalize(() => {
-        this.isLoading = false;
-        this.cdr.markForCheck();
-      })
-    ).subscribe({
-      next: () => {
-        this.router.navigate(['/home']);
-      },
-      error: (err) => {
-        this.errorMessage = this.auth.getErrorMessage(err);
-        this.cdr.markForCheck();
-      }
-    });
+    // Redirect to backend Google OAuth endpoint
+    window.location.href = `${this.auth.getBackendUrl()}/api/auth/google`;
   }
 
   clearError() {

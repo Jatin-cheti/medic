@@ -2,12 +2,14 @@ import express from 'express';
 import http from 'http';
 import dotenv from 'dotenv';
 import cors, { CorsOptions } from 'cors';
+import passport from 'passport';
 import { initSocket } from './websocket';
 import authRouter from './routes/auth';
 import dashboardRouter from './routes/dashboard';
 import { initSequelize } from './services/sequelize';
 import { initMongo } from './services/mongo';
 import { errorHandler, notFoundHandler } from './middleware/error-handler';
+import { setupPassport } from './config/passport';
 
 dotenv.config();
 
@@ -52,6 +54,11 @@ const corsOptions: CorsOptions = {
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
 app.use(express.json());
+
+// Initialize Passport
+setupPassport();
+app.use(passport.initialize());
+
 app.get('/', (_req, res) => res.json({ status: 'ok', time: new Date().toISOString() }));
 app.use('/api/auth', authRouter);
 app.use('/auth', authRouter);

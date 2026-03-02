@@ -7,7 +7,7 @@
   flex-direction: column;
   overflow-y: auto;
   transition: background-color 0.3s ease, border-color 0.3s ease;
-  
+
   &.dark-theme {
     background: #1e293b;
     border-right-color: #334155;
@@ -204,7 +204,7 @@
 .sidebar.dark-theme {
   background: #1e293b;
   border-right-color: #334155;
-  
+
   .user-profile {
     background: linear-gradient(135deg, #154E99 0%, #0d3a6d 100%);
 
