@@ -119,6 +119,67 @@
   }
 }
 
+// Quick Action Cards
+.action-card {
+  background: white;
+  padding: 2rem !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent !important;
+  box-shadow: 0 2px 12px rgba(21, 78, 153, 0.1) !important;
+  
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 32px rgba(21, 78, 153, 0.2) !important;
+    border-color: var(--primary) !important;
+  }
+  
+  .action-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, var(--light) 0%, rgba(127, 181, 250, 0.3) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    
+    svg {
+      color: var(--primary);
+      transition: all 0.3s ease;
+    }
+  }
+  
+  &:hover .action-icon {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    transform: scale(1.1) rotate(5deg);
+    
+    svg {
+      color: white;
+    }
+  }
+  
+  .action-content {
+    h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 0;
+      color: var(--text-primary);
+    }
+    
+    p {
+      margin: 0;
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
+    }
+  }
+}
+
 // Appointment-specific styles (extends global .card)
 .appointment-card {
   .appointment-header {
@@ -311,23 +372,83 @@
   }
 }
 
-// Dark mode overrides
+// Dark mode overrides - Ensure text readability
 .dark-mode {
+  .home-screen {
+    background: var(--background);
+  }
+  
+  .action-card {
+    background: var(--white) !important;
+    border-color: var(--border-color) !important;
+    
+    .action-content {
+      h3 {
+        color: var(--text-primary);
+      }
+      
+      p {
+        color: var(--text-secondary);
+      }
+    }
+    
+    &:hover {
+      background: #1e3a5f !important;
+      border-color: var(--primary) !important;
+      
+      .action-icon {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      }
+      
+      .action-content {
+        h3, p {
+          color: white;
+        }
+      }
+    }
+  }
+  
   .appointment-card,
   .doctor-card,
   .chat-card {
-    background: #1e293b;
-    border-color: #334155;
+    background: var(--white);
+    border-color: var(--border-color);
+    
+    h3, h4 {
+      color: var(--text-primary);
+    }
+    
+    p, .specialty, .chat-message {
+      color: var(--text-secondary);
+    }
   }
   
   .appointment-actions button.btn-secondary {
-    background: #0f172a;
-    border-color: #334155;
+    background: var(--background);
+    border-color: var(--border-color);
+    color: var(--text-primary);
     
     &:hover {
-      background: #1e3a5f;
-      border-color: #7FB5FA;
-      color: #7FB5FA;
+      background: var(--light);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+  }
+  
+  .doctor-avatar-large,
+  .doctor-avatar,
+  .chat-avatar {
+    background: var(--light);
+    color: var(--text-primary);
+  }
+  
+  .section-title {
+    h2 {
+      color: var(--text-primary);
+    }
+    
+    p {
+      color: var(--text-secondary);
     }
   }
 }

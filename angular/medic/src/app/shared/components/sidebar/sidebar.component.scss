@@ -221,3 +221,65 @@
     }
   }
 }
+
+// Dark mode - Ensure text readability
+.dark-mode {
+  .sidebar {
+    background: var(--white);
+    border-right-color: var(--border-color);
+  }
+  
+  .user-profile {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    
+    .user-name,
+    .user-email {
+      color: white;
+    }
+    
+    .user-badge {
+      background: rgba(255, 255, 255, 0.25);
+      color: white;
+    }
+    
+    .avatar {
+      background: rgba(255, 255, 255, 0.25);
+      color: white;
+    }
+  }
+  
+  .sidebar-menu {
+    .section-title {
+      color: var(--text-secondary);
+    }
+    
+    .menu-item {
+      color: var(--text-primary);
+      
+      svg {
+        color: var(--text-secondary);
+      }
+      
+      &:hover {
+        background: var(--light);
+        color: var(--primary);
+        
+        svg {
+          color: var(--primary);
+        }
+      }
+      
+      &.logout-btn {
+        color: var(--danger);
+        
+        svg {
+          color: var(--danger);
+        }
+        
+        &:hover {
+          background: rgba(239, 68, 68, 0.1);
+        }
+      }
+    }
+  }
+}
