@@ -4,7 +4,6 @@ import { FormBuilder, ReactiveFormsModule, Validators, FormGroup } from '@angula
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { AppLoaderComponent } from '../../shared/components/app-loader/app-loader.component';
-import { AppErrorComponent } from '../../shared/components/app-error/app-error.component';
 import { finalize } from 'rxjs';
 
 interface UserProfile {
@@ -25,7 +24,7 @@ interface UserProfile {
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, AppLoaderComponent, AppErrorComponent],
+  imports: [CommonModule, ReactiveFormsModule, AppLoaderComponent],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss']
 })

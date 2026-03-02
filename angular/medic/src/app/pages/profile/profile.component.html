@@ -14,7 +14,7 @@
   </div>
 
   <!-- Loading State -->
-  <app-loader [isLoading]="isLoading"></app-loader>
+  <app-loader [show]="isLoading"></app-loader>
 
   <!-- Error & Success Messages -->
   <div *ngIf="errorMessage" class="alert alert-error" [@fadeInOut]>
@@ -50,7 +50,6 @@
             <span class="upload-text">Change Photo</span>
           </label>
           <input 
-            #avatarInput="ngModel"
             id="avatar-input" 
             type="file" 
             accept="image/*" 
@@ -166,7 +165,7 @@
               type="email"
               formControlName="email"
               class="form-input"
-              disabled
+              [disabled]="true"
             />
             <p class="helper-text">Email cannot be changed</p>
           </div>
