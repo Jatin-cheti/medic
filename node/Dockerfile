@@ -23,11 +23,12 @@ COPY --from=build /usr/src/app/dist ./dist
 COPY --from=build /usr/src/app/run-migrations.js ./run-migrations.js
 COPY --from=build /usr/src/app/seed-data.js ./seed-data.js
 COPY --from=build /usr/src/app/src/migrations ./src/migrations
-COPY wait-for-db.sh ./wait-for-db.sh
-RUN chmod +x ./wait-for-db.sh
+COPY start.sh ./start.sh
+RUN chmod +x ./start.sh
 
 # Install production dependencies (based on copied package*.json)
 RUN npm ci --omit=dev
 
 EXPOSE 3000
-CMD ["sh", "-c", "node run-migrations.js && node seed-data.js && node dist/index.js"]
+ENTRYPOINT ["sh"]
+CMD ["./start.sh"]
