@@ -1,0 +1,234 @@
+<div class="profile-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1>My Profile</h1>
+      <p>View and manage your profile information</p>
+    </div>
+    <button *ngIf="!isEditing" (click)="toggleEdit()" class="edit-btn">
+      <span class="icon">✎</span> Edit Profile
+    </button>
+    <button *ngIf="isEditing" (click)="toggleEdit()" class="cancel-btn">
+      Cancel
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <app-loader [isLoading]="isLoading"></app-loader>
+
+  <!-- Error & Success Messages -->
+  <div *ngIf="errorMessage" class="alert alert-error" [@fadeInOut]>
+    <span class="alert-icon">⚠️</span>
+    <span class="alert-text">{{ errorMessage }}</span>
+    <button class="alert-close" (click)="clearMessages()">✕</button>
+  </div>
+
+  <div *ngIf="successMessage" class="alert alert-success" [@fadeInOut]>
+    <span class="alert-icon">✓</span>
+    <span class="alert-text">{{ successMessage }}</span>
+  </div>
+
+  <!-- Main Profile Content -->
+  <div class="profile-content" *ngIf="!isLoading && profile">
+    <!-- Avatar Section -->
+    <div class="avatar-section" [class.editing]="isEditing">
+      <div class="avatar-wrapper">
+        <img 
+          *ngIf="previewUrl" 
+          [src]="previewUrl" 
+          alt="Profile Picture"
+          class="avatar-image"
+        />
+        <div *ngIf="!previewUrl" class="avatar-placeholder">
+          <span class="avatar-icon">👤</span>
+        </div>
+        
+        <!-- Upload Overlay -->
+        <div *ngIf="isEditing" class="avatar-overlay">
+          <label for="avatar-input" class="upload-label">
+            <span class="upload-icon">📷</span>
+            <span class="upload-text">Change Photo</span>
+          </label>
+          <input 
+            #avatarInput="ngModel"
+            id="avatar-input" 
+            type="file" 
+            accept="image/*" 
+            (change)="onFileSelected($event)"
+            class="hidden"
+          />
+        </div>
+      </div>
+
+      <!-- Upload Button -->
+      <div *ngIf="isEditing && selectedFile" class="upload-actions">
+        <button 
+          (click)="uploadAvatar()" 
+          [disabled]="isUploadingAvatar"
+          class="upload-btn"
+        >
+          <span *ngIf="!isUploadingAvatar">Upload Picture</span>
+          <span *ngIf="isUploadingAvatar">Uploading...</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Profile Information Card -->
+    <div class="profile-card">
+      <!-- View Mode -->
+      <div *ngIf="!isEditing" class="profile-view">
+        <div class="profile-row">
+          <div class="profile-item">
+            <label class="profile-label">Full Name</label>
+            <p class="profile-value">{{ profile.firstName }} {{ profile.lastName }}</p>
+          </div>
+          <div class="profile-item">
+            <label class="profile-label">Email</label>
+            <p class="profile-value">{{ profile.email }}</p>
+          </div>
+        </div>
+
+        <div class="profile-row">
+          <div class="profile-item">
+            <label class="profile-label">Phone</label>
+            <p class="profile-value">{{ profile.phone || 'Not provided' }}</p>
+          </div>
+          <div class="profile-item">
+            <label class="profile-label">Gender</label>
+            <p class="profile-value">{{ profile.gender ? (profile.gender | titlecase) : 'Not provided' }}</p>
+          </div>
+        </div>
+
+        <div class="profile-row">
+          <div class="profile-item">
+            <label class="profile-label">Date of Birth</label>
+            <p class="profile-value">
+              {{ profile.dateOfBirth ? (profile.dateOfBirth | date:'MMM dd, yyyy') : 'Not provided' }}
+            </p>
+          </div>
+          <div class="profile-item">
+            <label class="profile-label">Preferred Language</label>
+            <p class="profile-value">{{ profile.preferredLanguage | titlecase }}</p>
+          </div>
+        </div>
+
+        <div class="profile-row">
+          <div class="profile-item full-width">
+            <label class="profile-label">Member Since</label>
+            <p class="profile-value">{{ profile.createdAt | date:'MMM dd, yyyy' }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Edit Mode -->
+      <form *ngIf="isEditing" [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="profile-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="firstName" class="form-label">First Name *</label>
+            <input
+              id="firstName"
+              type="text"
+              formControlName="firstName"
+              class="form-input"
+              placeholder="Enter your first name"
+            />
+            <span *ngIf="profileForm.get('firstName')?.hasError('required')" class="error-text">
+              First name is required
+            </span>
+            <span *ngIf="profileForm.get('firstName')?.hasError('minlength')" class="error-text">
+              First name must be at least 2 characters
+            </span>
+          </div>
+
+          <div class="form-group">
+            <label for="lastName" class="form-label">Last Name *</label>
+            <input
+              id="lastName"
+              type="text"
+              formControlName="lastName"
+              class="form-input"
+              placeholder="Enter your last name"
+            />
+            <span *ngIf="profileForm.get('lastName')?.hasError('required')" class="error-text">
+              Last name is required
+            </span>
+            <span *ngIf="profileForm.get('lastName')?.hasError('minlength')" class="error-text">
+              Last name must be at least 2 characters
+            </span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="email" class="form-label">Email Address</label>
+            <input
+              id="email"
+              type="email"
+              formControlName="email"
+              class="form-input"
+              disabled
+            />
+            <p class="helper-text">Email cannot be changed</p>
+          </div>
+
+          <div class="form-group">
+            <label for="phone" class="form-label">Phone Number</label>
+            <input
+              id="phone"
+              type="tel"
+              formControlName="phone"
+              class="form-input"
+              placeholder="Enter your phone number"
+            />
+            <span *ngIf="profileForm.get('phone')?.hasError('pattern')" class="error-text">
+              Invalid phone number format
+            </span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="dateOfBirth" class="form-label">Date of Birth</label>
+            <input
+              id="dateOfBirth"
+              type="date"
+              formControlName="dateOfBirth"
+              class="form-input"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="gender" class="form-label">Gender</label>
+            <select formControlName="gender" class="form-input">
+              <option value="">Select a gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="preferredLanguage" class="form-label">Preferred Language</label>
+            <select formControlName="preferredLanguage" class="form-input">
+              <option value="en">English</option>
+              <option value="es">Spanish</option>
+              <option value="fr">French</option>
+              <option value="de">German</option>
+              <option value="hi">Hindi</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="form-actions">
+          <button type="submit" [disabled]="profileForm.invalid || isLoading" class="submit-btn">
+            <span *ngIf="!isLoading">Save Changes</span>
+            <span *ngIf="isLoading">Saving...</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

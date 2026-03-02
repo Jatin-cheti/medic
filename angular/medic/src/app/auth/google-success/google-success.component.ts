@@ -9,7 +9,7 @@ import { AppLoaderComponent } from '../../shared/components/app-loader/app-loade
   imports: [CommonModule, AppLoaderComponent],
   template: `
     <div class="google-success-container">
-      <app-loader [isLoading]="true"></app-loader>
+      <app-loader></app-loader>
       <p class="loading-text">Completing Google Sign-In...</p>
     </div>
   `,
@@ -22,7 +22,7 @@ import { AppLoaderComponent } from '../../shared/components/app-loader/app-loade
       min-height: 100vh;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     }
-    
+
     .loading-text {
       color: white;
       font-size: 1.1rem;
@@ -42,7 +42,7 @@ export class GoogleSuccessComponent implements OnInit {
       const token = params['token'];
       const refreshToken = params['refreshToken'];
       const role = params['role'];
-      
+
       if (token && refreshToken) {
         // Store tokens in localStorage
         if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
@@ -52,7 +52,7 @@ export class GoogleSuccessComponent implements OnInit {
             localStorage.setItem('role', role);
           }
         }
-        
+
         // Redirect to home/dashboard
         setTimeout(() => {
           this.router.navigate(['/home']);

@@ -6,6 +6,7 @@ import passport from 'passport';
 import { initSocket } from './websocket';
 import authRouter from './routes/auth';
 import dashboardRouter from './routes/dashboard';
+import profileRouter from './routes/profile';
 import { initSequelize } from './services/sequelize';
 import { initMongo } from './services/mongo';
 import { errorHandler, notFoundHandler } from './middleware/error-handler';
@@ -63,6 +64,7 @@ app.get('/', (_req, res) => res.json({ status: 'ok', time: new Date().toISOStrin
 app.use('/api/auth', authRouter);
 app.use('/auth', authRouter);
 app.use('/api/patient', dashboardRouter);
+app.use('/api/profile', profileRouter);
 app.use(notFoundHandler);
 app.use(errorHandler);
 
