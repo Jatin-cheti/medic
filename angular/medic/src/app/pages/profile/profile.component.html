@@ -33,26 +33,26 @@
     <!-- Avatar Section -->
     <div class="avatar-section" [class.editing]="isEditing">
       <div class="avatar-wrapper">
-        <img 
-          *ngIf="previewUrl" 
-          [src]="previewUrl" 
+        <img
+          *ngIf="previewUrl"
+          [src]="previewUrl"
           alt="Profile Picture"
           class="avatar-image"
         />
         <div *ngIf="!previewUrl" class="avatar-placeholder">
           <span class="avatar-icon">👤</span>
         </div>
-        
+
         <!-- Upload Overlay -->
         <div *ngIf="isEditing" class="avatar-overlay">
           <label for="avatar-input" class="upload-label">
             <span class="upload-icon">📷</span>
             <span class="upload-text">Change Photo</span>
           </label>
-          <input 
-            id="avatar-input" 
-            type="file" 
-            accept="image/*" 
+          <input
+            id="avatar-input"
+            type="file"
+            accept="image/*"
             (change)="onFileSelected($event)"
             class="hidden"
           />
@@ -61,8 +61,8 @@
 
       <!-- Upload Button -->
       <div *ngIf="isEditing && selectedFile" class="upload-actions">
-        <button 
-          (click)="uploadAvatar()" 
+        <button
+          (click)="uploadAvatar()"
           [disabled]="isUploadingAvatar"
           class="upload-btn"
         >

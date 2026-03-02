@@ -9,21 +9,10 @@ dotenv.config();
 
 const router = Router();
 
-// Middleware to attach user info to request
-const withUserInfo = async (req: any, res: Response, next: Function) => {
-  try {
-    verifyToken(req, res, () => {
-      next();
-    });
-  } catch (err) {
-    res.status(401).json({ error: 'Unauthorized' });
-  }
-};
-
 // GET / - Get user profile details
-router.get('/', withUserInfo, async (req: any, res: Response) => {
+router.get('/', verifyToken, async (req: any, res: Response) => {
   try {
-    const userId = req.user?.id;
+    const userId = req.user?.userId;
     if (!userId) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
@@ -66,9 +55,9 @@ router.get('/', withUserInfo, async (req: any, res: Response) => {
 });
 
 // PUT / - Update user profile details
-router.put('/', withUserInfo, async (req: any, res: Response) => {
+router.put('/', verifyToken, async (req: any, res: Response) => {
   try {
-    const userId = req.user?.id;
+    const userId = req.user?.userId;
     if (!userId) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
@@ -155,9 +144,9 @@ router.put('/', withUserInfo, async (req: any, res: Response) => {
 });
 
 // POST /avatar-upload-url - Get presigned URL for avatar upload
-router.post('/avatar-upload-url', withUserInfo, async (req: any, res: Response) => {
+router.post('/avatar-upload-url', verifyToken, async (req: any, res: Response) => {
   try {
-    const userId = req.user?.id;
+    const userId = req.user?.userId;
     if (!userId) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
@@ -188,9 +177,9 @@ router.post('/avatar-upload-url', withUserInfo, async (req: any, res: Response) 
 });
 
 // PUT /avatar - Update avatar URL
-router.put('/avatar', withUserInfo, async (req: any, res: Response) => {
+router.put('/avatar', verifyToken, async (req: any, res: Response) => {
   try {
-    const userId = req.user?.id;
+    const userId = req.user?.userId;
     if (!userId) {
       return res.status(401).json({ error: 'Unauthorized' });
     }

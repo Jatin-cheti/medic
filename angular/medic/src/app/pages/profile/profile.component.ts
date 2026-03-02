@@ -35,12 +35,12 @@ export class ProfileComponent implements OnInit {
   isEditing = false;
   errorMessage = '';
   successMessage = '';
-  
+
   // File upload
   selectedFile: File | null = null;
   previewUrl: string | null = null;
   isUploadingAvatar = false;
-  
+
   private apiUrl = `${environment.apiUrl}/api/profile`;
 
   constructor(
@@ -60,6 +60,7 @@ export class ProfileComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log('ProfileComponent ngOnInit - Token:', localStorage.getItem('token') ? 'Present' : 'Missing');
     this.loadProfile();
   }
 
@@ -68,6 +69,10 @@ export class ProfileComponent implements OnInit {
     this.errorMessage = '';
     this.cdr.markForCheck();
 
+    const token = localStorage.getItem('token');
+    console.log('loadProfile - Making request to:', this.apiUrl);
+    console.log('loadProfile - Token present:', !!token);
+
     this.http.get<UserProfile>(this.apiUrl)
       .pipe(finalize(() => {
         this.isLoading = false;
@@ -75,6 +80,7 @@ export class ProfileComponent implements OnInit {
       }))
       .subscribe({
         next: (data) => {
+          console.log('Profile loaded successfully:', data);
           this.profile = data;
           this.previewUrl = data.avatarUrl || null;
           this.profileForm.patchValue({
@@ -89,6 +95,7 @@ export class ProfileComponent implements OnInit {
           this.cdr.markForCheck();
         },
         error: (err) => {
+          console.error('Profile load error:', err);
           this.errorMessage = 'Failed to load profile. Please try again.';
           console.error('Profile load error:', err);
         }
@@ -131,7 +138,7 @@ export class ProfileComponent implements OnInit {
     }
 
     this.selectedFile = file;
-    
+
     // Create preview
     const reader = new FileReader();
     reader.onload = (e) => {
