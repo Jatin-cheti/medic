@@ -4,6 +4,8 @@ import { AuthService } from '../../core/services/auth.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { AppErrorComponent } from '../../shared/components/app-error/app-error.component';
+import { AppLoaderComponent } from '../../shared/components/app-loader/app-loader.component';
 
 @Component({
   selector: 'app-login',
@@ -12,6 +14,8 @@ import { RouterLink } from '@angular/router';
     RouterLink,
     CommonModule,
     ReactiveFormsModule,
+    AppErrorComponent,
+    AppLoaderComponent,
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
@@ -19,6 +23,7 @@ import { RouterLink } from '@angular/router';
 export class LoginComponent {
   loginForm: any;
   errorMessage = '';
+  isLoading = false;
 
   constructor(
     private fb: FormBuilder,
@@ -46,11 +51,18 @@ export class LoginComponent {
     }
 
     this.errorMessage = '';
+    this.isLoading = true;
     this.auth.loginDoctor(payload)
       .subscribe(() => {
+        this.isLoading = false;
         this.router.navigate(['/dashboard']);
       }, (err) => {
-        this.errorMessage = err?.error?.error || 'Unable to login. Please try again.';
+        this.isLoading = false;
+        this.errorMessage = this.auth.getErrorMessage(err);
       });
+  }
+
+  clearError() {
+    this.errorMessage = '';
   }
 }

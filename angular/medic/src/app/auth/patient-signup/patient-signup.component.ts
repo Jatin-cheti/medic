@@ -3,17 +3,20 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { AppLoaderComponent } from '../../shared/components/app-loader/app-loader.component';
+import { AppErrorComponent } from '../../shared/components/app-error/app-error.component';
 
 @Component({
   selector: 'app-patient-signup',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, AppLoaderComponent, AppErrorComponent],
   templateUrl: './patient-signup.component.html',
   styleUrls: ['./patient-signup.component.scss']
 })
 export class PatientSignupComponent implements OnInit {
   signupForm: any;
   errorMessage = '';
+  isLoading = false;
   genders = ['Male', 'Female', 'Other', 'Prefer not to say'];
   languages = [
     { code: 'en', name: 'English' },
@@ -74,10 +77,17 @@ export class PatientSignupComponent implements OnInit {
     };
 
     this.errorMessage = '';
+    this.isLoading = true;
     this.auth.signupPatient(payload).subscribe(() => {
+      this.isLoading = false;
       this.router.navigate(['/patient-login']);
     }, (err) => {
-      this.errorMessage = err?.error?.error || 'Unable to signup. Please try again.';
+      this.isLoading = false;
+      this.errorMessage = this.auth.getErrorMessage(err);
     });
+  }
+
+  clearError() {
+    this.errorMessage = '';
   }
 }

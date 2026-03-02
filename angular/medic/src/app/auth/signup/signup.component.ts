@@ -13,6 +13,8 @@ import { CommonModule } from '@angular/common';
 })
 export class SignupComponent {
   signupForm: any;
+  errorMessage = '';
+  isLoading = false;
 
   constructor(
     private fb: FormBuilder,
@@ -29,9 +31,19 @@ export class SignupComponent {
   onSubmit() {
     if (this.signupForm.invalid) return;
 
+    this.errorMessage = '';
+    this.isLoading = true;
     this.auth.signup(this.signupForm.value)
       .subscribe(() => {
+        this.isLoading = false;
         this.router.navigate(['/login']);
+      }, (err) => {
+        this.isLoading = false;
+        this.errorMessage = this.auth.getErrorMessage(err);
       });
+  }
+
+  clearError() {
+    this.errorMessage = '';
   }
 }

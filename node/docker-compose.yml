@@ -61,7 +61,7 @@ services:
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
-    command: ["./wait-for-db.sh", "mysql:3306", "mongo:27017", "redis:6379", "--", "node", "dist/index.js"]
+    command: ["sh", "./start.sh"]
 
   frontend:
     build:

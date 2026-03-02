@@ -3,11 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { AppLoaderComponent } from '../../shared/components/app-loader/app-loader.component';
+import { AppErrorComponent } from '../../shared/components/app-error/app-error.component';
 
 @Component({
   selector: 'app-patient-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, AppLoaderComponent, AppErrorComponent],
   templateUrl: './patient-login.component.html',
   styleUrls: ['./patient-login.component.scss']
 })
@@ -55,7 +57,7 @@ export class PatientLoginComponent implements OnInit {
       this.router.navigate(['/home']);
     }, (err) => {
       this.isLoading = false;
-      this.errorMessage = err?.error?.error || 'Unable to login. Please try again.';
+      this.errorMessage = this.auth.getErrorMessage(err);
     });
   }
 
@@ -75,7 +77,7 @@ export class PatientLoginComponent implements OnInit {
       this.router.navigate(['/home']);
     }, (err) => {
       this.isLoading = false;
-      this.errorMessage = err?.error?.error || 'Google login failed. Please try again.';
+      this.errorMessage = this.auth.getErrorMessage(err);
     });
   }
 
@@ -92,7 +94,11 @@ export class PatientLoginComponent implements OnInit {
       this.router.navigate(['/home']);
     }, (err) => {
       this.isLoading = false;
-      this.errorMessage = err?.error?.error || 'Google login failed. Please try again.';
+      this.errorMessage = this.auth.getErrorMessage(err);
     });
+  }
+
+  clearError() {
+    this.errorMessage = '';
   }
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { tap } from 'rxjs';
+import { HttpErrorResponse, HttpClient } from '@angular/common/http';
+import { catchError, throwError, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -14,6 +14,37 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
+  private handleApiError(error: HttpErrorResponse) {
+    const message = this.getErrorMessage(error);
+    return throwError(() => new Error(message));
+  }
+
+  getErrorMessage(error: unknown): string {
+    if (error instanceof Error && error.message) {
+      return error.message;
+    }
+
+    const httpError = error as HttpErrorResponse;
+    if (httpError?.status === 0) {
+      return 'Cannot connect to server. Please try again.';
+    }
+
+    if (typeof httpError?.error === 'string' && httpError.error.trim()) {
+      return httpError.error;
+    }
+
+    const backendMessage =
+      httpError?.error?.message ||
+      httpError?.error?.error ||
+      httpError?.message;
+
+    if (backendMessage) {
+      return backendMessage;
+    }
+
+    return 'Something went wrong. Please try again.';
+  }
+
   login(data: any) {
     return this.http.post(`${this.api}/login`, data)
       .pipe(
@@ -22,7 +53,8 @@ export class AuthService {
             if (res.token) localStorage.setItem('token', res.token);
             if (res.refreshToken) localStorage.setItem('refreshToken', res.refreshToken);
           }
-        })
+        }),
+        catchError((error) => this.handleApiError(error))
       );
   }
 
@@ -34,7 +66,8 @@ export class AuthService {
             if (res.token) localStorage.setItem('token', res.token);
             if (res.refreshToken) localStorage.setItem('refreshToken', res.refreshToken);
           }
-        })
+        }),
+        catchError((error) => this.handleApiError(error))
       );
   }
 
@@ -46,7 +79,8 @@ export class AuthService {
             if (res.token) localStorage.setItem('token', res.token);
             if (res.refreshToken) localStorage.setItem('refreshToken', res.refreshToken);
           }
-        })
+        }),
+        catchError((error) => this.handleApiError(error))
       );
   }
 
@@ -58,7 +92,8 @@ export class AuthService {
             if (res.token) localStorage.setItem('token', res.token);
             if (res.refreshToken) localStorage.setItem('refreshToken', res.refreshToken);
           }
-        })
+        }),
+        catchError((error) => this.handleApiError(error))
       );
   }
 
@@ -70,7 +105,8 @@ export class AuthService {
             if (res.token) localStorage.setItem('token', res.token);
             if (res.refreshToken) localStorage.setItem('refreshToken', res.refreshToken);
           }
-        })
+        }),
+        catchError((error) => this.handleApiError(error))
       );
   }
 
@@ -85,7 +121,8 @@ export class AuthService {
         tap((res: any) => {
           if (res.token) localStorage.setItem('token', res.token);
           if (res.refreshToken) localStorage.setItem('refreshToken', res.refreshToken);
-        })
+        }),
+        catchError((error) => this.handleApiError(error))
       );
   }
 
@@ -97,7 +134,8 @@ export class AuthService {
             if (res.token) localStorage.setItem('token', res.token);
             if (res.refreshToken) localStorage.setItem('refreshToken', res.refreshToken);
           }
-        })
+        }),
+        catchError((error) => this.handleApiError(error))
       );
   }
 
@@ -109,7 +147,8 @@ export class AuthService {
             if (res.token) localStorage.setItem('token', res.token);
             if (res.refreshToken) localStorage.setItem('refreshToken', res.refreshToken);
           }
-        })
+        }),
+        catchError((error) => this.handleApiError(error))
       );
   }
 
@@ -121,7 +160,8 @@ export class AuthService {
             if (res.token) localStorage.setItem('token', res.token);
             if (res.refreshToken) localStorage.setItem('refreshToken', res.refreshToken);
           }
-        })
+        }),
+        catchError((error) => this.handleApiError(error))
       );
   }
 

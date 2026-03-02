@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 interface Appointment {
   id: number;
@@ -70,6 +71,7 @@ export class HomeScreenComponent implements OnInit {
   dashboardData: DashboardData | null = null;
   loading = true;
   error: string | null = null;
+  private apiUrl = environment.apiUrl;
 
   constructor(
     private http: HttpClient,
@@ -90,7 +92,7 @@ export class HomeScreenComponent implements OnInit {
       return;
     }
 
-    this.http.get<DashboardData>('/api/patient/dashboard', {
+    this.http.get<DashboardData>(`${this.apiUrl}/api/patient/dashboard`, {
       headers: { Authorization: `Bearer ${token}` }
     }).subscribe({
       next: (data) => {
@@ -100,9 +102,9 @@ export class HomeScreenComponent implements OnInit {
       error: (err) => {
         console.error('Dashboard load error:', err);
         if (err.status === 401) {
-          this.router.navigate(['/auth/login']);
+          this.router.navigate(['/patient-login']);
         } else {
-          this.error = 'Failed to load dashboard';
+          this.error = err?.error?.message || err?.error?.error || 'Failed to load dashboard';
         }
         this.loading = false;
       }

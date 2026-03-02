@@ -1,25 +1,63 @@
 import express from 'express';
 import http from 'http';
 import dotenv from 'dotenv';
-import cors from 'cors';
+import cors, { CorsOptions } from 'cors';
 import { initSocket } from './websocket';
 import authRouter from './routes/auth';
 import dashboardRouter from './routes/dashboard';
 import { initSequelize } from './services/sequelize';
 import { initMongo } from './services/mongo';
+import { errorHandler, notFoundHandler } from './middleware/error-handler';
 
 dotenv.config();
 
 const app = express();
-app.use(cors({
-  origin: process.env.FRONTEND_ORIGIN || 'http://localhost:4200',
+const envOrigins = [
+  process.env.FRONTEND_ORIGIN,
+  ...(process.env.CORS_ORIGINS || '').split(',').map((origin) => origin.trim()),
+].filter(Boolean) as string[];
+
+const defaultOrigins = [
+  'http://localhost:4200',
+  'http://127.0.0.1:4200',
+  'https://medic-2istznwx5-jatin-chetis-projects.vercel.app',
+];
+
+const allowedOrigins = new Set<string>([...defaultOrigins, ...envOrigins]);
+
+const corsOptions: CorsOptions = {
+  origin: (origin, callback) => {
+    if (!origin) {
+      callback(null, true);
+      return;
+    }
+
+    const isExplicitlyAllowed = allowedOrigins.has(origin);
+    const isVercelPreview = /^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(origin);
+
+    if (isExplicitlyAllowed || isVercelPreview) {
+      callback(null, true);
+      return;
+    }
+
+    const corsError = new Error(`CORS blocked for origin: ${origin}`) as Error & { statusCode?: number };
+    corsError.statusCode = 403;
+    callback(corsError);
+  },
   credentials: true,
-}));
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 app.use(express.json());
 app.get('/', (_req, res) => res.json({ status: 'ok', time: new Date().toISOString() }));
 app.use('/api/auth', authRouter);
 app.use('/auth', authRouter);
 app.use('/api/patient', dashboardRouter);
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 const server = http.createServer(app);
 

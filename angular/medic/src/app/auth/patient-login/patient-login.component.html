@@ -7,6 +7,7 @@
   <title>Medic - Patient Login</title>
 </head>
 <body>
+  <app-loader [show]="isLoading" text="Signing you in..."></app-loader>
   <div class="background">
     <div class="login-wrapper">
       <div class="left-section">
@@ -54,7 +55,7 @@
               </div>
             </div>
 
-            <p *ngIf="errorMessage" class="text-danger small mb-3">{{ errorMessage }}</p>
+            <app-error-banner [message]="errorMessage" (dismissed)="clearError()"></app-error-banner>
 
             <div class="form-options">
               <label class="remember-me">
@@ -64,7 +65,7 @@
               <a href="#" class="forgot-password">Forgot Password?</a>
             </div>
 
-            <button type="submit" class="login-btn">Sign In</button>
+            <button type="submit" class="login-btn" [disabled]="isLoading || loginForm.invalid">Sign In</button>
           </form>
 
           <div class="divider">OR</div>

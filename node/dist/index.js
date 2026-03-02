@@ -12,17 +12,48 @@ const auth_1 = __importDefault(require("./routes/auth"));
 const dashboard_1 = __importDefault(require("./routes/dashboard"));
 const sequelize_1 = require("./services/sequelize");
 const mongo_1 = require("./services/mongo");
+const error_handler_1 = require("./middleware/error-handler");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
-app.use((0, cors_1.default)({
-    origin: process.env.FRONTEND_ORIGIN || 'http://localhost:4200',
+const envOrigins = [
+    process.env.FRONTEND_ORIGIN,
+    ...(process.env.CORS_ORIGINS || '').split(',').map((origin) => origin.trim()),
+].filter(Boolean);
+const defaultOrigins = [
+    'http://localhost:4200',
+    'http://127.0.0.1:4200',
+    'https://medic-2istznwx5-jatin-chetis-projects.vercel.app',
+];
+const allowedOrigins = new Set([...defaultOrigins, ...envOrigins]);
+const corsOptions = {
+    origin: (origin, callback) => {
+        if (!origin) {
+            callback(null, true);
+            return;
+        }
+        const isExplicitlyAllowed = allowedOrigins.has(origin);
+        const isVercelPreview = /^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(origin);
+        if (isExplicitlyAllowed || isVercelPreview) {
+            callback(null, true);
+            return;
+        }
+        const corsError = new Error(`CORS blocked for origin: ${origin}`);
+        corsError.statusCode = 403;
+        callback(corsError);
+    },
     credentials: true,
-}));
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+};
+app.use((0, cors_1.default)(corsOptions));
+app.options('*', (0, cors_1.default)(corsOptions));
 app.use(express_1.default.json());
 app.get('/', (_req, res) => res.json({ status: 'ok', time: new Date().toISOString() }));
 app.use('/api/auth', auth_1.default);
 app.use('/auth', auth_1.default);
 app.use('/api/patient', dashboard_1.default);
+app.use(error_handler_1.notFoundHandler);
+app.use(error_handler_1.errorHandler);
 const server = http_1.default.createServer(app);
 async function start() {
     try {

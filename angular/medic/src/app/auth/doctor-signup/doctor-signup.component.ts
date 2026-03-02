@@ -3,17 +3,20 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { AppLoaderComponent } from '../../shared/components/app-loader/app-loader.component';
+import { AppErrorComponent } from '../../shared/components/app-error/app-error.component';
 
 @Component({
   selector: 'app-doctor-signup',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, AppLoaderComponent, AppErrorComponent],
   templateUrl: './doctor-signup.component.html',
   styleUrls: ['./doctor-signup.component.scss']
 })
 export class DoctorSignupComponent implements OnInit {
   signupForm: any;
   errorMessage = '';
+  isLoading = false;
   genders = ['Male', 'Female', 'Other', 'Prefer not to say'];
   languages = [
     { code: 'en', name: 'English' },
@@ -106,6 +109,7 @@ export class DoctorSignupComponent implements OnInit {
     }
 
     try {
+      this.isLoading = true;
       const degreeFileUrl = await this.fileToDataUrl(value.degreeFile as File);
       const experienceFileUrl = await this.fileToDataUrl(value.experienceFile as File);
 
@@ -128,12 +132,19 @@ export class DoctorSignupComponent implements OnInit {
 
       this.errorMessage = '';
       this.auth.signupDoctor(payload).subscribe(() => {
+        this.isLoading = false;
         this.router.navigate(['/doctor-login']);
       }, (err) => {
-        this.errorMessage = err?.error?.error || 'Unable to signup. Please try again.';
+        this.isLoading = false;
+        this.errorMessage = this.auth.getErrorMessage(err);
       });
     } catch {
+      this.isLoading = false;
       this.errorMessage = 'Unable to read selected files.';
     }
+  }
+
+  clearError() {
+    this.errorMessage = '';
   }
 }

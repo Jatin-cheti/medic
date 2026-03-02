@@ -1,0 +1,5 @@
+<div class="app-error-banner" *ngIf="message">
+  <span class="icon">⚠</span>
+  <span class="text">{{ message }}</span>
+  <button *ngIf="dismissible" type="button" class="close-btn" (click)="onDismiss()">×</button>
+</div>

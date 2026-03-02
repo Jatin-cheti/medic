@@ -1,0 +1,32 @@
+.app-error-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 14px;
+  padding: 11px 12px;
+  border-radius: 10px;
+  border: 1px solid #ef9a9a;
+  background: #fff2f2;
+  color: #b42318;
+
+  .icon {
+    font-size: 15px;
+    line-height: 1;
+  }
+
+  .text {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .close-btn {
+    border: 0;
+    background: transparent;
+    color: #b42318;
+    font-size: 18px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0 2px;
+  }
+}

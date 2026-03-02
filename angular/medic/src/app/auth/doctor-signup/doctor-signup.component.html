@@ -1,4 +1,5 @@
 <div class="background">
+  <app-loader [show]="isLoading" text="Submitting your profile..."></app-loader>
   <div class="login-wrapper">
     <div class="left-section">
       <div class="header">
@@ -136,9 +137,9 @@
             </div>
           </div>
 
-          <p *ngIf="errorMessage" class="text-danger small mb-3">{{ errorMessage }}</p>
+          <app-error-banner [message]="errorMessage" (dismissed)="clearError()"></app-error-banner>
 
-          <button type="submit" class="login-btn">Submit for Verification</button>
+          <button type="submit" class="login-btn" [disabled]="isLoading || signupForm.invalid">Submit for Verification</button>
         </form>
 
         <p class="signup-link">Already have an account? <a routerLink="/doctor-login">Login as Doctor</a></p>
