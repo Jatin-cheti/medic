@@ -20,6 +20,9 @@ RUN apk add --no-cache bash netcat-openbsd
 # copy only what we need from the build stage
 COPY --from=build /usr/src/app/package*.json ./
 COPY --from=build /usr/src/app/dist ./dist
+COPY --from=build /usr/src/app/run-migrations.js ./run-migrations.js
+COPY --from=build /usr/src/app/seed-data.js ./seed-data.js
+COPY --from=build /usr/src/app/src/migrations ./src/migrations
 COPY wait-for-db.sh ./wait-for-db.sh
 RUN chmod +x ./wait-for-db.sh
 
@@ -27,4 +30,4 @@ RUN chmod +x ./wait-for-db.sh
 RUN npm ci --omit=dev
 
 EXPOSE 3000
-CMD ["./wait-for-db.sh", "mysql:3306", "mongo:27017", "redis:6379", "--", "node", "dist/index.js"]
+CMD ["sh", "-c", "node run-migrations.js && node seed-data.js && node dist/index.js"]
