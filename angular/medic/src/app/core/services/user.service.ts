@@ -30,6 +30,7 @@ export class UserService {
     const lastName = sessionStorage.getItem('lastName') || '';
     const email = sessionStorage.getItem('userEmail') || '';
     const userName = sessionStorage.getItem('userName') || '';
+    const avatar = sessionStorage.getItem('userAvatar') || '';
 
     let name = 'Patient';
     if (firstName && lastName) {
@@ -44,7 +45,7 @@ export class UserService {
       name,
       email,
       role: 'Patient',
-      avatar: ''
+      avatar
     });
   }
 
@@ -69,6 +70,11 @@ export class UserService {
     if (firstName) sessionStorage.setItem('firstName', firstName);
     if (lastName) sessionStorage.setItem('lastName', lastName);
     if (email) sessionStorage.setItem('userEmail', email);
+    if (avatar) {
+      sessionStorage.setItem('userAvatar', avatar);
+    } else {
+      sessionStorage.removeItem('userAvatar');
+    }
   }
 
   getUserInfo(): UserInfo {

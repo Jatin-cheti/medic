@@ -75,6 +75,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     sessionStorage.removeItem('userName');
     sessionStorage.removeItem('firstName');
     sessionStorage.removeItem('lastName');
+    sessionStorage.removeItem('userAvatar');
     this.router.navigate(['/patient-login']);
   }
 

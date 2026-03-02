@@ -54,8 +54,23 @@ export async function generatePresignedDownloadUrl(key: string): Promise<string>
 export function extractS3KeyFromUrl(url: string): string | null {
   try {
     const urlObj = new URL(url);
-    const key = urlObj.pathname.replace(`/${BUCKET_NAME}/`, '');
-    return key || null;
+    const host = urlObj.hostname;
+    const path = decodeURIComponent(urlObj.pathname.replace(/^\//, ''));
+
+    if (!path) {
+      return null;
+    }
+
+    const virtualHostedStyle = host.startsWith(`${BUCKET_NAME}.s3.`) || host === `${BUCKET_NAME}.s3.amazonaws.com`;
+    if (virtualHostedStyle) {
+      return path;
+    }
+
+    if (path.startsWith(`${BUCKET_NAME}/`)) {
+      return path.substring(BUCKET_NAME.length + 1);
+    }
+
+    return path;
   } catch {
     return null;
   }

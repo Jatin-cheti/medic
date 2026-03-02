@@ -9,6 +9,20 @@ dotenv.config();
 
 const router = Router();
 
+async function resolveAvatarUrl(avatarUrl: string | null): Promise<string | null> {
+  if (!avatarUrl) {
+    return null;
+  }
+
+  try {
+    const key = S3Service.extractS3KeyFromUrl(avatarUrl) || avatarUrl.replace(/^\//, '');
+    return await S3Service.generatePresignedDownloadUrl(key);
+  } catch (error) {
+    console.error('Avatar signing error:', error);
+    return avatarUrl;
+  }
+}
+
 // GET / - Get user profile details
 router.get('/', verifyToken, async (req: any, res: Response) => {
   try {
@@ -34,6 +48,7 @@ router.get('/', verifyToken, async (req: any, res: Response) => {
     }
 
     const profile = user[0];
+    const signedAvatarUrl = await resolveAvatarUrl(profile.avatar_url);
     res.json({
       id: profile.id,
       uuid: profile.uuid,
@@ -41,7 +56,7 @@ router.get('/', verifyToken, async (req: any, res: Response) => {
       phone: profile.phone,
       firstName: profile.first_name,
       lastName: profile.last_name,
-      avatarUrl: profile.avatar_url,
+      avatarUrl: signedAvatarUrl,
       dateOfBirth: profile.date_of_birth,
       gender: profile.gender,
       preferredLanguage: profile.preferred_language,
@@ -122,6 +137,7 @@ router.put('/', verifyToken, async (req: any, res: Response) => {
     ) as any[];
 
     const profile = updatedUser[0];
+    const signedAvatarUrl = await resolveAvatarUrl(profile.avatar_url);
     res.json({
       id: profile.id,
       uuid: profile.uuid,
@@ -129,7 +145,7 @@ router.put('/', verifyToken, async (req: any, res: Response) => {
       phone: profile.phone,
       firstName: profile.first_name,
       lastName: profile.last_name,
-      avatarUrl: profile.avatar_url,
+      avatarUrl: signedAvatarUrl,
       dateOfBirth: profile.date_of_birth,
       gender: profile.gender,
       preferredLanguage: profile.preferred_language,
@@ -213,9 +229,10 @@ router.put('/avatar', verifyToken, async (req: any, res: Response) => {
     ) as any[];
 
     const profile = updatedUser[0];
+    const signedAvatarUrl = await resolveAvatarUrl(profile.avatar_url);
     res.json({
       id: profile.id,
-      avatarUrl: profile.avatar_url,
+      avatarUrl: signedAvatarUrl,
       message: 'Avatar updated successfully',
     });
   } catch (err) {

@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, Injector } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators, FormGroup } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -48,7 +48,7 @@ export class ProfileComponent implements OnInit {
     private fb: FormBuilder,
     private http: HttpClient,
     private cdr: ChangeDetectorRef,
-    private injector: Injector
+    private userService: UserService
   ) {
     this.profileForm = this.fb.group({
       firstName: ['', [Validators.required, Validators.minLength(2)]],
@@ -85,17 +85,13 @@ export class ProfileComponent implements OnInit {
           console.log('Profile loaded successfully:', data);
           this.profile = data;
           this.previewUrl = data.avatarUrl || null;
-          
-          // Update sidebar with avatar
-          const userService = this.injector?.get(UserService);
-          if (userService) {
-            userService.setUserInfo(
-              data.firstName,
-              data.lastName,
-              data.email,
-              data.avatarUrl || ''
-            );
-          }
+
+          this.userService.setUserInfo(
+            data.firstName,
+            data.lastName,
+            data.email,
+            data.avatarUrl || ''
+          );
           this.profileForm.patchValue({
             firstName: data.firstName,
             lastName: data.lastName,

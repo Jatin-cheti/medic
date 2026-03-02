@@ -27,17 +27,38 @@ export class AuthService {
 
   private hasValidToken(): boolean {
     if (!this.hasStorage()) return false;
-    
+
     const token = sessionStorage.getItem('token');
     if (!token) return false;
 
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
+      const payload = this.decodeJwtPayload(token);
+      if (!payload?.exp) return false;
       const exp = payload.exp * 1000;
       return Date.now() < exp;
     } catch {
       return false;
     }
+  }
+
+  private decodeJwtPayload(token: string): any {
+    const payloadPart = token.split('.')[1];
+    if (!payloadPart) {
+      throw new Error('Invalid JWT format');
+    }
+
+    const base64 = payloadPart.replace(/-/g, '+').replace(/_/g, '/');
+    const padded = base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), '=');
+    return JSON.parse(atob(padded));
+  }
+
+  private clearAuthState(): void {
+    if (this.hasStorage()) {
+      sessionStorage.removeItem('token');
+      sessionStorage.removeItem('refreshToken');
+      sessionStorage.removeItem('role');
+    }
+    this.isAuthenticatedSubject.next(false);
   }
 
   private handleApiError(error: HttpErrorResponse) {
@@ -226,7 +247,7 @@ export class AuthService {
 
   isLoggedIn(): boolean {
     if (!this.hasStorage()) return false;
-    
+
     const token = sessionStorage.getItem('token');
     if (!token) {
       this.isAuthenticatedSubject.next(false);
@@ -235,34 +256,33 @@ export class AuthService {
 
     // Validate token is not expired
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
+      const payload = this.decodeJwtPayload(token);
+      if (!payload?.exp) {
+        this.clearAuthState();
+        return false;
+      }
       const exp = payload.exp * 1000; // Convert to milliseconds
       const now = Date.now();
-      
+
       if (exp < now) {
         // Token expired, clear storage
         console.log('Token expired, clearing auth data');
-        this.logout();
+        this.clearAuthState();
         return false;
       }
-      
+
       this.isAuthenticatedSubject.next(true);
       return true;
     } catch (e) {
       // Invalid token format
       console.error('Invalid token format:', e);
-      this.logout();
+      this.clearAuthState();
       return false;
     }
   }
 
   logout() {
-    if (this.hasStorage()) {
-      sessionStorage.removeItem('token');
-      sessionStorage.removeItem('refreshToken');
-      sessionStorage.removeItem('role');
-    }
-    this.isAuthenticatedSubject.next(false);
+    this.clearAuthState();
     this.router.navigate(['/patient-login']);
   }
 
@@ -283,7 +303,7 @@ export class AuthService {
     if (!token) return null;
 
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
+      const payload = this.decodeJwtPayload(token);
       return {
         userId: payload.userId,
         uuid: payload.uuid,
