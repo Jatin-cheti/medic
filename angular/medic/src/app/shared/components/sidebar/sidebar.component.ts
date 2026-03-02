@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ThemeService } from '../../../core/services/theme.service';
+import { DarkModeToggleComponent } from '../dark-mode-toggle/dark-mode-toggle.component';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, DarkModeToggleComponent],
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss']
 })
@@ -68,10 +69,6 @@ export class SidebarComponent implements OnInit {
       .join('')
       .toUpperCase()
       .substring(0, 2);
-  }
-
-  toggleDarkMode() {
-    this.themeService.toggleTheme();
   }
 
   navigateTo(route: string) {

@@ -145,36 +145,44 @@
   }
 }
 
-// Dark mode navbar - Ensure readability
+// Dark mode navbar - Ensure readability with dark background
 .dark-mode .navbar {
-  background: var(--white);
-  border-bottom-color: var(--border-color);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  background: #1e293b;
+  border-bottom-color: #334155;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   
   .logo {
-    color: var(--primary);
+    color: #7FB5FA;
     
     &:hover {
-      color: var(--primary-dark);
+      color: #6da5e9;
     }
   }
   
   .nav-link {
-    color: var(--text-secondary);
+    color: #cbd5e1;
     
-    &:hover,
+    &:hover {
+      color: #7FB5FA;
+      background: #334155;
+    }
+    
     &.active {
-      color: var(--primary);
-      background: var(--light);
+      color: #7FB5FA;
+      background: #334155;
+      
+      &::after {
+        background: #7FB5FA;
+      }
     }
   }
   
   .notification-btn {
-    background: var(--light);
-    color: var(--primary);
+    background: #334155;
+    color: #7FB5FA;
     
     &:hover {
-      background: var(--primary);
+      background: #7FB5FA;
       color: white;
     }
   }

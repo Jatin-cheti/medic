@@ -201,6 +201,16 @@
   }
 }
 
+// Dark mode wrapper style
+.dark-mode-wrapper {
+  padding: 0.5rem 0.75rem !important;
+  cursor: default;
+  
+  &:hover {
+    background: transparent !important;
+  }
+}
+
 // Responsive adjustments
 @media (max-width: 768px) {
   .sidebar {
@@ -222,58 +232,61 @@
   }
 }
 
-// Dark mode - Ensure text readability
+// Dark mode - Fix sidebar to be dark and ensure text readability
 .dark-mode {
   .sidebar {
-    background: var(--white);
-    border-right-color: var(--border-color);
+    background: #1e293b;
+    border-right-color: #334155;
   }
   
   .user-profile {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    background: linear-gradient(135deg, #154E99 0%, #0d3a6d 100%);
     
     .user-name,
     .user-email {
       color: white;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
     }
     
     .user-badge {
-      background: rgba(255, 255, 255, 0.25);
-      color: white;
+      background: white;
+      color: #154E99;
+      font-weight: 600;
     }
     
     .avatar {
-      background: rgba(255, 255, 255, 0.25);
+      background: rgba(255, 255, 255, 0.3);
       color: white;
+      border: 3px solid rgba(255, 255, 255, 0.4);
     }
   }
   
   .sidebar-menu {
     .section-title {
-      color: var(--text-secondary);
+      color: #94a3b8;
     }
     
     .menu-item {
-      color: var(--text-primary);
+      color: #f1f5f9;
       
       svg {
-        color: var(--text-secondary);
+        color: #94a3b8;
       }
       
       &:hover {
-        background: var(--light);
-        color: var(--primary);
+        background: #334155;
+        color: #7FB5FA;
         
         svg {
-          color: var(--primary);
+          color: #7FB5FA;
         }
       }
       
       &.logout-btn {
-        color: var(--danger);
+        color: #f87171;
         
         svg {
-          color: var(--danger);
+          color: #f87171;
         }
         
         &:hover {
