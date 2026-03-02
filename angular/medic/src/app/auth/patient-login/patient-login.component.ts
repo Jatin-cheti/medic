@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
@@ -23,7 +23,8 @@ export class PatientLoginComponent implements OnInit {
     private fb: FormBuilder,
     private auth: AuthService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private cdr: ChangeDetectorRef
   ) {
     this.loginForm = this.fb.group({
       identifier: ['', [Validators.required]],
@@ -53,9 +54,11 @@ export class PatientLoginComponent implements OnInit {
 
     this.isLoading = true;
     this.errorMessage = '';
+    this.cdr.markForCheck();
     this.auth.loginPatient(payload).pipe(
       finalize(() => {
         this.isLoading = false;
+        this.cdr.markForCheck();
       })
     ).subscribe({
       next: () => {
@@ -63,6 +66,8 @@ export class PatientLoginComponent implements OnInit {
       },
       error: (err) => {
         this.errorMessage = this.auth.getErrorMessage(err);
+        console.error('Login error:', err);
+        this.cdr.markForCheck();
       }
     });
   }
@@ -70,17 +75,20 @@ export class PatientLoginComponent implements OnInit {
   loginWithGoogle() {
     this.isLoading = true;
     this.errorMessage = '';
+    this.cdr.markForCheck();
 
     // Prompt user for email to test Google login
     const email = prompt('Enter email for Google login test:');
     if (!email) {
       this.isLoading = false;
+      this.cdr.markForCheck();
       return;
     }
 
     this.auth.googleTestLogin(email, 'Test', 'User').pipe(
       finalize(() => {
         this.isLoading = false;
+        this.cdr.markForCheck();
       })
     ).subscribe({
       next: () => {
@@ -88,6 +96,7 @@ export class PatientLoginComponent implements OnInit {
       },
       error: (err) => {
         this.errorMessage = this.auth.getErrorMessage(err);
+        this.cdr.markForCheck();
       }
     });
   }
@@ -103,6 +112,7 @@ export class PatientLoginComponent implements OnInit {
     this.auth.googleLogin(googleId, email, firstName || 'User', lastName || '').pipe(
       finalize(() => {
         this.isLoading = false;
+        this.cdr.markForCheck();
       })
     ).subscribe({
       next: () => {
@@ -110,6 +120,7 @@ export class PatientLoginComponent implements OnInit {
       },
       error: (err) => {
         this.errorMessage = this.auth.getErrorMessage(err);
+        this.cdr.markForCheck();
       }
     });
   }

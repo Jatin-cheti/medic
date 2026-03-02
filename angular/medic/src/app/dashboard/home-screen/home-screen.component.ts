@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -78,7 +78,8 @@ export class HomeScreenComponent implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -88,10 +89,12 @@ export class HomeScreenComponent implements OnInit {
   loadDashboard() {
     this.loading = true;
     this.error = null;
+    this.cdr.markForCheck();
 
     const token = localStorage.getItem('token');
     if (!token) {
       this.loading = false;
+      this.cdr.markForCheck();
       this.router.navigate(['/patient-login']);
       return;
     }
@@ -101,6 +104,7 @@ export class HomeScreenComponent implements OnInit {
     }).pipe(
       finalize(() => {
         this.loading = false;
+        this.cdr.markForCheck();
       })
     ).subscribe({
       next: (data) => {
@@ -128,6 +132,7 @@ export class HomeScreenComponent implements OnInit {
             recentChats: data?.stats?.recentChats ?? (data?.conversations?.length || 0),
           },
         };
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Dashboard load error:', err);
@@ -136,6 +141,7 @@ export class HomeScreenComponent implements OnInit {
         } else {
           this.error = err?.error?.message || err?.error?.error || 'Failed to load dashboard';
         }
+        this.cdr.markForCheck();
       }
     });
   }

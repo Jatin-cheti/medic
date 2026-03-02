@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -32,7 +32,8 @@ export class DoctorSignupComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private auth: AuthService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {
     this.signupForm = this.fb.group({
       firstName: ['', Validators.required],
@@ -135,6 +136,7 @@ export class DoctorSignupComponent implements OnInit {
       this.auth.signupDoctor(payload).pipe(
         finalize(() => {
           this.isLoading = false;
+          this.cdr.markForCheck();
         })
       ).subscribe({
         next: () => {
@@ -142,6 +144,7 @@ export class DoctorSignupComponent implements OnInit {
         },
         error: (err) => {
           this.errorMessage = this.auth.getErrorMessage(err);
+          this.cdr.markForCheck();
         }
       });
     } catch {

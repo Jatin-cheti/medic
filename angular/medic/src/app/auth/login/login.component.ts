@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
 import { Router } from '@angular/router';
@@ -29,7 +29,8 @@ export class LoginComponent {
   constructor(
     private fb: FormBuilder,
     private auth: AuthService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {
     this.loginForm = this.fb.group({
       identifier: ['', [Validators.required]],
@@ -53,9 +54,11 @@ export class LoginComponent {
 
     this.errorMessage = '';
     this.isLoading = true;
+    this.cdr.markForCheck();
     this.auth.loginDoctor(payload).pipe(
       finalize(() => {
         this.isLoading = false;
+        this.cdr.markForCheck();
       })
     ).subscribe({
       next: () => {
@@ -63,6 +66,8 @@ export class LoginComponent {
       },
       error: (err) => {
         this.errorMessage = this.auth.getErrorMessage(err);
+        console.error('Login error:', err);
+        this.cdr.markForCheck();
       }
     });
   }
