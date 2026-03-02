@@ -221,7 +221,7 @@ router.get('/google', passport.authenticate('google', {
 router.get('/google/callback', 
   passport.authenticate('google', { 
     session: false,
-    failureRedirect: '/auth/patient-login?error=auth_failed'
+    failureRedirect: `${process.env.FRONTEND_ORIGIN || 'http://localhost:4200'}/patient-login?error=auth_failed`
   }),
   async (req: Request, res: Response) => {
     try {

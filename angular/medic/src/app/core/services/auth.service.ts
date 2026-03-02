@@ -173,7 +173,39 @@ export class AuthService {
   }
 
   isLoggedIn(): boolean {
-    return this.hasStorage() ? !!localStorage.getItem('token') : false;
+    if (!this.hasStorage()) return false;
+    
+    const token = localStorage.getItem('token');
+    if (!token) return false;
+
+    // Validate token is not expired
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const exp = payload.exp * 1000; // Convert to milliseconds
+      const now = Date.now();
+      
+      if (exp < now) {
+        // Token expired, clear storage
+        console.log('Token expired, clearing auth data');
+        this.logout();
+        return false;
+      }
+      
+      return true;
+    } catch (e) {
+      // Invalid token format
+      console.error('Invalid token format:', e);
+      this.logout();
+      return false;
+    }
+  }
+
+  logout() {
+    if (this.hasStorage()) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('role');
+    }
   }
 
   getToken(): string | null {
