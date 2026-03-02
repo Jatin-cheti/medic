@@ -55,7 +55,7 @@ export class LoginComponent {
     this.auth.loginDoctor(payload)
       .subscribe(() => {
         this.isLoading = false;
-        this.router.navigate(['/dashboard']);
+        this.router.navigate(['/home']);
       }, (err) => {
         this.isLoading = false;
         this.errorMessage = this.auth.getErrorMessage(err);
