@@ -8,10 +8,8 @@ const router = Router();
 // Dashboard data for patients
 router.get('/dashboard', verifyToken, verifyRole(['patient']), async (req: Request, res: Response) => {
   try {
-    console.log('Dashboard route handler called');
     const user = (req as any).user as AuthenticatedRequest['user'];
     const userId = user?.userId;
-    console.log('User in dashboard:', { userId, email: user?.email });
 
     // Get upcoming appointments
     const appointments = await sequelize.query(

@@ -79,10 +79,8 @@ Object.keys(db).forEach(modelName => {
 export async function initSequelize() {
   try {
     await sequelize.authenticate();
-    console.log('Sequelize: Connection established.');
-    if (process.env.NODE_ENV !== 'production') {
-      await sequelize.sync({ alter: true });
-      console.log('Sequelize: Models synced with database.');
+    if (NODE_ENV !== 'production') {
+      await sequelize.sync({ alter: false });
     }
   } catch (err) {
     console.error('Sequelize initialization error:', err);

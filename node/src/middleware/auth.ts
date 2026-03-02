@@ -20,8 +20,6 @@ export const verifyToken: RequestHandler = (req: Request, res: Response, next: N
   const authReq = req as any as AuthenticatedRequest;
   const token = req.headers.authorization?.split(' ')[1] || req.cookies?.token;
 
-  console.log('verifyToken called, token present:', !!token, 'token length:', token?.length);
-
   if (!token) {
     res.status(401).json({ error: 'token required' });
     return;
@@ -29,7 +27,6 @@ export const verifyToken: RequestHandler = (req: Request, res: Response, next: N
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as any;
-    console.log('Token verified successfully, decoded:', Object.keys(decoded));
     authReq.user = decoded;
     next();
   } catch (err) {
