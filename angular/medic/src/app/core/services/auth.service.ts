@@ -165,13 +165,6 @@ export class AuthService {
       );
   }
 
-  logout() {
-    if (this.hasStorage()) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('refreshToken');
-    }
-  }
-
   isLoggedIn(): boolean {
     if (!this.hasStorage()) return false;
     
