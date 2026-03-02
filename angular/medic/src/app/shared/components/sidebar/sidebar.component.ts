@@ -14,8 +14,8 @@ export class SidebarComponent implements OnInit {
   // Permanent sidebar - no toggle needed
 
   userInfo = {
-    name: 'John Doe',
-    email: 'john.doe@example.com',
+    name: '',
+    email: '',
     role: 'Patient',
     avatar: ''
   };
@@ -34,6 +34,10 @@ export class SidebarComponent implements OnInit {
     this.themeService.isDarkMode$.subscribe((isDark: boolean) => {
       this.isDarkMode = isDark;
     });
+    
+    // Reload user info after a short delay to catch dashboard data
+    setTimeout(() => this.loadUserInfo(), 500);
+    setTimeout(() => this.loadUserInfo(), 1500);
   }
 
   loadUserInfo() {
@@ -47,11 +51,13 @@ export class SidebarComponent implements OnInit {
     
     // Try to construct full name from firstName and lastName
     if (firstName && lastName) {
-      this.userInfo.name = `${firstName} ${lastName}`;
+      this.userInfo.name = `${firstName} ${lastName}`.trim();
     } else if (userName) {
       this.userInfo.name = userName;
     } else if (firstName) {
       this.userInfo.name = firstName;
+    } else {
+      this.userInfo.name = 'Patient';
     }
   }
 
