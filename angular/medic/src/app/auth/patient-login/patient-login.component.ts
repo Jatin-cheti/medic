@@ -70,7 +70,7 @@ export class PatientLoginComponent implements OnInit {
   loginWithGoogle() {
     this.isLoading = true;
     this.errorMessage = '';
-    
+
     // Prompt user for email to test Google login
     const email = prompt('Enter email for Google login test:');
     if (!email) {
