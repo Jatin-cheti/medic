@@ -16,7 +16,7 @@ const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '24h';
 const JWT_REFRESH_SECRET = (process.env.JWT_REFRESH_SECRET || 'refresh_secret_change_me') as unknown as jwt.Secret;
 const JWT_REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN || '7d';
 
-type RoleName = 'patient' | 'doctor' | 'admin';
+type RoleName = 'patient' | 'doctor' | 'admin' | 'super_admin';
 
 function normalizeEmail(email?: string): string | null {
   if (!email) return null;

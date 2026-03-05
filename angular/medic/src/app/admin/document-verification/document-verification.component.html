@@ -1,0 +1,112 @@
+<div class="list-page">
+  <div class="list-header">
+    <div>
+      <h1>Document Verification</h1>
+      <p>{{ total }} document(s) matching current filter</p>
+    </div>
+  </div>
+
+  <!-- Status filter tabs -->
+  <div class="status-tabs">
+    <button
+      *ngFor="let tab of statusTabs"
+      class="tab-btn"
+      [class.active]="statusFilter === tab.value"
+      (click)="setStatus(tab.value)"
+    >
+      {{ tab.label }}
+    </button>
+  </div>
+
+  <div *ngIf="actionError" class="error-state" style="margin-bottom:12px">⚠ {{ actionError }}</div>
+
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div><p>Loading…</p>
+  </div>
+
+  <div *ngIf="error" class="error-state">⚠ {{ error }}</div>
+
+  <div *ngIf="!isLoading && !error" class="data-table-wrapper">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Doctor</th>
+          <th>Email</th>
+          <th>Document Type</th>
+          <th>File</th>
+          <th>Status</th>
+          <th>Submitted</th>
+          <th *ngIf="statusFilter === 'pending' || statusFilter === 'all'">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let doc of documents; let i = index">
+          <td>{{ (page - 1) * limit + i + 1 }}</td>
+          <td>{{ doc.first_name }} {{ doc.last_name }}</td>
+          <td>{{ doc.email }}</td>
+          <td>{{ doc.document_type }}</td>
+          <td>
+            <a *ngIf="doc.file_url" [href]="doc.file_url" target="_blank" rel="noopener noreferrer">
+              View File ↗
+            </a>
+            <span *ngIf="!doc.file_url">—</span>
+          </td>
+          <td>
+            <span class="badge"
+              [class.pending]="doc.status === 'pending'"
+              [class.approved]="doc.status === 'approved'"
+              [class.rejected]="doc.status === 'rejected'"
+            >
+              {{ doc.status | titlecase }}
+            </span>
+          </td>
+          <td>{{ doc.created_at | date:'mediumDate' }}</td>
+          <td *ngIf="statusFilter === 'pending' || statusFilter === 'all'">
+            <ng-container *ngIf="doc.status === 'pending'">
+              <ng-container *ngIf="rejectingDocId !== doc.id">
+                <button class="btn btn-approve" (click)="approve(doc.id)" [disabled]="actionLoading">
+                  Approve
+                </button>
+                <button class="btn btn-reject" (click)="openReject(doc.id)" [disabled]="actionLoading">
+                  Reject
+                </button>
+              </ng-container>
+
+              <!-- Inline rejection form -->
+              <div *ngIf="rejectingDocId === doc.id" class="reject-inline">
+                <textarea
+                  rows="2"
+                  placeholder="Rejection reason…"
+                  [(ngModel)]="rejectionReason"
+                  class="reject-textarea"
+                ></textarea>
+                <div class="reject-actions">
+                  <button class="btn btn-reject" (click)="confirmReject()" [disabled]="actionLoading">
+                    Confirm Reject
+                  </button>
+                  <button class="btn" (click)="cancelReject()" [disabled]="actionLoading">
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </ng-container>
+            <span *ngIf="doc.status !== 'pending'" class="text-muted">—</span>
+          </td>
+        </tr>
+        <tr *ngIf="documents.length === 0">
+          <td [attr.colspan]="statusFilter === 'pending' || statusFilter === 'all' ? 8 : 7"
+              style="text-align:center;color:#999;padding:32px">
+            No documents found.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="pagination">
+      <button (click)="prevPage()" [disabled]="page <= 1">← Previous</button>
+      <span class="page-info">Page {{ page }} of {{ totalPages || 1 }}</span>
+      <button (click)="nextPage()" [disabled]="page * limit >= total">Next →</button>
+    </div>
+  </div>
+</div>

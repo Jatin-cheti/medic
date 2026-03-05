@@ -1,0 +1,67 @@
+<div class="list-page">
+  <div class="list-header">
+    <div>
+      <h1>Patients</h1>
+      <p>{{ total }} total registered patients</p>
+    </div>
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input
+        type="text"
+        placeholder="Search by name or email…"
+        [(ngModel)]="search"
+        (input)="onSearch()"
+      />
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div><p>Loading…</p>
+  </div>
+
+  <div *ngIf="error" class="error-state">⚠ {{ error }}</div>
+
+  <div *ngIf="!isLoading && !error" class="data-table-wrapper">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Status</th>
+          <th>Verified</th>
+          <th>Joined</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of patients; let i = index">
+          <td>{{ (page - 1) * limit + i + 1 }}</td>
+          <td>{{ p.first_name }} {{ p.last_name }}</td>
+          <td>{{ p.email }}</td>
+          <td>{{ p.phone || '—' }}</td>
+          <td>
+            <span class="badge" [class.active]="p.is_active && !p.is_suspended" [class.inactive]="!p.is_active || p.is_suspended">
+              {{ (!p.is_active || p.is_suspended) ? 'Suspended' : 'Active' }}
+            </span>
+          </td>
+          <td>
+            <span class="badge" [class.verified]="p.is_verified" [class.pending]="!p.is_verified">
+              {{ p.is_verified ? 'Yes' : 'No' }}
+            </span>
+          </td>
+          <td>{{ p.created_at | date:'mediumDate' }}</td>
+        </tr>
+        <tr *ngIf="patients.length === 0">
+          <td colspan="7" style="text-align:center;color:#999;padding:32px">No patients found.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="pagination">
+      <button (click)="prevPage()" [disabled]="page <= 1">← Previous</button>
+      <span class="page-info">Page {{ page }} of {{ totalPages || 1 }}</span>
+      <button (click)="nextPage()" [disabled]="page * limit >= total">Next →</button>
+    </div>
+  </div>
+</div>

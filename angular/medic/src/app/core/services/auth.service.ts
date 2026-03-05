@@ -283,8 +283,13 @@ export class AuthService {
   }
 
   logout() {
+    const role = this.getRole();
     this.clearAuthState();
-    this.router.navigate(['/patient-login']);
+    if (role === 'admin' || role === 'super_admin') {
+      this.router.navigate(['/admin-login']);
+    } else {
+      this.router.navigate(['/patient-login']);
+    }
   }
 
   getToken(): string | null {

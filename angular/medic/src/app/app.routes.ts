@@ -16,13 +16,20 @@ import { PaymentsComponent } from './pages/payments/payments.component';
 import { PrescriptionsComponent } from './pages/prescriptions/prescriptions.component';
 import { ChangePasswordComponent } from './pages/change-password/change-password.component';
 import { NotificationsComponent } from './pages/notifications/notifications.component';
-import { authGuard, noAuthGuard } from './core/guards/auth-guard';
+import { authGuard, noAuthGuard, adminGuard, superAdminGuard, adminNoAuthGuard } from './core/guards/auth-guard';
+import { AdminLoginComponent } from './admin/admin-login/admin-login.component';
+import { AdminLayoutComponent } from './admin/admin-layout/admin-layout.component';
+import { AdminDashboardComponent } from './admin/dashboard/dashboard.component';
+import { DoctorListComponent } from './admin/doctor-list/doctor-list.component';
+import { PatientListComponent } from './admin/patient-list/patient-list.component';
+import { DocumentVerificationComponent } from './admin/document-verification/document-verification.component';
+import { CreateAdminComponent } from './admin/create-admin/create-admin.component';
 
 export const routes: Routes = [
   // Root redirect
   { path: '', redirectTo: 'home', pathMatch: 'full' },
 
-  // Auth routes — redirect to /home if already logged in
+  // Patient / Doctor auth routes
   { path: 'login', component: LoginComponent, canActivate: [noAuthGuard] },
   { path: 'signup', component: PatientSignupComponent, canActivate: [noAuthGuard] },
   { path: 'patient-signup', component: PatientSignupComponent, canActivate: [noAuthGuard] },
@@ -31,7 +38,39 @@ export const routes: Routes = [
   { path: 'patient-login', component: PatientLoginComponent, canActivate: [noAuthGuard] },
   { path: 'auth/google-success', component: GoogleSuccessComponent },
 
-  // Protected routes with layout
+  // Admin login
+  { path: 'admin-login', component: AdminLoginComponent, canActivate: [adminNoAuthGuard] },
+
+  // Admin dashboard routes
+  {
+    path: 'admin',
+    component: AdminLayoutComponent,
+    canActivate: [adminGuard],
+    children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'dashboard', component: AdminDashboardComponent },
+      { path: 'doctors', component: DoctorListComponent },
+      { path: 'patients', component: PatientListComponent },
+      { path: 'documents', component: DocumentVerificationComponent },
+    ],
+  },
+
+  // Super Admin dashboard routes
+  {
+    path: 'super-admin',
+    component: AdminLayoutComponent,
+    canActivate: [superAdminGuard],
+    children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'dashboard', component: AdminDashboardComponent },
+      { path: 'doctors', component: DoctorListComponent },
+      { path: 'patients', component: PatientListComponent },
+      { path: 'documents', component: DocumentVerificationComponent },
+      { path: 'create-admin', component: CreateAdminComponent },
+    ],
+  },
+
+  // Protected patient/doctor routes with layout
   {
     path: '',
     component: LayoutComponent,
@@ -49,10 +88,10 @@ export const routes: Routes = [
       { path: 'payments', component: PaymentsComponent },
       { path: 'prescriptions', component: PrescriptionsComponent },
       { path: 'change-password', component: ChangePasswordComponent },
-      { path: 'notifications', component: NotificationsComponent }
-    ]
+      { path: 'notifications', component: NotificationsComponent },
+    ],
   },
 
   // Fallback
-  { path: '**', redirectTo: 'patient-login', pathMatch: 'full' }
+  { path: '**', redirectTo: 'patient-login', pathMatch: 'full' },
 ];

@@ -1,0 +1,173 @@
+// Shared admin component styles
+$primary: #154E99;
+$primary-dark: #0d3a6d;
+$secondary: #7FB5FA;
+$light: #C2DCFF;
+$bg: #F0F0F2;
+$white: #fff;
+
+// Loading state
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px 20px;
+  color: #888;
+
+  .spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid $light;
+    border-top-color: $primary;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-bottom: 12px;
+  }
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+// Error state
+.error-state {
+  background: #fff5f5;
+  border: 1px solid #fed7d7;
+  border-radius: 10px;
+  padding: 14px 18px;
+  color: #c53030;
+  font-size: 14px;
+}
+
+// Badge helpers
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+
+  &.pending  { background: #FFF3CD; color: #856404; }
+  &.approved { background: #D1FAE5; color: #065F46; }
+  &.rejected { background: #FEE2E2; color: #991B1B; }
+  &.verified { background: #DBEAFE; color: $primary; }
+  &.active   { background: #D1FAE5; color: #065F46; }
+  &.inactive { background: #F3F4F6; color: #6B7280; }
+}
+
+// Search bar
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: $white;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0 14px;
+  height: 40px;
+  max-width: 320px;
+
+  input {
+    border: none;
+    outline: none;
+    font-size: 14px;
+    flex: 1;
+    background: transparent;
+  }
+
+  .search-icon { color: #aaa; }
+}
+
+// Data table
+.data-table-wrapper {
+  background: $white;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  overflow: hidden;
+}
+
+table.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+
+  thead tr {
+    background: $bg;
+    th {
+      padding: 12px 16px;
+      text-align: left;
+      font-weight: 600;
+      color: #555;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+  }
+
+  tbody tr {
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.1s;
+
+    &:hover { background: #fafafa; }
+    &:last-child { border-bottom: none; }
+
+    td { padding: 12px 16px; color: #333; vertical-align: middle; }
+  }
+}
+
+// Pagination
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 14px 16px;
+  border-top: 1px solid #f0f0f0;
+
+  button {
+    padding: 6px 14px;
+    border: 1px solid $light;
+    border-radius: 6px;
+    background: $white;
+    color: $primary;
+    font-size: 13px;
+    cursor: pointer;
+    font-weight: 600;
+
+    &:disabled { opacity: 0.4; cursor: not-allowed; }
+    &:not(:disabled):hover { background: $primary; color: $white; }
+  }
+
+  .page-info { font-size: 13px; color: #666; }
+}
+
+// List page layout
+.list-page {
+  max-width: 1200px;
+}
+
+.list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+
+  h1 { font-size: 22px; font-weight: 700; color: $primary-dark; margin: 0 0 4px; }
+  p  { font-size: 13px; color: #888; margin: 0; }
+}
+
+// Action buttons
+.btn { 
+  border: none;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+  &:not(:disabled):hover { opacity: 0.85; }
+}
+.btn-approve { background: #065F46; color: $white; }
+.btn-reject  { background: #991B1B; color: $white; }
+.btn-primary { background: $primary; color: $white; }

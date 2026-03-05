@@ -1,0 +1,62 @@
+@import '../admin-styles';
+
+.status-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.tab-btn {
+  padding: 8px 20px;
+  border-radius: 20px;
+  border: 1.5px solid #C2DCFF;
+  background: #fff;
+  color: #154E99;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &.active {
+    background: #154E99;
+    color: #fff;
+    border-color: #154E99;
+  }
+
+  &:hover:not(.active) {
+    background: #F0F5FF;
+  }
+}
+
+.reject-inline {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 300px;
+}
+
+.reject-textarea {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1.5px solid #C2DCFF;
+  border-radius: 6px;
+  font-size: 13px;
+  resize: none;
+  font-family: inherit;
+
+  &:focus {
+    outline: none;
+    border-color: #154E99;
+  }
+}
+
+.reject-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.text-muted {
+  color: #aaa;
+  font-size: 13px;
+}

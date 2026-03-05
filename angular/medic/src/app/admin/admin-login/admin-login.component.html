@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Medic - Admin Login</title>
+</head>
+<body>
+<div class="background">
+  <div class="login-wrapper">
+    <div class="left-section">
+      <div class="header">
+        <img class="logo" src="logo.svg" alt="Medic Logo">
+        <h1 class="title">Medic Admin</h1>
+      </div>
+      <div class="welcome-content">
+        <h2>Admin Portal</h2>
+        <p>Manage the platform, verify doctors and oversee all activity.</p>
+        <div class="features">
+          <div class="feature"><span class="icon">✓</span><span>Doctor Verification</span></div>
+          <div class="feature"><span class="icon">✓</span><span>User Management</span></div>
+          <div class="feature"><span class="icon">✓</span><span>Document Approval</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="right-section">
+      <div class="login-container">
+        <h3 class="login-title">Admin Login</h3>
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <div class="input-wrapper">
+              <span class="input-icon">✉</span>
+              <input
+                type="email"
+                id="email"
+                formControlName="email"
+                placeholder="admin@medic.com"
+                autocomplete="email"
+              />
+            </div>
+            <span class="field-error" *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
+              Valid email is required
+            </span>
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            <div class="input-wrapper">
+              <span class="input-icon">🔒</span>
+              <input
+                [type]="showPassword ? 'text' : 'password'"
+                id="password"
+                formControlName="password"
+                placeholder="Enter your password"
+                autocomplete="current-password"
+              />
+              <button type="button" class="toggle-pw" (click)="togglePassword()">
+                {{ showPassword ? 'Hide' : 'Show' }}
+              </button>
+            </div>
+          </div>
+
+          <div class="error-banner" *ngIf="errorMessage">
+            <span>⚠ {{ errorMessage }}</span>
+          </div>
+
+          <button
+            type="submit"
+            class="login-btn"
+            [disabled]="isLoading || form.invalid"
+          >
+            <span *ngIf="isLoading">Signing in…</span>
+            <span *ngIf="!isLoading">Sign In</span>
+          </button>
+        </form>
+
+        <p class="back-link">
+          Not an admin? <a href="/patient-login">Patient Login</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

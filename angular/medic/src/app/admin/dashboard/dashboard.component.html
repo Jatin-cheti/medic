@@ -1,0 +1,73 @@
+<div class="dashboard-page">
+  <div class="page-header">
+    <h1>Dashboard Overview</h1>
+    <p>Welcome to the {{ isSuperAdmin ? 'Super Admin' : 'Admin' }} control panel</p>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading statistics…</p>
+  </div>
+
+  <div *ngIf="error" class="error-state">⚠ {{ error }}</div>
+
+  <div *ngIf="!isLoading && !error" class="stats-grid">
+    <div class="stat-card blue" [routerLink]="basePath + '/doctors'">
+      <div class="stat-icon">👨‍⚕️</div>
+      <div class="stat-body">
+        <div class="stat-value">{{ stats.doctors }}</div>
+        <div class="stat-label">Total Doctors</div>
+      </div>
+      <div class="stat-arrow">→</div>
+    </div>
+
+    <div class="stat-card green" [routerLink]="basePath + '/patients'">
+      <div class="stat-icon">🏥</div>
+      <div class="stat-body">
+        <div class="stat-value">{{ stats.patients }}</div>
+        <div class="stat-label">Total Patients</div>
+      </div>
+      <div class="stat-arrow">→</div>
+    </div>
+
+    <div class="stat-card orange" [routerLink]="basePath + '/documents'">
+      <div class="stat-icon">📄</div>
+      <div class="stat-body">
+        <div class="stat-value">{{ stats.pendingDocuments }}</div>
+        <div class="stat-label">Pending Documents</div>
+      </div>
+      <div class="stat-arrow">→</div>
+    </div>
+
+    <div class="stat-card purple" *ngIf="isSuperAdmin" [routerLink]="basePath + '/create-admin'">
+      <div class="stat-icon">🛡️</div>
+      <div class="stat-body">
+        <div class="stat-value">{{ stats.admins ?? 0 }}</div>
+        <div class="stat-label">Admins</div>
+      </div>
+      <div class="stat-arrow">→</div>
+    </div>
+  </div>
+
+  <div class="quick-actions" *ngIf="!isLoading">
+    <h2>Quick Actions</h2>
+    <div class="actions-grid">
+      <a class="action-card" [routerLink]="basePath + '/documents'">
+        <span class="action-icon">✅</span>
+        <span>Verify Documents</span>
+      </a>
+      <a class="action-card" [routerLink]="basePath + '/doctors'">
+        <span class="action-icon">🔍</span>
+        <span>View Doctors</span>
+      </a>
+      <a class="action-card" [routerLink]="basePath + '/patients'">
+        <span class="action-icon">👥</span>
+        <span>View Patients</span>
+      </a>
+      <a class="action-card" *ngIf="isSuperAdmin" [routerLink]="basePath + '/create-admin'">
+        <span class="action-icon">➕</span>
+        <span>Create Admin</span>
+      </a>
+    </div>
+  </div>
+</div>

@@ -7,6 +7,7 @@ import { initSocket } from './websocket';
 import authRouter from './routes/auth';
 import dashboardRouter from './routes/dashboard';
 import profileRouter from './routes/profile';
+import adminRouter, { ensureAdminRoles } from './routes/admin';
 import { initSequelize } from './services/sequelize';
 import { initMongo } from './services/mongo';
 import { errorHandler, notFoundHandler } from './middleware/error-handler';
@@ -66,6 +67,7 @@ app.use('/api/auth', authRouter);
 app.use('/auth', authRouter);
 app.use('/api/patient', dashboardRouter);
 app.use('/api/profile', profileRouter);
+app.use('/api/admin', adminRouter);
 app.use(notFoundHandler);
 app.use(errorHandler);
 
@@ -74,6 +76,7 @@ const server = http.createServer(app);
 async function start() {
   try {
     await initSequelize();
+    await ensureAdminRoles(); // Ensure super_admin role exists
     await initMongo(); // MongoDB is now optional - won't crash if unavailable
   } catch (err) {
     console.error('DB init failed', err);
