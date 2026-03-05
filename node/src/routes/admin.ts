@@ -70,7 +70,7 @@ router.post('/login', async (req: Request, res: Response) => {
 
     const user = users[0];
     if (!user) return res.status(401).json({ error: 'invalid credentials' });
-    if (!user.is_active || user.is_suspended) {
+    if (Number(user.is_active) !== 1 || Number(user.is_suspended) === 1) {
       return res.status(403).json({ error: 'account disabled' });
     }
 
