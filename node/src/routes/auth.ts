@@ -89,7 +89,7 @@ async function createUser(params: {
   gender?: string | null;
   preferredLanguage?: string;
   googleId?: string;
-}) {
+}, transaction?: Transaction) {
   const roleId = await getRoleId(params.role);
   const passwordHash = params.password ? await bcrypt.hash(params.password, 10) : null;
   const now = new Date();
@@ -121,6 +121,7 @@ async function createUser(params: {
         updatedAt: now,
       },
       type: QueryTypes.INSERT,
+      transaction,
     }
   ) as any;
 
@@ -133,6 +134,7 @@ async function createUser(params: {
     {
       replacements: { id: insertedId },
       type: QueryTypes.SELECT,
+      transaction,
     }
   ) as Array<any>;
 
@@ -607,7 +609,7 @@ router.post('/doctor/signup', async (req, res) => {
         lastName,
         gender,
         preferredLanguage,
-      });
+      }, t);
 
       const now = new Date();
 
