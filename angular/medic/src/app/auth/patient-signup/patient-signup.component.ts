@@ -88,7 +88,7 @@ export class PatientSignupComponent implements OnInit {
       })
     ).subscribe({
       next: () => {
-        this.router.navigate(['/patient-login']);
+        this.router.navigateByUrl('/home', { replaceUrl: true });
       },
       error: (err) => {
         this.errorMessage = this.auth.getErrorMessage(err);

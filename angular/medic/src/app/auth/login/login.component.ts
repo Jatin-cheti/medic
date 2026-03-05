@@ -62,7 +62,7 @@ export class LoginComponent {
       })
     ).subscribe({
       next: () => {
-        this.router.navigate(['/home']);
+        this.router.navigateByUrl('/home', { replaceUrl: true });
       },
       error: (err) => {
         this.errorMessage = this.auth.getErrorMessage(err);

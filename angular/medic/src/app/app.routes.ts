@@ -16,26 +16,26 @@ import { PaymentsComponent } from './pages/payments/payments.component';
 import { PrescriptionsComponent } from './pages/prescriptions/prescriptions.component';
 import { ChangePasswordComponent } from './pages/change-password/change-password.component';
 import { NotificationsComponent } from './pages/notifications/notifications.component';
-import { AuthGuard } from './core/guards/auth-guard';
+import { authGuard, noAuthGuard } from './core/guards/auth-guard';
 
 export const routes: Routes = [
-  // Root redirect - will be handled by App component based on auth state
+  // Root redirect
   { path: '', redirectTo: 'home', pathMatch: 'full' },
-  
-  // Auth routes
-  { path: 'login', component: LoginComponent },
-  { path: 'signup', component: PatientSignupComponent },
-  { path: 'patient-signup', component: PatientSignupComponent },
-  { path: 'doctor-signup', component: DoctorSignupComponent },
-  { path: 'doctor-login', component: LoginComponent },
-  { path: 'patient-login', component: PatientLoginComponent },
+
+  // Auth routes — redirect to /home if already logged in
+  { path: 'login', component: LoginComponent, canActivate: [noAuthGuard] },
+  { path: 'signup', component: PatientSignupComponent, canActivate: [noAuthGuard] },
+  { path: 'patient-signup', component: PatientSignupComponent, canActivate: [noAuthGuard] },
+  { path: 'doctor-signup', component: DoctorSignupComponent, canActivate: [noAuthGuard] },
+  { path: 'doctor-login', component: LoginComponent, canActivate: [noAuthGuard] },
+  { path: 'patient-login', component: PatientLoginComponent, canActivate: [noAuthGuard] },
   { path: 'auth/google-success', component: GoogleSuccessComponent },
 
   // Protected routes with layout
   {
     path: '',
     component: LayoutComponent,
-    canActivate: [AuthGuard],
+    canActivate: [authGuard],
     children: [
       { path: 'home', component: HomeScreenComponent },
       { path: 'dashboard', redirectTo: 'home', pathMatch: 'full' },
@@ -53,6 +53,6 @@ export const routes: Routes = [
     ]
   },
 
-  // Fallback for unknown routes
-  { path: '**', redirectTo: 'home', pathMatch: 'full' }
+  // Fallback
+  { path: '**', redirectTo: 'patient-login', pathMatch: 'full' }
 ];

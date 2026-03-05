@@ -1,28 +1,32 @@
-import { Injectable } from '@angular/core';
-import { CanActivate, Router, UrlTree } from '@angular/router';
+import { inject } from '@angular/core';
+import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { Observable } from 'rxjs';
 
-@Injectable({ providedIn: 'root' })
-export class AuthGuard implements CanActivate {
+/** Protects routes that require authentication. */
+export const authGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
 
-  constructor(private auth: AuthService, private router: Router) {}
-
-  canActivate(): boolean | UrlTree | Observable<boolean | UrlTree> {
-    const isLoggedIn = this.auth.isLoggedIn();
-    
-    console.log('🛡️ AuthGuard - checking authentication:', {
-      isLoggedIn,
-      hasToken: !!this.auth.getToken(),
-      currentUrl: this.router.url
-    });
-    
-    if (isLoggedIn) {
-      return true;
-    }
-
-    // Redirect to patient login (default login page)
-    console.warn('❌ AuthGuard: User not authenticated, redirecting to patient-login');
-    return this.router.createUrlTree(['/patient-login']);
+  if (auth.isLoggedIn()) {
+    return true;
   }
+
+  return router.createUrlTree(['/patient-login']);
+};
+
+/** Prevents authenticated users from accessing login/signup pages. */
+export const noAuthGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+
+  if (auth.isLoggedIn()) {
+    return router.createUrlTree(['/home']);
+  }
+
+  return true;
+};
+
+/** @deprecated Use authGuard functional guard instead */
+export class AuthGuard {
+  static canActivate = authGuard;
 }

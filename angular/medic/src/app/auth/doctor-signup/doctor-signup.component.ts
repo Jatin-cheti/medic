@@ -140,7 +140,7 @@ export class DoctorSignupComponent implements OnInit {
         })
       ).subscribe({
         next: () => {
-          this.router.navigate(['/doctor-login']);
+          this.router.navigateByUrl('/home', { replaceUrl: true });
         },
         error: (err) => {
           this.errorMessage = this.auth.getErrorMessage(err);
