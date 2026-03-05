@@ -45,12 +45,13 @@ $white: #fff;
   font-size: 12px;
   font-weight: 600;
 
-  &.pending  { background: #FFF3CD; color: #856404; }
-  &.approved { background: #D1FAE5; color: #065F46; }
-  &.rejected { background: #FEE2E2; color: #991B1B; }
-  &.verified { background: #DBEAFE; color: $primary; }
-  &.active   { background: #D1FAE5; color: #065F46; }
-  &.inactive { background: #F3F4F6; color: #6B7280; }
+  &.pending            { background: #FFF3CD; color: #856404; }
+  &.approved           { background: #D1FAE5; color: #065F46; }
+  &.rejected           { background: #FEE2E2; color: #991B1B; }
+  &.changes_requested  { background: #EDE9FE; color: #5B21B6; }
+  &.verified           { background: #DBEAFE; color: $primary; }
+  &.active             { background: #D1FAE5; color: #065F46; }
+  &.inactive           { background: #F3F4F6; color: #6B7280; }
 }
 
 // Search bar

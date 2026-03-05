@@ -24,6 +24,8 @@ import { DoctorListComponent } from './admin/doctor-list/doctor-list.component';
 import { PatientListComponent } from './admin/patient-list/patient-list.component';
 import { DocumentVerificationComponent } from './admin/document-verification/document-verification.component';
 import { CreateAdminComponent } from './admin/create-admin/create-admin.component';
+import { DoctorDetailComponent } from './admin/doctor-detail/doctor-detail.component';
+import { AdminSymptomCheckerComponent } from './admin/symptom-checker/symptom-checker.component';
 
 export const routes: Routes = [
   // Root redirect
@@ -50,8 +52,10 @@ export const routes: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: AdminDashboardComponent },
       { path: 'doctors', component: DoctorListComponent },
+      { path: 'doctors/:id', component: DoctorDetailComponent },
       { path: 'patients', component: PatientListComponent },
       { path: 'documents', component: DocumentVerificationComponent },
+      { path: 'symptom-checker', component: AdminSymptomCheckerComponent },
     ],
   },
 
@@ -64,9 +68,11 @@ export const routes: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: AdminDashboardComponent },
       { path: 'doctors', component: DoctorListComponent },
+      { path: 'doctors/:id', component: DoctorDetailComponent },
       { path: 'patients', component: PatientListComponent },
       { path: 'documents', component: DocumentVerificationComponent },
       { path: 'create-admin', component: CreateAdminComponent },
+      { path: 'symptom-checker', component: AdminSymptomCheckerComponent },
     ],
   },
 

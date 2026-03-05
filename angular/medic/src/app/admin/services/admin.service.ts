@@ -40,6 +40,20 @@ export class AdminService {
     return this.http.post(`${this.api}/documents/${id}/reject`, { reason });
   }
 
+  requestChanges(id: number, notes: string): Observable<any> {
+    return this.http.post(`${this.api}/documents/${id}/request-changes`, { notes });
+  }
+
+  getDoctorById(id: number): Observable<any> {
+    return this.http.get(`${this.api}/doctors/${id}`);
+  }
+
+  getDoctorDocuments(doctorId: number): Observable<any> {
+    return this.http.get(`${this.api}/doctor-documents`, {
+      params: new HttpParams().set('doctorId', String(doctorId)).set('status', 'all'),
+    });
+  }
+
   createAdmin(data: { email: string; password: string; firstName: string; lastName: string }): Observable<any> {
     return this.http.post(`${this.api}/super/create-admin`, data);
   }

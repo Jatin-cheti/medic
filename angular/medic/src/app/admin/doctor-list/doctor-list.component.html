@@ -28,31 +28,42 @@
           <th>#</th>
           <th>Name</th>
           <th>Email</th>
-          <th>Phone</th>
           <th>Reg. Number</th>
           <th>Status</th>
-          <th>Verified</th>
+          <th>Verification</th>
           <th>Joined</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let doc of doctors; let i = index">
           <td>{{ (page - 1) * limit + i + 1 }}</td>
-          <td>{{ doc.first_name }} {{ doc.last_name }}</td>
+          <td class="name-cell">
+            <div class="doctor-avatar">{{ doc.first_name?.[0] }}{{ doc.last_name?.[0] }}</div>
+            <span>{{ doc.first_name }} {{ doc.last_name }}</span>
+          </td>
           <td>{{ doc.email || '—' }}</td>
-          <td>{{ doc.phone || '—' }}</td>
           <td>{{ doc.registration_number || '—' }}</td>
           <td>
-            <span class="badge" [class.active]="doc.is_active && !doc.is_suspended" [class.inactive]="!doc.is_active || doc.is_suspended">
-              {{ (!doc.is_active || doc.is_suspended) ? 'Suspended' : 'Active' }}
+            <span class="badge"
+              [class.active]="isActive(doc)"
+              [class.inactive]="!isActive(doc)">
+              {{ isActive(doc) ? 'Active' : 'Suspended' }}
             </span>
           </td>
           <td>
-            <span class="badge" [class.verified]="doc.doc_verified" [class.pending]="!doc.doc_verified">
+            <span class="badge"
+              [class.verified]="doc.doc_verified"
+              [class.pending]="!doc.doc_verified">
               {{ doc.doc_verified ? 'Verified' : 'Pending' }}
             </span>
           </td>
           <td>{{ doc.created_at | date:'mediumDate' }}</td>
+          <td>
+            <button class="btn-profile" [routerLink]="[doc.id]">
+              View Profile →
+            </button>
+          </td>
         </tr>
         <tr *ngIf="doctors.length === 0">
           <td colspan="8" style="text-align:center;color:#999;padding:32px">No doctors found.</td>

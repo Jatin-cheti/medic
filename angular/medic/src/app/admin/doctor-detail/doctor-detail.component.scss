@@ -1,0 +1,200 @@
+@import '../admin-styles';
+
+.detail-page {
+  max-width: 960px;
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: $primary;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 20px;
+
+  &:hover { text-decoration: underline; }
+}
+
+// ── Profile Card ─────────────────────────────────────────────
+.profile-card {
+  background: $white;
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.profile-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, $primary, $primary-dark);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 700;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+.profile-info {
+  flex: 1;
+  min-width: 200px;
+
+  h1 { font-size: 22px; font-weight: 700; color: $primary-dark; margin: 0 0 4px; }
+  .profile-email { font-size: 14px; color: #666; margin: 0 0 2px; }
+  .profile-phone { font-size: 14px; color: #666; margin: 0 0 10px; }
+  .profile-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+}
+
+.profile-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+
+  .meta-item {
+    display: flex;
+    flex-direction: column;
+    min-width: 110px;
+  }
+  .meta-label { font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.05em; }
+  .meta-value  { font-size: 14px; font-weight: 600; color: $primary-dark; }
+}
+
+// ── Section Cards ─────────────────────────────────────────────
+.section-card {
+  background: $white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  margin-bottom: 20px;
+}
+
+.section-heading {
+  font-size: 16px;
+  font-weight: 700;
+  color: $primary-dark;
+  margin: 0 0 16px;
+}
+
+// Specialties
+.specialty-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.specialty-chip {
+  background: #EBF4FF;
+  color: $primary;
+  padding: 4px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+// Empty state
+.empty-state {
+  text-align: center;
+  color: #999;
+  padding: 24px;
+  font-size: 14px;
+}
+
+// File link
+.file-link {
+  color: $primary;
+  font-weight: 600;
+  text-decoration: none;
+  &:hover { text-decoration: underline; }
+}
+
+// Status note
+.reason-note {
+  font-size: 11px;
+  color: #999;
+  margin-top: 4px;
+  max-width: 200px;
+  word-break: break-word;
+}
+
+// Action area
+.action-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.action-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 200px;
+}
+
+.action-form-btns {
+  display: flex;
+  gap: 6px;
+}
+
+.action-textarea {
+  width: 100%;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 13px;
+  resize: vertical;
+  outline: none;
+  font-family: inherit;
+
+  &:focus { border-color: $primary; }
+}
+
+// Buttons
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+  font-family: inherit;
+
+  &:disabled { opacity: 0.55; pointer-events: none; }
+  &:active { transform: scale(0.97); }
+}
+
+.btn-sm {
+  padding: 5px 12px;
+  font-size: 12px;
+}
+
+.btn-approve  { background: #D1FAE5; color: #065F46; &:hover { background: #A7F3D0; } }
+.btn-reject   { background: #FEE2E2; color: #991B1B; &:hover { background: #FECACA; } }
+.btn-request  { background: #EDE9FE; color: #5B21B6; &:hover { background: #DDD6FE; } }
+.btn-danger   { background: #EF4444; color: #fff;    &:hover { background: #DC2626; } }
+
+.text-muted { color: #bbb; font-size: 13px; }
+
+// Success banner
+.success-state {
+  background: #D1FAE5;
+  border: 1px solid #6EE7B7;
+  border-radius: 10px;
+  padding: 12px 16px;
+  color: #065F46;
+  font-size: 14px;
+  margin-bottom: 12px;
+}

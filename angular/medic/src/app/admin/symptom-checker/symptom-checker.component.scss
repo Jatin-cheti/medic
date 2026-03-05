@@ -1,0 +1,86 @@
+@import '../admin-styles';
+
+.sc-page {
+  max-width: 960px;
+}
+
+.page-header {
+  margin-bottom: 28px;
+  h1 { font-size: 24px; font-weight: 700; color: $primary-dark; margin: 0 0 6px; }
+  p  { color: #666; margin: 0; }
+}
+
+.sc-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 18px;
+  margin-bottom: 28px;
+}
+
+.sc-stat-card {
+  background: $white;
+  border-radius: 14px;
+  padding: 22px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.sc-stat-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 13px;
+  background: #EBF4FF;
+  color: $primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  &.ai    { background: #FEF3C7; color: #D97706; }
+  &.today { background: #D1FAE5; color: #059669; }
+}
+
+.sc-stat-body {
+  .sc-stat-value {
+    font-size: 26px;
+    font-weight: 700;
+    color: $primary-dark;
+    line-height: 1;
+  }
+  .sc-stat-label {
+    font-size: 13px;
+    color: #666;
+    margin-top: 4px;
+  }
+}
+
+// Coming soon card
+.coming-soon-card {
+  background: $white;
+  border-radius: 16px;
+  padding: 48px 32px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  text-align: center;
+
+  .coming-soon-icon {
+    color: $secondary;
+    margin-bottom: 20px;
+  }
+
+  h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: $primary-dark;
+    margin: 0 0 12px;
+  }
+
+  p {
+    font-size: 14px;
+    color: #6b7280;
+    max-width: 480px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+}

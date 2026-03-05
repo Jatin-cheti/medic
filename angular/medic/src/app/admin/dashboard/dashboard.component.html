@@ -1,73 +1,122 @@
-<div class="dashboard-page">
-  <div class="page-header">
-    <h1>Dashboard Overview</h1>
-    <p>Welcome to the {{ isSuperAdmin ? 'Super Admin' : 'Admin' }} control panel</p>
-  </div>
-
-  <div *ngIf="isLoading" class="loading-state">
-    <div class="spinner"></div>
-    <p>Loading statistics…</p>
-  </div>
-
-  <div *ngIf="error" class="error-state">⚠ {{ error }}</div>
-
-  <div *ngIf="!isLoading && !error" class="stats-grid">
-    <div class="stat-card blue" [routerLink]="basePath + '/doctors'">
-      <div class="stat-icon">👨‍⚕️</div>
-      <div class="stat-body">
-        <div class="stat-value">{{ stats.doctors }}</div>
-        <div class="stat-label">Total Doctors</div>
+<div class="sa-dashboard">
+  <!-- Hero Banner -->
+  <section class="sa-hero">
+    <div class="sa-hero-inner">
+      <div class="sa-greeting">
+        <h1>Welcome back, <span class="highlight">{{ userName }}</span>! 👋</h1>
+        <p>{{ isSuperAdmin ? 'Super Admin' : 'Admin' }} Control Panel &bull; Medic Platform</p>
       </div>
-      <div class="stat-arrow">→</div>
-    </div>
 
-    <div class="stat-card green" [routerLink]="basePath + '/patients'">
-      <div class="stat-icon">🏥</div>
-      <div class="stat-body">
-        <div class="stat-value">{{ stats.patients }}</div>
-        <div class="stat-label">Total Patients</div>
+      <div class="sa-stats" *ngIf="!isLoading">
+        <div class="sa-stat">
+          <div class="sa-stat-value">{{ stats.doctors }}</div>
+          <div class="sa-stat-label">Doctors</div>
+        </div>
+        <div class="sa-stat">
+          <div class="sa-stat-value">{{ stats.patients }}</div>
+          <div class="sa-stat-label">Patients</div>
+        </div>
+        <div class="sa-stat">
+          <div class="sa-stat-value">{{ stats.pendingDocuments }}</div>
+          <div class="sa-stat-label">Pending Docs</div>
+        </div>
+        <div class="sa-stat" *ngIf="isSuperAdmin">
+          <div class="sa-stat-value">{{ stats.admins ?? 0 }}</div>
+          <div class="sa-stat-label">Admins</div>
+        </div>
       </div>
-      <div class="stat-arrow">→</div>
+    </div>
+  </section>
+
+  <div *ngIf="error" class="error-state">&#9888; {{ error }}</div>
+
+  <!-- Action Cards Grid -->
+  <section class="sa-cards-section">
+    <div class="sa-section-header">
+      <h2>Quick Actions</h2>
+      <p>Manage the platform from here</p>
     </div>
 
-    <div class="stat-card orange" [routerLink]="basePath + '/documents'">
-      <div class="stat-icon">📄</div>
-      <div class="stat-body">
-        <div class="stat-value">{{ stats.pendingDocuments }}</div>
-        <div class="stat-label">Pending Documents</div>
-      </div>
-      <div class="stat-arrow">→</div>
-    </div>
+    <div class="sa-cards-grid">
+      <!-- Patients Card -->
+      <button class="sa-card" [routerLink]="basePath + '/patients'">
+        <div class="sa-card-icon patients">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+        </div>
+        <div class="sa-card-content">
+          <h3>Patients</h3>
+          <p>View and manage all patients</p>
+        </div>
+        <div class="sa-card-count">{{ stats.patients }}</div>
+      </button>
 
-    <div class="stat-card purple" *ngIf="isSuperAdmin" [routerLink]="basePath + '/create-admin'">
-      <div class="stat-icon">🛡️</div>
-      <div class="stat-body">
-        <div class="stat-value">{{ stats.admins ?? 0 }}</div>
-        <div class="stat-label">Admins</div>
-      </div>
-      <div class="stat-arrow">→</div>
-    </div>
-  </div>
+      <!-- Doctors Card -->
+      <button class="sa-card" [routerLink]="basePath + '/doctors'">
+        <div class="sa-card-icon doctors">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </div>
+        <div class="sa-card-content">
+          <h3>Doctors</h3>
+          <p>Search, verify and manage doctors</p>
+        </div>
+        <div class="sa-card-count">{{ stats.doctors }}</div>
+      </button>
 
-  <div class="quick-actions" *ngIf="!isLoading">
-    <h2>Quick Actions</h2>
-    <div class="actions-grid">
-      <a class="action-card" [routerLink]="basePath + '/documents'">
-        <span class="action-icon">✅</span>
-        <span>Verify Documents</span>
-      </a>
-      <a class="action-card" [routerLink]="basePath + '/doctors'">
-        <span class="action-icon">🔍</span>
-        <span>View Doctors</span>
-      </a>
-      <a class="action-card" [routerLink]="basePath + '/patients'">
-        <span class="action-icon">👥</span>
-        <span>View Patients</span>
-      </a>
-      <a class="action-card" *ngIf="isSuperAdmin" [routerLink]="basePath + '/create-admin'">
-        <span class="action-icon">➕</span>
-        <span>Create Admin</span>
-      </a>
+      <!-- Verify Documents Card -->
+      <button class="sa-card" [routerLink]="basePath + '/documents'">
+        <div class="sa-card-icon documents">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+        </div>
+        <div class="sa-card-content">
+          <h3>Verify Documents</h3>
+          <p>Review pending doctor docs</p>
+        </div>
+        <div class="sa-card-count pending">{{ stats.pendingDocuments }}</div>
+      </button>
+
+      <!-- Create Admin Card (super_admin only) -->
+      <button class="sa-card" *ngIf="isSuperAdmin" [routerLink]="basePath + '/create-admin'">
+        <div class="sa-card-icon create-admin">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="8.5" cy="7" r="4"></circle>
+            <line x1="20" y1="8" x2="20" y2="14"></line>
+            <line x1="23" y1="11" x2="17" y2="11"></line>
+          </svg>
+        </div>
+        <div class="sa-card-content">
+          <h3>Create Admin</h3>
+          <p>Add a new admin account</p>
+        </div>
+        <div class="sa-card-count">{{ stats.admins ?? 0 }}</div>
+      </button>
+
+      <!-- Symptom Checker Card -->
+      <button class="sa-card" [routerLink]="basePath + '/symptom-checker'">
+        <div class="sa-card-icon symptom">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+        </div>
+        <div class="sa-card-content">
+          <h3>Symptom Checker</h3>
+          <p>AI usage analytics</p>
+        </div>
+      </button>
     </div>
-  </div>
+  </section>
 </div>

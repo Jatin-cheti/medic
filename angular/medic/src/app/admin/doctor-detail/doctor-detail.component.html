@@ -1,0 +1,144 @@
+<div class="detail-page">
+  <!-- Back button -->
+  <button class="back-btn" (click)="goBack()">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="15 18 9 12 15 6"></polyline>
+    </svg>
+    Back to Doctors
+  </button>
+
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div><p>Loading profile…</p>
+  </div>
+
+  <div *ngIf="error" class="error-state">⚠ {{ error }}</div>
+
+  <div *ngIf="!isLoading && doctor" class="detail-body">
+    <!-- Profile header card -->
+    <div class="profile-card">
+      <div class="profile-avatar">
+        {{ doctor.first_name?.[0] }}{{ doctor.last_name?.[0] }}
+      </div>
+      <div class="profile-info">
+        <h1>Dr. {{ doctor.first_name }} {{ doctor.last_name }}</h1>
+        <p class="profile-email">{{ doctor.email }}</p>
+        <p class="profile-phone" *ngIf="doctor.phone">{{ doctor.phone }}</p>
+        <div class="profile-badges">
+          <span class="badge" [class.active]="isActive" [class.inactive]="!isActive">
+            {{ isActive ? 'Active' : 'Suspended' }}
+          </span>
+          <span class="badge" [class.verified]="isVerified" [class.pending]="!isVerified">
+            {{ isVerified ? 'Verified' : 'Pending Verification' }}
+          </span>
+        </div>
+      </div>
+      <div class="profile-meta">
+        <div class="meta-item" *ngIf="doctor.registration_number">
+          <span class="meta-label">Reg. Number</span>
+          <span class="meta-value">{{ doctor.registration_number }}</span>
+        </div>
+        <div class="meta-item" *ngIf="doctor.years_of_experience">
+          <span class="meta-label">Experience</span>
+          <span class="meta-value">{{ doctor.years_of_experience }} years</span>
+        </div>
+        <div class="meta-item" *ngIf="doctor.consultation_fee">
+          <span class="meta-label">Consultation Fee</span>
+          <span class="meta-value">₹{{ doctor.consultation_fee }}</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Joined</span>
+          <span class="meta-value">{{ doctor.created_at | date:'mediumDate' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Specialties -->
+    <div class="section-card" *ngIf="specialties.length > 0">
+      <h2 class="section-heading">Specialties</h2>
+      <div class="specialty-chips">
+        <span class="specialty-chip" *ngFor="let s of specialties">{{ s.name }}</span>
+      </div>
+    </div>
+
+    <!-- Success / Error banners -->
+    <div class="success-state" *ngIf="successMessage">✔ {{ successMessage }}</div>
+    <div class="error-state" *ngIf="actionError">⚠ {{ actionError }}</div>
+
+    <!-- Documents table -->
+    <div class="section-card">
+      <h2 class="section-heading">Uploaded Documents</h2>
+
+      <div *ngIf="documents.length === 0" class="empty-state">No documents uploaded yet.</div>
+
+      <div *ngIf="documents.length > 0" class="data-table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Document Type</th>
+              <th>File</th>
+              <th>Status</th>
+              <th>Submitted</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let doc of documents; let i = index">
+              <td>{{ i + 1 }}</td>
+              <td>{{ doc.document_type }}</td>
+              <td>
+                <a *ngIf="doc.file_url" [href]="doc.file_url" target="_blank" rel="noopener noreferrer"
+                   class="file-link">View ↗</a>
+                <span *ngIf="!doc.file_url">—</span>
+              </td>
+              <td>
+                <span class="badge" [ngClass]="statusClass(doc.status)">
+                  {{ doc.status | titlecase }}
+                </span>
+                <div *ngIf="doc.rejection_reason" class="reason-note">
+                  Note: {{ doc.rejection_reason }}
+                </div>
+              </td>
+              <td>{{ doc.created_at | date:'mediumDate' }}</td>
+              <td>
+                <!-- Action form for reject / request-changes -->
+                <ng-container *ngIf="requestingDoc?.id === doc.id; else actionBtns">
+                  <div class="action-form">
+                    <textarea
+                      rows="2"
+                      [placeholder]="requestingDoc?.mode === 'reject' ? 'Rejection reason…' : 'Describe required changes…'"
+                      [(ngModel)]="actionNotes"
+                      class="action-textarea"
+                    ></textarea>
+                    <div class="action-form-btns">
+                      <button class="btn btn-sm btn-danger" (click)="confirmAction()" [disabled]="actionLoading">
+                        {{ requestingDoc?.mode === 'reject' ? 'Reject' : 'Request Changes' }}
+                      </button>
+                      <button class="btn btn-sm" (click)="cancelAction()" [disabled]="actionLoading">Cancel</button>
+                    </div>
+                  </div>
+                </ng-container>
+
+                <ng-template #actionBtns>
+                  <div class="action-btns" *ngIf="doc.status === 'pending' || doc.status === 'changes_requested'">
+                    <button class="btn btn-sm btn-approve" (click)="approve(doc.id)" [disabled]="actionLoading">
+                      Approve
+                    </button>
+                    <button class="btn btn-sm btn-reject" (click)="openAction(doc.id, 'reject')" [disabled]="actionLoading">
+                      Reject
+                    </button>
+                    <button class="btn btn-sm btn-request" (click)="openAction(doc.id, 'request')" [disabled]="actionLoading">
+                      Request Changes
+                    </button>
+                  </div>
+                  <span *ngIf="doc.status === 'approved' || doc.status === 'rejected'" class="text-muted">—</span>
+                </ng-template>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

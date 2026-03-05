@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { AdminService } from '../services/admin.service';
 import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-doctor-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './doctor-list.component.html',
   styleUrls: ['./doctor-list.component.scss'],
 })
@@ -64,5 +65,9 @@ export class DoctorListComponent implements OnInit {
 
   get totalPages() {
     return Math.ceil(this.total / this.limit);
+  }
+
+  isActive(doc: any): boolean {
+    return Number(doc.is_active) === 1 && Number(doc.is_suspended) !== 1;
   }
 }

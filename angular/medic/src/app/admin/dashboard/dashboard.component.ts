@@ -31,6 +31,11 @@ export class AdminDashboardComponent implements OnInit {
     return this.isSuperAdmin ? '/super-admin' : '/admin';
   }
 
+  get userName(): string {
+    const user = this.auth.getUserFromToken();
+    return user?.email?.split('@')[0] || 'Admin';
+  }
+
   constructor(private adminService: AdminService, private auth: AuthService) {}
 
   ngOnInit() {

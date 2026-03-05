@@ -27,6 +27,10 @@ export async function ensureAdminRoles(): Promise<void> {
     await sequelize.query(
       `ALTER TABLE roles MODIFY COLUMN name ENUM('patient','doctor','admin','super_admin') NOT NULL`
     );
+    // Extend doctor_documents status ENUM to include changes_requested
+    await sequelize.query(
+      `ALTER TABLE doctor_documents MODIFY COLUMN status ENUM('pending','approved','rejected','changes_requested') NOT NULL DEFAULT 'pending'`
+    );
     // Insert super_admin role if missing
     const existing = await sequelize.query(
       "SELECT id FROM roles WHERE name = 'super_admin' LIMIT 1",
@@ -154,6 +158,59 @@ router.get('/stats', verifyToken, verifyRole(['admin', 'super_admin']), async (r
 });
 
 // ─────────────────────────────────────────────
+// GET /api/admin/doctors/:id  – doctor profile
+// ─────────────────────────────────────────────
+async function getDoctorById(req: Request, res: Response) {
+  const doctorId = parseInt(req.params['id']);
+  if (!doctorId || isNaN(doctorId)) return res.status(400).json({ error: 'invalid doctor id' });
+
+  try {
+    const [users] = await Promise.all([
+      sequelize.query(
+        `SELECT u.id, u.uuid, u.email, u.phone, u.first_name, u.last_name,
+                u.is_active, u.is_verified, u.is_suspended, u.created_at, u.last_login,
+                dp.id as doctor_profile_id, dp.registration_number, dp.bio,
+                dp.is_verified as doc_verified, dp.is_approved,
+                dp.years_of_experience, dp.consultation_fee
+         FROM users u
+         JOIN roles r ON r.id = u.role_id AND r.name = 'doctor'
+         LEFT JOIN doctor_profiles dp ON dp.user_id = u.id
+         WHERE u.id = :doctorId
+         LIMIT 1`,
+        { replacements: { doctorId }, type: QueryTypes.SELECT }
+      ),
+    ]);
+    const doctor = (users as any[])[0];
+    if (!doctor) return res.status(404).json({ error: 'doctor not found' });
+
+    const documents = await sequelize.query(
+      `SELECT dd.id, dd.uuid, dd.file_url, dd.file_name, dd.status,
+              dd.rejection_reason, dd.verified_at, dd.created_at,
+              dt.name as document_type, dt.code as document_code
+       FROM doctor_documents dd
+       JOIN document_types dt ON dt.id = dd.document_type_id
+       JOIN doctor_profiles dp ON dp.id = dd.doctor_id
+       WHERE dp.user_id = :doctorId
+       ORDER BY dd.created_at DESC`,
+      { replacements: { doctorId }, type: QueryTypes.SELECT }
+    );
+
+    const specialties = await sequelize.query(
+      `SELECT s.name FROM specialties s
+       JOIN doctor_specialties ds ON ds.specialty_id = s.id
+       JOIN doctor_profiles dp ON dp.id = ds.doctor_id
+       WHERE dp.user_id = :doctorId`,
+      { replacements: { doctorId }, type: QueryTypes.SELECT }
+    ) as Array<{ name: string }>;
+
+    return res.json({ doctor, documents, specialties });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: 'server error' });
+  }
+}
+
+// ─────────────────────────────────────────────
 // Shared list helpers
 // ─────────────────────────────────────────────
 async function listDoctors(req: Request, res: Response) {
@@ -279,6 +336,7 @@ async function listDocuments(req: Request, res: Response) {
 // Admin routes (admin + super_admin)
 // ─────────────────────────────────────────────
 router.get('/doctors', verifyToken, verifyRole(['admin', 'super_admin']), listDoctors);
+router.get('/doctors/:id', verifyToken, verifyRole(['admin', 'super_admin']), getDoctorById);
 router.get('/patients', verifyToken, verifyRole(['admin', 'super_admin']), listPatients);
 router.get('/doctor-documents', verifyToken, verifyRole(['admin', 'super_admin']), listDocuments);
 
@@ -310,6 +368,29 @@ router.post('/documents/:id/approve', verifyToken, verifyRole(['admin', 'super_a
     );
 
     return res.json({ message: 'document approved' });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: 'server error' });
+  }
+});
+
+router.post('/documents/:id/request-changes', verifyToken, verifyRole(['admin', 'super_admin']), async (req: Request, res: Response) => {
+  const docId = parseInt(req.params['id']);
+  const notes = String(req.body?.notes || '').trim();
+  const reviewerId = (req as any).user?.userId;
+
+  if (!docId || isNaN(docId)) return res.status(400).json({ error: 'invalid document id' });
+  if (!notes) return res.status(400).json({ error: 'change request notes are required' });
+
+  try {
+    await sequelize.query(
+      `UPDATE doctor_documents
+       SET status = 'changes_requested', verified_by = :reviewerId, verified_at = NOW(),
+           rejection_reason = :notes, updated_at = NOW()
+       WHERE id = :docId`,
+      { replacements: { docId, reviewerId, notes }, type: QueryTypes.UPDATE }
+    );
+    return res.json({ message: 'changes requested' });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: 'server error' });
@@ -402,5 +483,6 @@ router.post('/super/create-admin', verifyToken, verifyRole(['super_admin']), asy
 router.get('/super/doctors', verifyToken, verifyRole(['super_admin']), listDoctors);
 router.get('/super/patients', verifyToken, verifyRole(['super_admin']), listPatients);
 router.get('/super/doctor-documents', verifyToken, verifyRole(['super_admin']), listDocuments);
+router.get('/super/doctors/:id', verifyToken, verifyRole(['super_admin']), getDoctorById);
 
 export default router;

@@ -1,1 +1,40 @@
 @import '../admin-styles';
+
+.name-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.doctor-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: $light;
+  color: $primary-dark;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+.btn-profile {
+  background: none;
+  border: 1px solid $primary;
+  color: $primary;
+  border-radius: 8px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: $primary;
+    color: #fff;
+  }
+}

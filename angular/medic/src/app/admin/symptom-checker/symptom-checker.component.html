@@ -1,0 +1,74 @@
+<div class="sc-page">
+  <div class="page-header">
+    <h1>Symptom Checker Analytics</h1>
+    <p>AI-powered symptom checker usage overview</p>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div><p>Loading…</p>
+  </div>
+
+  <div *ngIf="!isLoading" class="sc-body">
+    <!-- Stats cards -->
+    <div class="sc-stats-grid">
+      <div class="sc-stat-card">
+        <div class="sc-stat-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+        </div>
+        <div class="sc-stat-body">
+          <div class="sc-stat-value">{{ totalChecks }}</div>
+          <div class="sc-stat-label">Total Symptom Checks</div>
+        </div>
+      </div>
+
+      <div class="sc-stat-card">
+        <div class="sc-stat-icon ai">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+        </div>
+        <div class="sc-stat-body">
+          <div class="sc-stat-value">—</div>
+          <div class="sc-stat-label">Most Common Symptom</div>
+        </div>
+      </div>
+
+      <div class="sc-stat-card">
+        <div class="sc-stat-icon today">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+        </div>
+        <div class="sc-stat-body">
+          <div class="sc-stat-value">—</div>
+          <div class="sc-stat-label">Checks Today</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Placeholder coming soon card -->
+    <div class="coming-soon-card">
+      <div class="coming-soon-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+        </svg>
+      </div>
+      <h2>Full Analytics Coming Soon</h2>
+      <p>
+        Detailed symptom checker analytics — including usage trends, symptom frequency charts,
+        and AI accuracy metrics — will be available in a future release.
+      </p>
+    </div>
+  </div>
+</div>
