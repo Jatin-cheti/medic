@@ -1,7 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
-import { QueryTypes } from 'sequelize';
+import { QueryTypes, Transaction } from 'sequelize';
 import { v4 as uuidv4 } from 'uuid';
 import passport from 'passport';
 import { sequelize } from '../services/sequelize';
@@ -228,7 +228,7 @@ router.get('/google/callback',
       const googleUser = req.user as any;
       
       if (!googleUser || !googleUser.googleId || !googleUser.email) {
-        const redirectUrl = `${process.env.FRONTEND_ORIGIN || 'http://localhost:4200'}/auth/patient-login?error=invalid_user_data`;
+        const redirectUrl = `${process.env.FRONTEND_ORIGIN || 'http://localhost:4200'}/patient-login?error=invalid_user_data`;
         return res.redirect(redirectUrl);
       }
 
@@ -289,7 +289,7 @@ router.get('/google/callback',
       }
 
       if (!user.length) {
-        const redirectUrl = `${process.env.FRONTEND_ORIGIN || 'http://localhost:4200'}/auth/patient-login?error=user_creation_failed`;
+        const redirectUrl = `${process.env.FRONTEND_ORIGIN || 'http://localhost:4200'}/patient-login?error=user_creation_failed`;
         return res.redirect(redirectUrl);
       }
 
@@ -309,7 +309,7 @@ router.get('/google/callback',
       res.redirect(redirectUrl);
     } catch (err) {
       console.error('Google callback error:', err);
-      const redirectUrl = `${process.env.FRONTEND_ORIGIN || 'http://localhost:4200'}/auth/patient-login?error=server_error`;
+      const redirectUrl = `${process.env.FRONTEND_ORIGIN || 'http://localhost:4200'}/patient-login?error=server_error`;
       res.redirect(redirectUrl);
     }
   }
@@ -504,6 +504,44 @@ router.post('/patient/signup', async (req, res) => {
   }
 });
 
+/** Ensure the document_types table has DEGREE and SPEC_CERT rows (idempotent). */
+async function ensureDocumentTypes(): Promise<{ degreeId: number; experienceId: number }> {
+  const requiredTypes = [
+    { code: 'DEGREE', name: 'Medical Degree', description: 'Medical degree certificate (MBBS, BDS, etc.)', is_required: 1 },
+    { code: 'SPEC_CERT', name: 'Specialization Certificate', description: 'Certificate for medical specialization', is_required: 0 },
+  ];
+
+  for (const dt of requiredTypes) {
+    const existing = await sequelize.query(
+      'SELECT id FROM document_types WHERE code = :code LIMIT 1',
+      { replacements: { code: dt.code }, type: QueryTypes.SELECT }
+    ) as Array<{ id: number }>;
+
+    if (!existing.length) {
+      await sequelize.query(
+        `INSERT INTO document_types (uuid, name, code, description, is_required, is_active, created_at, updated_at)
+         VALUES (:uuid, :name, :code, :description, :is_required, 1, :now, :now)`,
+        {
+          replacements: { uuid: uuidv4(), ...dt, now: new Date() },
+          type: QueryTypes.INSERT,
+        }
+      );
+    }
+  }
+
+  const rows = await sequelize.query(
+    `SELECT id, code FROM document_types WHERE code IN ('DEGREE', 'SPEC_CERT')`,
+    { type: QueryTypes.SELECT }
+  ) as Array<{ id: number; code: string }>;
+
+  const degreeRow = rows.find(r => r.code === 'DEGREE');
+  const experienceRow = rows.find(r => r.code === 'SPEC_CERT') || degreeRow;
+
+  if (!degreeRow) throw new Error('Failed to ensure DEGREE document type');
+
+  return { degreeId: degreeRow.id, experienceId: experienceRow!.id };
+}
+
 router.post('/doctor/signup', async (req, res) => {
   const email = normalizeEmail(req.body?.email);
   const phone = normalizePhone(req.body?.phone);
@@ -554,89 +592,87 @@ router.post('/doctor/signup', async (req, res) => {
       return res.status(409).json({ error: 'registration number already exists' });
     }
 
-    const user = await createUser({
-      role: 'doctor',
-      email,
-      phone,
-      password,
-      firstName,
-      lastName,
-      gender,
-      preferredLanguage,
+    // Ensure document types exist before starting the transaction
+    const { degreeId, experienceId } = await ensureDocumentTypes();
+
+    // Wrap the entire user + doctor profile + documents creation in a transaction
+    // so a failure in any step rolls everything back (no orphaned users).
+    const result = await sequelize.transaction(async (t: Transaction) => {
+      const user = await createUser({
+        role: 'doctor',
+        email,
+        phone,
+        password,
+        firstName,
+        lastName,
+        gender,
+        preferredLanguage,
+      });
+
+      const now = new Date();
+
+      const doctorInsert = await sequelize.query(
+        `INSERT INTO doctor_profiles (
+          uuid, user_id, registration_number, years_of_experience,
+          consultation_fee, is_verified, is_approved, is_suspended,
+          rating, total_consultations, created_at, updated_at
+        ) VALUES (
+          :uuid, :userId, :registrationNumber, :yearsOfExperience,
+          :consultationFee, 0, 0, 0,
+          0, 0, :createdAt, :updatedAt
+        )`,
+        {
+          replacements: {
+            uuid: uuidv4(),
+            userId: user.id,
+            registrationNumber,
+            yearsOfExperience: Number.isFinite(yearsOfExperience) ? yearsOfExperience : 0,
+            consultationFee: Number.isFinite(consultationFee) ? consultationFee : 0,
+            createdAt: now,
+            updatedAt: now,
+          },
+          type: QueryTypes.INSERT,
+          transaction: t,
+        }
+      ) as any;
+
+      const doctorProfileId = Array.isArray(doctorInsert) ? doctorInsert[0] : doctorInsert;
+
+      await sequelize.query(
+        `INSERT INTO doctor_documents (
+          uuid, doctor_id, document_type_id, file_url, file_name,
+          status, created_at, updated_at
+        ) VALUES
+        (:degreeUuid, :doctorId, :degreeTypeId, :degreeFileUrl, :degreeFileName, 'pending', :createdAt, :updatedAt),
+        (:experienceUuid, :doctorId, :experienceTypeId, :experienceFileUrl, :experienceFileName, 'pending', :createdAt, :updatedAt)`,
+        {
+          replacements: {
+            degreeUuid: uuidv4(),
+            experienceUuid: uuidv4(),
+            doctorId: doctorProfileId,
+            degreeTypeId: degreeId,
+            experienceTypeId: experienceId,
+            degreeFileUrl,
+            degreeFileName,
+            experienceFileUrl,
+            experienceFileName,
+            createdAt: now,
+            updatedAt: now,
+          },
+          type: QueryTypes.INSERT,
+          transaction: t,
+        }
+      );
+
+      return { user, doctorProfileId };
     });
 
-    const now = new Date();
-
-    const doctorInsert = await sequelize.query(
-      `INSERT INTO doctor_profiles (
-        uuid, user_id, registration_number, years_of_experience,
-        consultation_fee, is_verified, is_approved, is_suspended,
-        rating, total_consultations, created_at, updated_at
-      ) VALUES (
-        :uuid, :userId, :registrationNumber, :yearsOfExperience,
-        :consultationFee, 0, 0, 0,
-        0, 0, :createdAt, :updatedAt
-      )`,
-      {
-        replacements: {
-          uuid: uuidv4(),
-          userId: user.id,
-          registrationNumber,
-          yearsOfExperience: Number.isFinite(yearsOfExperience) ? yearsOfExperience : 0,
-          consultationFee: Number.isFinite(consultationFee) ? consultationFee : 0,
-          createdAt: now,
-          updatedAt: now,
-        },
-        type: QueryTypes.INSERT,
-      }
-    ) as any;
-
-    const doctorProfileId = Array.isArray(doctorInsert) ? doctorInsert[0] : doctorInsert;
-
-    const documentTypes = await sequelize.query(
-      `SELECT id, code FROM document_types WHERE code IN ('DEGREE', 'SPEC_CERT')`,
-      { type: QueryTypes.SELECT }
-    ) as Array<{ id: number; code: string }>;
-
-    const degreeType = documentTypes.find((d) => d.code === 'DEGREE');
-    const experienceType = documentTypes.find((d) => d.code === 'SPEC_CERT') || degreeType;
-
-    if (!degreeType) {
-      return res.status(500).json({ error: 'document type DEGREE not found' });
-    }
-
-    await sequelize.query(
-      `INSERT INTO doctor_documents (
-        uuid, doctor_id, document_type_id, file_url, file_name,
-        status, created_at, updated_at
-      ) VALUES
-      (:degreeUuid, :doctorId, :degreeTypeId, :degreeFileUrl, :degreeFileName, 'pending', :createdAt, :updatedAt),
-      (:experienceUuid, :doctorId, :experienceTypeId, :experienceFileUrl, :experienceFileName, 'pending', :createdAt, :updatedAt)
-      `,
-      {
-        replacements: {
-          degreeUuid: uuidv4(),
-          experienceUuid: uuidv4(),
-          doctorId: doctorProfileId,
-          degreeTypeId: degreeType.id,
-          experienceTypeId: experienceType?.id || degreeType.id,
-          degreeFileUrl,
-          degreeFileName,
-          experienceFileUrl,
-          experienceFileName,
-          createdAt: now,
-          updatedAt: now,
-        },
-        type: QueryTypes.INSERT,
-      }
-    );
-
-    const token = signToken(user, 'doctor');
+    const token = signToken(result.user, 'doctor');
     return res.status(201).json({
-      user,
+      user: result.user,
       role: 'doctor',
       doctorProfile: {
-        id: doctorProfileId,
+        id: result.doctorProfileId,
         registrationNumber,
         yearsOfExperience,
         consultationFee,

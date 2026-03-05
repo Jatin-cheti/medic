@@ -26,11 +26,11 @@ export class UserService {
   }
 
   private loadUserFromStorage(): void {
-    const firstName = sessionStorage.getItem('firstName') || '';
-    const lastName = sessionStorage.getItem('lastName') || '';
-    const email = sessionStorage.getItem('userEmail') || '';
-    const userName = sessionStorage.getItem('userName') || '';
-    const avatar = sessionStorage.getItem('userAvatar') || '';
+    const firstName = localStorage.getItem('firstName') || '';
+    const lastName = localStorage.getItem('lastName') || '';
+    const email = localStorage.getItem('userEmail') || '';
+    const userName = localStorage.getItem('userName') || '';
+    const avatar = localStorage.getItem('userAvatar') || '';
 
     let name = 'Patient';
     if (firstName && lastName) {
@@ -66,14 +66,14 @@ export class UserService {
 
     this.userInfoSubject.next(userInfo);
 
-    // Also store in sessionStorage
-    if (firstName) sessionStorage.setItem('firstName', firstName);
-    if (lastName) sessionStorage.setItem('lastName', lastName);
-    if (email) sessionStorage.setItem('userEmail', email);
+    // Also store in localStorage
+    if (firstName) localStorage.setItem('firstName', firstName);
+    if (lastName) localStorage.setItem('lastName', lastName);
+    if (email) localStorage.setItem('userEmail', email);
     if (avatar) {
-      sessionStorage.setItem('userAvatar', avatar);
+      localStorage.setItem('userAvatar', avatar);
     } else {
-      sessionStorage.removeItem('userAvatar');
+      localStorage.removeItem('userAvatar');
     }
   }
 
