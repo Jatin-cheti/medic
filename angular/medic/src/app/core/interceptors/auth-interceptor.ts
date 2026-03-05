@@ -1,8 +1,7 @@
 import { inject } from '@angular/core';
-import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
+import { HttpInterceptorFn, HttpErrorResponse, HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { catchError, switchMap, throwError } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 
 const getToken = (): string | null =>
@@ -20,6 +19,10 @@ const clearAuth = (): void => {
 };
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
+  // inject() must be called at the top of the functional interceptor (injection context)
+  const router = inject(Router);
+  const http = inject(HttpClient);
+
   const token = getToken();
   const authReq = token
     ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
@@ -38,11 +41,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         const refreshToken = getRefreshToken();
         if (!refreshToken) {
           clearAuth();
-          inject(Router).navigateByUrl('/patient-login');
+          router.navigateByUrl('/patient-login');
           return throwError(() => error);
         }
 
-        const http = inject(HttpClient);
         return http
           .post<{ token: string; refreshToken?: string }>(
             `${environment.apiUrl}/api/auth/refresh-token`,
@@ -63,7 +65,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
             }),
             catchError((refreshErr) => {
               clearAuth();
-              inject(Router).navigateByUrl('/patient-login');
+              router.navigateByUrl('/patient-login');
               return throwError(() => refreshErr);
             })
           );

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { AppLoaderComponent } from '../../shared/components/app-loader/app-loader.component';
 
@@ -44,7 +44,6 @@ export class GoogleSuccessComponent implements OnInit {
   errorMessage = '';
 
   constructor(
-    private router: Router,
     private route: ActivatedRoute,
     private auth: AuthService
   ) {}
@@ -56,13 +55,15 @@ export class GoogleSuccessComponent implements OnInit {
       const role = params['role'] || 'patient';
 
       if (token && refreshToken) {
-        // Store tokens via the service so isAuthenticatedSubject is updated too
+        // Store tokens first, then do a hard redirect so the app boots fresh
+        // with tokens already in localStorage — avoids Angular Router guard
+        // race conditions after an external OAuth page redirect.
         this.auth.handleOAuthCallback(token, refreshToken, role);
-        this.router.navigateByUrl('/home', { replaceUrl: true });
+        window.location.replace('/home');
       } else {
         this.errorMessage = 'Authentication tokens not received.';
         setTimeout(() => {
-          this.router.navigateByUrl('/patient-login?error=auth_failed', { replaceUrl: true });
+          window.location.replace('/patient-login?error=auth_failed');
         }, 2000);
       }
     });

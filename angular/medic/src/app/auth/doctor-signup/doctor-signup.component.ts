@@ -70,11 +70,23 @@ export class DoctorSignupComponent implements OnInit {
     });
   }
 
+  private readonly MAX_FILE_MB = 5;
+  private readonly MAX_FILE_BYTES = this.MAX_FILE_MB * 1024 * 1024;
+
   onDegreeFileChange(event: Event) {
     const input = event.target as HTMLInputElement;
     const file = input.files && input.files.length ? input.files[0] : null;
     if (file) {
+      if (file.size > this.MAX_FILE_BYTES) {
+        this.errorMessage = `Degree certificate must be under ${this.MAX_FILE_MB}MB. Selected file is ${(file.size / 1024 / 1024).toFixed(1)}MB.`;
+        input.value = '';
+        this.degreeFileName = '';
+        this.signupForm.patchValue({ degreeFile: null });
+        this.signupForm.get('degreeFile')?.updateValueAndValidity();
+        return;
+      }
       this.degreeFileName = file.name;
+      this.errorMessage = '';
     }
     this.signupForm.patchValue({ degreeFile: file });
     this.signupForm.get('degreeFile')?.updateValueAndValidity();
@@ -84,7 +96,16 @@ export class DoctorSignupComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     const file = input.files && input.files.length ? input.files[0] : null;
     if (file) {
+      if (file.size > this.MAX_FILE_BYTES) {
+        this.errorMessage = `Experience certificate must be under ${this.MAX_FILE_MB}MB. Selected file is ${(file.size / 1024 / 1024).toFixed(1)}MB.`;
+        input.value = '';
+        this.experienceFileName = '';
+        this.signupForm.patchValue({ experienceFile: null });
+        this.signupForm.get('experienceFile')?.updateValueAndValidity();
+        return;
+      }
       this.experienceFileName = file.name;
+      this.errorMessage = '';
     }
     this.signupForm.patchValue({ experienceFile: file });
     this.signupForm.get('experienceFile')?.updateValueAndValidity();
