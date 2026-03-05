@@ -124,7 +124,7 @@ pipeline {
         stage('Deploy Backend → Railway') {
             when {
                 allOf {
-                    branch 'main'
+                    expression { env.GIT_BRANCH ==~ /.*main/ }
                     expression { env.BACKEND_CHANGED == 'true' }
                 }
             }
@@ -146,7 +146,7 @@ pipeline {
         stage('Deploy Frontend → Vercel') {
             when {
                 allOf {
-                    branch 'main'
+                    expression { env.GIT_BRANCH ==~ /.*main/ }
                     expression { env.FRONTEND_CHANGED == 'true' }
                 }
             }
