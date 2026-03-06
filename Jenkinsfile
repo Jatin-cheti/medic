@@ -135,7 +135,7 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'RAILWAY_TOKEN', variable: 'RAILWAY_API_TOKEN')]) {
                     dir(env.BACKEND_DIR) {
-                        bat 'railway up --detach --service %RAILWAY_SERVICE_ID% --environment %RAILWAY_ENVIRONMENT%'
+                        bat 'railway up --detach --project %RAILWAY_PROJECT_ID% --service %RAILWAY_SERVICE_ID% --environment %RAILWAY_ENVIRONMENT%'
                     }
                 }
             }
