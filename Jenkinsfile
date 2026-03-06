@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    parameters {
+        booleanParam(name: 'FORCE_DEPLOY', defaultValue: false, description: 'Skip change detection and deploy everything')
+    }
+
     environment {
         BACKEND_DIR  = 'node'
         FRONTEND_DIR = 'angular/medic'
@@ -37,10 +41,11 @@ pipeline {
         stage('Detect Changes') {
             steps {
                 script {
+                    def forceAll = params.FORCE_DEPLOY == true
                     def backendChanged  = true
                     def frontendChanged = true
 
-                    if (env.GIT_PREVIOUS_SUCCESSFUL_COMMIT) {
+                    if (!forceAll && env.GIT_PREVIOUS_SUCCESSFUL_COMMIT) {
                         def changed = powershell(
                             script: "git diff --name-only ${env.GIT_PREVIOUS_SUCCESSFUL_COMMIT} ${env.GIT_COMMIT}",
                             returnStdout: true
@@ -53,6 +58,7 @@ pipeline {
                     env.BACKEND_CHANGED  = backendChanged  ? 'true' : 'false'
                     env.FRONTEND_CHANGED = frontendChanged ? 'true' : 'false'
 
+                    echo "Force deploy     : ${forceAll}"
                     echo "Backend changed  : ${env.BACKEND_CHANGED}"
                     echo "Frontend changed : ${env.FRONTEND_CHANGED}"
                 }
