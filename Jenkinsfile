@@ -6,6 +6,10 @@ pipeline {
         FRONTEND_DIR = 'angular/medic'
         VERCEL_ORG_ID     = 'team_iy55sKGpLYWpgSQgEotOnXGQ'
         VERCEL_PROJECT_ID = 'prj_fyAJDyTCPLKaa2ltOzTAsXYF2x8T'
+        // Railway project + service IDs (required when using a user token in CI)
+        RAILWAY_PROJECT_ID  = '309eb535-bf25-442f-a360-7373d703f37f'
+        RAILWAY_SERVICE_ID  = 'c50f0cf0-5545-4bbd-9087-b5a979e66393'
+        RAILWAY_ENVIRONMENT = 'production'
     }
 
     options {
@@ -131,7 +135,7 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'RAILWAY_TOKEN', variable: 'RAILWAY_TOKEN')]) {
                     dir(env.BACKEND_DIR) {
-                        bat 'npx @railway/cli@latest up --detach --ci'
+                        bat 'railway up --detach --service %RAILWAY_SERVICE_ID% --environment %RAILWAY_ENVIRONMENT%'
                     }
                 }
             }
