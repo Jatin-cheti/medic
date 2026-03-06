@@ -219,6 +219,18 @@ async function listDoctors(req: Request, res: Response) {
   const offset = (page - 1) * limit;
   const search = String(req.query['search'] || '').trim();
 
+  // Whitelist sort columns to prevent SQL injection
+  const SORT_WHITELIST: Record<string, string> = {
+    name: 'u.first_name',
+    email: 'u.email',
+    registration_number: 'dp.registration_number',
+    created_at: 'u.created_at',
+    status: 'u.is_active',
+  };
+  const rawSortBy = String(req.query['sortBy'] || 'created_at');
+  const sortCol = SORT_WHITELIST[rawSortBy] || 'u.created_at';
+  const sortDir = String(req.query['sortOrder'] || 'desc').toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
+
   const searchWhere = search
     ? `AND (u.email LIKE :search OR u.first_name LIKE :search OR u.last_name LIKE :search OR dp.registration_number LIKE :search)`
     : '';
@@ -236,7 +248,7 @@ async function listDoctors(req: Request, res: Response) {
          JOIN roles r ON r.id = u.role_id AND r.name = 'doctor'
          LEFT JOIN doctor_profiles dp ON dp.user_id = u.id
          WHERE 1=1 ${searchWhere}
-         ORDER BY u.created_at DESC
+         ORDER BY ${sortCol} ${sortDir}
          LIMIT :limit OFFSET :offset`,
         { replacements, type: QueryTypes.SELECT }
       ),
@@ -248,7 +260,8 @@ async function listDoctors(req: Request, res: Response) {
         { replacements, type: QueryTypes.SELECT }
       ) as Promise<Array<{ total: number }>>,
     ]);
-    return res.json({ data: doctors, total: Number((countRow as any).total), page, limit });
+    const total = Number((countRow as any).total);
+    return res.json({ data: doctors, total, page, limit, totalPages: Math.ceil(total / limit) });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: 'server error' });
@@ -260,6 +273,18 @@ async function listPatients(req: Request, res: Response) {
   const limit = Math.min(100, parseInt(req.query['limit'] as string) || 20);
   const offset = (page - 1) * limit;
   const search = String(req.query['search'] || '').trim();
+
+  // Whitelist sort columns to prevent SQL injection
+  const SORT_WHITELIST: Record<string, string> = {
+    name: 'u.first_name',
+    email: 'u.email',
+    phone: 'u.phone',
+    created_at: 'u.created_at',
+    status: 'u.is_active',
+  };
+  const rawSortBy = String(req.query['sortBy'] || 'created_at');
+  const sortCol = SORT_WHITELIST[rawSortBy] || 'u.created_at';
+  const sortDir = String(req.query['sortOrder'] || 'desc').toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
 
   const searchWhere = search
     ? `AND (u.email LIKE :search OR u.first_name LIKE :search OR u.last_name LIKE :search)`
@@ -274,7 +299,7 @@ async function listPatients(req: Request, res: Response) {
          FROM users u
          JOIN roles r ON r.id = u.role_id AND r.name = 'patient'
          WHERE 1=1 ${searchWhere}
-         ORDER BY u.created_at DESC
+         ORDER BY ${sortCol} ${sortDir}
          LIMIT :limit OFFSET :offset`,
         { replacements, type: QueryTypes.SELECT }
       ),
@@ -285,7 +310,8 @@ async function listPatients(req: Request, res: Response) {
         { replacements, type: QueryTypes.SELECT }
       ) as Promise<Array<{ total: number }>>,
     ]);
-    return res.json({ data: patients, total: Number((countRow as any).total), page, limit });
+    const total = Number((countRow as any).total);
+    return res.json({ data: patients, total, page, limit, totalPages: Math.ceil(total / limit) });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: 'server error' });
@@ -325,12 +351,55 @@ async function listDocuments(req: Request, res: Response) {
         { replacements, type: QueryTypes.SELECT }
       ) as Promise<Array<{ total: number }>>,
     ]);
-    return res.json({ data: docs, total: Number((countRow as any).total), page, limit });
+    const total = Number((countRow as any).total);
+    return res.json({ data: docs, total, page, limit, totalPages: Math.ceil(total / limit) });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: 'server error' });
   }
 }
+
+// ─────────────────────────────────────────────
+// GET /api/admin/dashboard-stats  (alias with renamed fields)
+// ─────────────────────────────────────────────
+router.get('/dashboard-stats', verifyToken, verifyRole(['admin', 'super_admin']), async (req: Request, res: Response) => {
+  const role = (req as any).user?.role;
+  try {
+    const [[doctorCount], [patientCount], [pendingDocs]] = await Promise.all([
+      sequelize.query(
+        `SELECT COUNT(*) as total FROM users u JOIN roles r ON r.id = u.role_id WHERE r.name = 'doctor'`,
+        { type: QueryTypes.SELECT }
+      ) as Promise<Array<{ total: number }>>,
+      sequelize.query(
+        `SELECT COUNT(*) as total FROM users u JOIN roles r ON r.id = u.role_id WHERE r.name = 'patient'`,
+        { type: QueryTypes.SELECT }
+      ) as Promise<Array<{ total: number }>>,
+      sequelize.query(
+        `SELECT COUNT(*) as total FROM doctor_documents WHERE status = 'pending'`,
+        { type: QueryTypes.SELECT }
+      ) as Promise<Array<{ total: number }>>,
+    ]);
+
+    const stats: any = {
+      totalDoctors: Number((doctorCount as any).total),
+      totalPatients: Number((patientCount as any).total),
+      pendingDocuments: Number((pendingDocs as any).total),
+    };
+
+    if (role === 'super_admin') {
+      const [adminCount] = await sequelize.query(
+        `SELECT COUNT(*) as total FROM users u JOIN roles r ON r.id = u.role_id WHERE r.name = 'admin'`,
+        { type: QueryTypes.SELECT }
+      ) as Array<{ total: number }>;
+      stats.totalAdmins = Number((adminCount as any).total);
+    }
+
+    return res.json(stats);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: 'server error' });
+  }
+});
 
 // ─────────────────────────────────────────────
 // Admin routes (admin + super_admin)
@@ -414,6 +483,78 @@ router.post('/documents/:id/reject', verifyToken, verifyRole(['admin', 'super_ad
       { replacements: { docId, reviewerId, reason }, type: QueryTypes.UPDATE }
     );
     return res.json({ message: 'document rejected' });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: 'server error' });
+  }
+});
+
+// ─────────────────────────────────────────────
+// POST /api/admin/dev/seed-test-documents
+// Seeds fake pending documents for all doctors that have no documents.
+// Useful in dev/staging to test the document verification flow.
+// ─────────────────────────────────────────────
+router.post('/dev/seed-test-documents', verifyToken, verifyRole(['admin', 'super_admin']), async (req: Request, res: Response) => {
+  try {
+    // Ensure document types exist
+    const DEGREE_CODE = 'DEGREE';
+    const CERT_CODE = 'SPEC_CERT';
+    for (const [code, name] of [[DEGREE_CODE, 'Degree Certificate'], [CERT_CODE, 'Specialization Certificate']] as [string, string][]) {
+      const existing = await sequelize.query(
+        'SELECT id FROM document_types WHERE code = :code LIMIT 1',
+        { replacements: { code }, type: QueryTypes.SELECT }
+      ) as Array<{ id: number }>;
+      if (!existing.length) {
+        await sequelize.query(
+          `INSERT INTO document_types (uuid, name, code, description, is_required, created_at, updated_at)
+           VALUES (:uuid, :name, :code, :description, 1, NOW(), NOW())`,
+          { replacements: { uuid: uuidv4(), name, code, description: name }, type: QueryTypes.INSERT }
+        );
+      }
+    }
+
+    // Get all doctor profiles that have no documents
+    const doctorProfiles = await sequelize.query(
+      `SELECT dp.id FROM doctor_profiles dp
+       WHERE NOT EXISTS (SELECT 1 FROM doctor_documents dd WHERE dd.doctor_id = dp.id)`,
+      { type: QueryTypes.SELECT }
+    ) as Array<{ id: number }>;
+
+    if (!doctorProfiles.length) {
+      return res.json({ message: 'No doctors without documents found', seeded: 0 });
+    }
+
+    const [degreeType] = await sequelize.query(
+      'SELECT id FROM document_types WHERE code = :code LIMIT 1',
+      { replacements: { code: DEGREE_CODE }, type: QueryTypes.SELECT }
+    ) as Array<{ id: number }>;
+    const [certType] = await sequelize.query(
+      'SELECT id FROM document_types WHERE code = :code LIMIT 1',
+      { replacements: { code: CERT_CODE }, type: QueryTypes.SELECT }
+    ) as Array<{ id: number }>;
+
+    let seededCount = 0;
+    for (const dp of doctorProfiles) {
+      for (const [typeId, fname] of [[degreeType.id, 'degree.pdf'], [certType.id, 'cert.pdf']] as [number, string][]) {
+        await sequelize.query(
+          `INSERT INTO doctor_documents (uuid, doctor_id, document_type_id, file_name, file_url, status, created_at, updated_at)
+           VALUES (:uuid, :doctorId, :typeId, :fname, :furl, 'pending', NOW(), NOW())`,
+          {
+            replacements: {
+              uuid: uuidv4(),
+              doctorId: dp.id,
+              typeId,
+              fname,
+              furl: `https://medic-docs-placeholder.s3.amazonaws.com/test/${dp.id}/${fname}`,
+            },
+            type: QueryTypes.INSERT,
+          }
+        );
+        seededCount++;
+      }
+    }
+
+    return res.json({ message: `Seeded ${seededCount} test documents for ${doctorProfiles.length} doctor(s)`, seeded: seededCount });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: 'server error' });

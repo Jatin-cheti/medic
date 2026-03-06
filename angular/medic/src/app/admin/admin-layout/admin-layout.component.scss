@@ -110,25 +110,60 @@ $sidebar-collapsed-width: 60px;
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 16px;
-  color: rgba(255,255,255,0.8);
+  padding: 11px 16px;
+  color: rgba(255,255,255,0.75);
   text-decoration: none;
-  transition: all 0.15s ease;
+  transition: background 0.18s ease, color 0.18s ease, padding-left 0.18s ease;
   cursor: pointer;
   font-size: 14px;
   white-space: nowrap;
+  position: relative;
+  border-left: 3px solid transparent;
 
-  &:hover, &.active {
-    background: rgba(255,255,255,0.12);
+  &:hover {
+    background: rgba(255,255,255,0.1);
     color: $white;
+    border-left-color: rgba(255,255,255,0.3);
   }
 
   &.active {
-    border-left: 3px solid $secondary;
-    padding-left: 13px;
+    background: rgba(255,255,255,0.15);
+    color: $white;
+    border-left-color: $secondary;
+    font-weight: 600;
   }
 
-  .nav-icon { font-size: 16px; flex-shrink: 0; width: 20px; text-align: center; }
+  .nav-icon {
+    flex-shrink: 0;
+    width: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+// Tooltip labels when sidebar is collapsed
+.admin-shell.sidebar-collapsed .nav-item {
+  &::after {
+    content: attr(title);
+    position: absolute;
+    left: calc(#{$sidebar-collapsed-width} + 8px);
+    top: 50%;
+    transform: translateY(-50%);
+    background: $primary-dark;
+    color: $white;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 5px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    z-index: 200;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  &:hover::after { opacity: 1; }
 }
 
 .sidebar-footer {

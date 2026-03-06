@@ -26,12 +26,12 @@
       <thead>
         <tr>
           <th>#</th>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Reg. Number</th>
+          <th class="sortable" (click)="onSort('name')">Name {{ sortIcon('name') }}</th>
+          <th class="sortable" (click)="onSort('email')">Email {{ sortIcon('email') }}</th>
+          <th class="sortable" (click)="onSort('registration_number')">Reg. Number {{ sortIcon('registration_number') }}</th>
           <th>Status</th>
           <th>Verification</th>
-          <th>Joined</th>
+          <th class="sortable" (click)="onSort('created_at')">Joined {{ sortIcon('created_at') }}</th>
           <th>Actions</th>
         </tr>
       </thead>

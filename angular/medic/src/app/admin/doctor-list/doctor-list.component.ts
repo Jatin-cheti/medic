@@ -18,6 +18,8 @@ export class DoctorListComponent implements OnInit {
   page = 1;
   limit = 20;
   search = '';
+  sortBy = 'created_at';
+  sortOrder: 'asc' | 'desc' = 'desc';
   isLoading = false;
   error = '';
 
@@ -38,7 +40,7 @@ export class DoctorListComponent implements OnInit {
   loadDoctors() {
     this.isLoading = true;
     this.error = '';
-    this.adminService.getDoctors(this.page, this.search).subscribe({
+    this.adminService.getDoctors(this.page, this.search, this.sortBy, this.sortOrder).subscribe({
       next: (res: any) => {
         this.doctors = res.data;
         this.total = res.total;
@@ -53,6 +55,22 @@ export class DoctorListComponent implements OnInit {
 
   onSearch() {
     this.searchSubject.next(this.search);
+  }
+
+  onSort(col: string) {
+    if (this.sortBy === col) {
+      this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortBy = col;
+      this.sortOrder = 'desc';
+    }
+    this.page = 1;
+    this.loadDoctors();
+  }
+
+  sortIcon(col: string): string {
+    if (this.sortBy !== col) return '↕';
+    return this.sortOrder === 'asc' ? '↑' : '↓';
   }
 
   prevPage() {

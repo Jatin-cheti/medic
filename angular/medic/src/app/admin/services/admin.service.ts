@@ -17,14 +17,30 @@ export class AdminService {
     return this.http.get(`${this.api}/stats`);
   }
 
-  getDoctors(page = 1, search = ''): Observable<any> {
-    const params = new HttpParams().set('page', String(page)).set('search', search);
+  getDoctors(page = 1, search = '', sortBy = 'created_at', sortOrder: 'asc' | 'desc' = 'desc'): Observable<any> {
+    const params = new HttpParams()
+      .set('page', String(page))
+      .set('search', search)
+      .set('sortBy', sortBy)
+      .set('sortOrder', sortOrder);
     return this.http.get(`${this.api}/doctors`, { params });
   }
 
-  getPatients(page = 1, search = ''): Observable<any> {
-    const params = new HttpParams().set('page', String(page)).set('search', search);
+  getPatients(page = 1, search = '', sortBy = 'created_at', sortOrder: 'asc' | 'desc' = 'desc'): Observable<any> {
+    const params = new HttpParams()
+      .set('page', String(page))
+      .set('search', search)
+      .set('sortBy', sortBy)
+      .set('sortOrder', sortOrder);
     return this.http.get(`${this.api}/patients`, { params });
+  }
+
+  getDashboardStats(): Observable<any> {
+    return this.http.get(`${this.api}/dashboard-stats`);
+  }
+
+  seedTestDocuments(): Observable<any> {
+    return this.http.post(`${this.api}/dev/seed-test-documents`, {});
   }
 
   getDocuments(status = 'pending', page = 1): Observable<any> {

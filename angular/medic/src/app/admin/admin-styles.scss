@@ -15,14 +15,16 @@ $white: #fff;
   color: #888;
 
   .spinner {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     border: 3px solid $light;
     border-top-color: $primary;
     border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    margin-bottom: 12px;
+    animation: spin 0.7s linear infinite;
+    margin-bottom: 14px;
   }
+
+  p { font-size: 14px; }
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -35,6 +37,17 @@ $white: #fff;
   padding: 14px 18px;
   color: #c53030;
   font-size: 14px;
+}
+
+// Success state
+.success-state {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+  padding: 12px 18px;
+  color: #166534;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 // Badge helpers
@@ -99,6 +112,12 @@ table.data-table {
       color: #555;
       font-size: 13px;
       white-space: nowrap;
+
+      &.sortable {
+        cursor: pointer;
+        user-select: none;
+        &:hover { color: $primary; }
+      }
     }
   }
 
@@ -157,7 +176,7 @@ table.data-table {
 }
 
 // Action buttons
-.btn { 
+.btn {
   border: none;
   border-radius: 6px;
   padding: 6px 14px;
