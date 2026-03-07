@@ -1,0 +1,22 @@
+.container {
+  background-color: #F0F0F2;
+}
+
+.card {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+.card-title {
+  font-family: 'Poppins', sans-serif;
+  color: #154E99;
+}
+
+.card-text {
+  font-family: 'Inter', sans-serif;
+}

@@ -1,0 +1,21 @@
+.container {
+  background-color: #F0F0F2;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  font-family: 'Poppins', sans-serif;
+  color: #154E99;
+}
+
+.btn-primary {
+  background-color: #154E99;
+  border-color: #154E99;
+
+  &:hover {
+    background-color: #0d3a6d;
+    border-color: #0d3a6d;
+  }
+}

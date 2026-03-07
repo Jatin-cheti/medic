@@ -1,78 +1,48 @@
-import { Component, ChangeDetectorRef } from '@angular/core';
-import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
-import { AuthService } from '../../core/services/auth.service';
+import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AuthService } from '../auth.service';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
-import { AppErrorComponent } from '../../shared/components/app-error/app-error.component';
-import { AppLoaderComponent } from '../../shared/components/app-loader/app-loader.component';
-import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [
-    RouterLink,
-    CommonModule,
-    ReactiveFormsModule,
-    AppErrorComponent,
-    AppLoaderComponent,
-  ],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent {
-  loginForm: any;
-  errorMessage = '';
+  loginForm: FormGroup;
+  errorMessage: string | null = null;
   isLoading = false;
 
-  constructor(
-    private fb: FormBuilder,
-    private auth: AuthService,
-    private router: Router,
-    private cdr: ChangeDetectorRef
-  ) {
+  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
     this.loginForm = this.fb.group({
-      identifier: ['', [Validators.required]],
-      password: ['', Validators.required]
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      role: ['', [Validators.required]]
     });
   }
 
-  onSubmit() {
-    if (this.loginForm.invalid) return;
-
-    const value = this.loginForm.value;
-    const payload: any = {
-      password: value.password,
-    };
-
-    if (String(value.identifier).includes('@')) {
-      payload.email = String(value.identifier).trim().toLowerCase();
-    } else {
-      payload.phone = String(value.identifier).trim();
+  onSubmit(): void {
+    if (this.loginForm.invalid) {
+      return;
     }
 
-    this.errorMessage = '';
     this.isLoading = true;
-    this.cdr.markForCheck();
-    this.auth.loginDoctor(payload).pipe(
-      finalize(() => {
+    this.errorMessage = null;
+
+    const { email, password, role } = this.loginForm.value;
+
+    this.authService.login(email, password, role).subscribe({
+      next: (response) => {
         this.isLoading = false;
-        this.cdr.markForCheck();
-      })
-    ).subscribe({
-      next: () => {
-        this.router.navigateByUrl('/home', { replaceUrl: true });
+        this.router.navigate([`/${role.toLowerCase()}/dashboard`]);
       },
-      error: (err) => {
-        this.errorMessage = this.auth.getErrorMessage(err);
-        console.error('Login error:', err);
-        this.cdr.markForCheck();
+      error: (error) => {
+        this.isLoading = false;
+        this.errorMessage = error.error.message || 'An error occurred. Please try again.';
       }
     });
-  }
-
-  clearError() {
-    this.errorMessage = '';
   }
 }

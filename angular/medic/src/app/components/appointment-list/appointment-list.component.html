@@ -1,0 +1,22 @@
+<div class="container mt-4" *ngIf="!loading; else loadingTemplate">
+  <h2 class="text-primary">Your Appointments</h2>
+  <div class="row">
+    <div class="col-md-6 mb-4" *ngFor="let appointment of appointments">
+      <div class="card" [@fadeInAnimation]>
+        <div class="card-body">
+          <h5 class="card-title">{{ appointment.doctorName }}</h5>
+          <p class="card-text">Date: {{ appointment.date | date }}</p>
+          <p class="card-text">Time: {{ appointment.time }}</p>
+          <p class="card-text">Status: {{ appointment.status }}</p>
+          <button class="btn btn-primary">View Details</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #loadingTemplate>
+  <div class="text-center">
+    <p>Loading appointments...</p>
+  </div>
+</ng-template>

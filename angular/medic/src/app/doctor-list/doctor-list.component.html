@@ -1,0 +1,49 @@
+<div class="container mt-4">
+  <h2 class="text-primary">Browse Doctors</h2>
+  <div class="row">
+    <div class="col-12 col-md-6 col-lg-4 mb-4" *ngFor="let doctor of doctors" [@fadeIn]>
+      <div class="card shadow-sm">
+        <img [src]="doctor.profilePicture" class="card-img-top" alt="{{ doctor.name }}" />
+        <div class="card-body">
+          <h5 class="card-title">{{ doctor.name }}</h5>
+          <p class="card-text">{{ doctor.specialty }}</p>
+          <p class="card-text">Rating: {{ doctor.rating }}</p>
+          <button class="btn btn-primary" (click)="openModal(appointmentModal, doctor)">Book Appointment</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #appointmentModal let-modal>
+    <div class="modal-header">
+      <h5 class="modal-title">Book Appointment with {{ selectedDoctor?.name }}</h5>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="appointmentForm" (ngSubmit)="bookAppointment()">
+        <div class="form-group">
+          <label for="consultationType">Consultation Type</label>
+          <select formControlName="consultationType" class="form-control" id="consultationType">
+            <option value="" disabled>Select type</option>
+            <option value="video">Video</option>
+            <option value="audio">Audio</option>
+            <option value="physical">Physical</option>
+          </select>
+          <div *ngIf="appointmentForm.get('consultationType')?.invalid && appointmentForm.get('consultationType')?.touched" class="text-danger">
+            Please select a consultation type.
+          </div>
+        </div>
+        <div class="form-group mt-3">
+          <label for="appointmentDate">Appointment Date</label>
+          <input type="date" formControlName="appointmentDate" class="form-control" id="appointmentDate" />
+          <div *ngIf="appointmentForm.get('appointmentDate')?.invalid && appointmentForm.get('appointmentDate')?.touched" class="text-danger">
+            Please select a date.
+          </div>
+        </div>
+        <button type="submit" class="btn btn-success mt-3" [disabled]="appointmentForm.invalid">Book Appointment</button>
+      </form>
+    </div>
+  </ng-template>
+</div>

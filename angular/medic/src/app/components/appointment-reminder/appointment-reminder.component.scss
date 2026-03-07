@@ -1,0 +1,20 @@
+.container {
+  background-color: var(--background);
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  font-family: 'Poppins', sans-serif;
+  margin-bottom: 20px;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  border-color: var(--primary-dark);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-dark);
+}

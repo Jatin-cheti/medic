@@ -1,0 +1,12 @@
+.container {
+  background-color: var(--background);
+  padding: 20px;
+}
+
+.card {
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}

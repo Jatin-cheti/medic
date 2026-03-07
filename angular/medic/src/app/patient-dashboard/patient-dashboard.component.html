@@ -1,0 +1,72 @@
+<div class="container mt-4" [@fadeInAnimation]>
+  <h2 class="text-primary">Patient Dashboard</h2>
+
+  <div class="row">
+    <div class="col-md-6 mb-4">
+      <div class="card">
+        <div class="card-header">
+          <h5>Upcoming Appointments</h5>
+        </div>
+        <div class="card-body">
+          <ul class="list-group">
+            <li *ngFor="let appointment of appointments" class="list-group-item">
+              {{ appointment.date }} - {{ appointment.doctorName }}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+      <div class="card">
+        <div class="card-header">
+          <h5>Past Appointments</h5>
+        </div>
+        <div class="card-body">
+          <ul class="list-group">
+            <li *ngFor="let appointment of pastAppointments" class="list-group-item">
+              {{ appointment.date }} - {{ appointment.doctorName }} - {{ appointment.billAmount | currency }}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <h5>Upload Prescription</h5>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="prescriptionForm" (ngSubmit)="onSubmit()">
+            <div class="mb-3">
+              <label for="prescription" class="form-label">Prescription Details</label>
+              <textarea id="prescription" formControlName="prescription" class="form-control"></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="file" class="form-label">Upload File</label>
+              <input type="file" id="file" formControlName="file" class="form-control" />
+            </div>
+            <button type="submit" class="btn btn-primary" [disabled]="prescriptionForm.invalid">Submit</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <h5>AI Symptom Checker</h5>
+        </div>
+        <div class="card-body">
+          <p>Use our AI symptom checker to get insights on your health.</p>
+          <a routerLink="/symptom-checker" class="btn btn-secondary">Start Symptom Checker</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

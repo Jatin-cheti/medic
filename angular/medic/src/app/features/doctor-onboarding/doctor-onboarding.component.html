@@ -1,0 +1,144 @@
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h2 class="text-center text-primary mb-4">Doctor Onboarding</h2>
+          <p class="text-center text-secondary">Complete the form below to register as a doctor.</p>
+
+          <div class="progress mb-4">
+            <div
+              class="progress-bar"
+              role="progressbar"
+              [style.width.%]="(step / 3) * 100"
+              aria-valuenow="{{ step }}"
+              aria-valuemin="1"
+              aria-valuemax="3"
+            ></div>
+          </div>
+
+          <form [formGroup]="onboardingForm" (ngSubmit)="submit()">
+            <!-- Step 1: Personal Details -->
+            <div *ngIf="step === 1" class="fade-in">
+              <div class="mb-3">
+                <label for="name" class="form-label">Full Name</label>
+                <input
+                  type="text"
+                  id="name"
+                  class="form-control"
+                  formControlName="name"
+                  [class.is-invalid]="onboardingForm.get('name')?.invalid && onboardingForm.get('name')?.touched"
+                />
+                <div class="invalid-feedback">Name is required and must be at least 3 characters.</div>
+              </div>
+              <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input
+                  type="email"
+                  id="email"
+                  class="form-control"
+                  formControlName="email"
+                  [class.is-invalid]="onboardingForm.get('email')?.invalid && onboardingForm.get('email')?.touched"
+                />
+                <div class="invalid-feedback">Please enter a valid email address.</div>
+              </div>
+              <div class="mb-3">
+                <label for="phone" class="form-label">Phone Number</label>
+                <input
+                  type="text"
+                  id="phone"
+                  class="form-control"
+                  formControlName="phone"
+                  [class.is-invalid]="onboardingForm.get('phone')?.invalid && onboardingForm.get('phone')?.touched"
+                />
+                <div class="invalid-feedback">Please enter a valid 10-digit phone number.</div>
+              </div>
+              <div class="mb-3">
+                <label for="specialization" class="form-label">Specialization</label>
+                <input
+                  type="text"
+                  id="specialization"
+                  class="form-control"
+                  formControlName="specialization"
+                  [class.is-invalid]="onboardingForm.get('specialization')?.invalid && onboardingForm.get('specialization')?.touched"
+                />
+                <div class="invalid-feedback">Specialization is required.</div>
+              </div>
+            </div>
+
+            <!-- Step 2: Document Upload -->
+            <div *ngIf="step === 2" class="fade-in">
+              <div class="mb-3">
+                <label for="degree" class="form-label">Upload Degree</label>
+                <input
+                  type="file"
+                  id="degree"
+                  class="form-control"
+                  (change)="onFileChange($event, 'degree')"
+                />
+              </div>
+              <div class="mb-3">
+                <label for="experienceCertificate" class="form-label">Upload Experience Certificate</label>
+                <input
+                  type="file"
+                  id="experienceCertificate"
+                  class="form-control"
+                  (change)="onFileChange($event, 'experienceCertificate')"
+                />
+              </div>
+            </div>
+
+            <!-- Step 3: Review & Submit -->
+            <div *ngIf="step === 3" class="fade-in">
+              <h5 class="text-center">Review Your Details</h5>
+              <ul class="list-group mb-3">
+                <li class="list-group-item">Name: {{ onboardingForm.get('name')?.value }}</li>
+                <li class="list-group-item">Email: {{ onboardingForm.get('email')?.value }}</li>
+                <li class="list-group-item">Phone: {{ onboardingForm.get('phone')?.value }}</li>
+                <li class="list-group-item">Specialization: {{ onboardingForm.get('specialization')?.value }}</li>
+              </ul>
+              <p class="text-secondary">Please ensure all details are correct before submitting.</p>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="d-flex justify-content-between">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                (click)="previousStep()"
+                [disabled]="step === 1"
+              >
+                Previous
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary"
+                *ngIf="step < 3"
+                (click)="nextStep()"
+                [disabled]="onboardingForm.invalid"
+              >
+                Next
+              </button>
+              <button
+                type="submit"
+                class="btn btn-success"
+                *ngIf="step === 3"
+                [disabled]="isSubmitting"
+              >
+                Submit
+              </button>
+            </div>
+          </form>
+
+          <!-- Success/Error Messages -->
+          <div *ngIf="successMessage" class="alert alert-success mt-3" role="alert">
+            {{ successMessage }}
+          </div>
+          <div *ngIf="errorMessage" class="alert alert-danger mt-3" role="alert">
+            {{ errorMessage }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

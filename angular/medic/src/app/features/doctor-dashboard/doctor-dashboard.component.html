@@ -1,0 +1,39 @@
+<div class="dashboard-container">
+  <header class="dashboard-header">
+    <h1>Doctor Dashboard</h1>
+  </header>
+
+  <section class="symptom-checker-section">
+    <div class="symptom-checker-card">
+      <h2>Symptom Checker Tool</h2>
+      <form [formGroup]="symptomForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label for="symptoms">Enter Symptoms (comma-separated):</label>
+          <input
+            id="symptoms"
+            type="text"
+            formControlName="symptoms"
+            placeholder="e.g., fever, headache, fatigue"
+            class="form-control"
+            [class.is-invalid]="symptomForm.get('symptoms')?.invalid && symptomForm.get('symptoms')?.touched"
+          />
+          <div *ngIf="symptomForm.get('symptoms')?.invalid && symptomForm.get('symptoms')?.touched" class="invalid-feedback">
+            Please enter at least 5 characters.
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary" [disabled]="symptomForm.invalid || isLoading">
+          {{ isLoading ? 'Checking...' : 'Check Symptoms' }}
+        </button>
+      </form>
+
+      <div *ngIf="diagnosisResult" class="result-section">
+        <h3>Diagnosis Result:</h3>
+        <p>{{ diagnosisResult }}</p>
+        <h4>Recommendations:</h4>
+        <ul>
+          <li *ngFor="let recommendation of recommendations">{{ recommendation }}</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</div>

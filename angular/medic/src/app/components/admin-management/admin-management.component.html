@@ -1,0 +1,46 @@
+<div class="container mt-4" [@fadeInAnimation]>
+  <h2 class="text-primary">Manage Admins</h2>
+  <form [formGroup]="adminForm" (ngSubmit)="saveAdmin()">
+    <div class="mb-3">
+      <label for="name" class="form-label">Name</label>
+      <input id="name" formControlName="name" class="form-control" required>
+      <div *ngIf="adminForm.get('name')?.invalid && adminForm.get('name')?.touched" class="text-danger">
+        Name is required.
+      </div>
+    </div>
+    <div class="mb-3">
+      <label for="email" class="form-label">Email</label>
+      <input id="email" formControlName="email" type="email" class="form-control" required>
+      <div *ngIf="adminForm.get('email')?.invalid && adminForm.get('email')?.touched" class="text-danger">
+        Valid email is required.
+      </div>
+    </div>
+    <div class="mb-3">
+      <label for="role" class="form-label">Role</label>
+      <select id="role" formControlName="role" class="form-select" required>
+        <option value="" disabled>Select role</option>
+        <option value="Admin">Admin</option>
+        <option value="Super Admin">Super Admin</option>
+      </select>
+      <div *ngIf="adminForm.get('role')?.invalid && adminForm.get('role')?.touched" class="text-danger">
+        Role is required.
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary">{{ isEditing ? 'Update Admin' : 'Add Admin' }}</button>
+  </form>
+
+  <h3 class="mt-4">Existing Admins</h3>
+  <div class="row">
+    <div class="col-md-4" *ngFor="let admin of admins">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">{{ admin.name }}</h5>
+          <p class="card-text">{{ admin.email }}</p>
+          <p class="card-text"><small class="text-muted">{{ admin.role }}</small></p>
+          <button class="btn btn-warning" (click)="editAdmin(admin)">Edit</button>
+          <button class="btn btn-danger" (click)="deleteAdmin(admin.id)">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

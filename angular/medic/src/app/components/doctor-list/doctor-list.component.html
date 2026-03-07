@@ -1,0 +1,23 @@
+<div class="container mt-4" [@fadeInAnimation]>
+  <h2 class="text-primary">Browse Doctors</h2>
+  <div class="row">
+    <ng-container *ngIf="loading; else doctorList">
+      <div class="col-12 text-center">
+        <p>Loading doctors...</p>
+      </div>
+    </ng-container>
+    <ng-template #doctorList>
+      <div class="col-12 col-md-6 col-lg-4 mb-4" *ngFor="let doctor of doctors">
+        <div class="card shadow-sm">
+          <img [src]="doctor.image" class="card-img-top" alt="{{ doctor.name }}">
+          <div class="card-body">
+            <h5 class="card-title font-weight-bold">{{ doctor.name }}</h5>
+            <p class="card-text">{{ doctor.specialization }}</p>
+            <p class="text-secondary">Rating: {{ doctor.rating }}</p>
+            <button class="btn btn-primary" (click)="openAppointmentModal(doctor)">Book Appointment</button>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+</div>

@@ -1,0 +1,36 @@
+<div class="container mt-4" [@fadeInAnimation]>
+  <h2 class="text-primary">Send Appointment Reminder</h2>
+  <form [formGroup]="reminderForm" (ngSubmit)="onSubmit()">
+    <div class="mb-3">
+      <label for="appointmentId" class="form-label">Appointment ID</label>
+      <input type="text" id="appointmentId" formControlName="appointmentId" class="form-control" aria-label="Appointment ID" required>
+      <div *ngIf="reminderForm.get('appointmentId')?.invalid && reminderForm.get('appointmentId')?.touched" class="text-danger">
+        Appointment ID is required.
+      </div>
+    </div>
+    <div class="mb-3">
+      <label for="reminderMethod" class="form-label">Reminder Method</label>
+      <select id="reminderMethod" formControlName="reminderMethod" class="form-select" aria-label="Reminder Method" required>
+        <option value="" disabled selected>Select method</option>
+        <option value="email">Email</option>
+        <option value="sms">SMS</option>
+      </select>
+      <div *ngIf="reminderForm.get('reminderMethod')?.invalid && reminderForm.get('reminderMethod')?.touched" class="text-danger">
+        Reminder method is required.
+      </div>
+    </div>
+    <div class="mb-3">
+      <label for="reminderFrequency" class="form-label">Reminder Frequency</label>
+      <select id="reminderFrequency" formControlName="reminderFrequency" class="form-select" aria-label="Reminder Frequency" required>
+        <option value="" disabled selected>Select frequency</option>
+        <option value="1_day_before">1 Day Before</option>
+        <option value="2_days_before">2 Days Before</option>
+        <option value="1_hour_before">1 Hour Before</option>
+      </select>
+      <div *ngIf="reminderForm.get('reminderFrequency')?.invalid && reminderForm.get('reminderFrequency')?.touched" class="text-danger">
+        Reminder frequency is required.
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Send Reminder</button>
+  </form>
+</div>

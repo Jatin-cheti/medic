@@ -1,0 +1,21 @@
+<div class="card mb-4 fade-in" aria-labelledby="user-filter-card">
+  <div class="card-header" id="user-filter-card">
+    <h5 class="mb-0">Filter Users</h5>
+  </div>
+  <div class="card-body">
+    <form [formGroup]="filterForm" (ngSubmit)="onFilterChange()">
+      <div class="mb-3">
+        <label for="role" class="form-label">Select Role</label>
+        <select id="role" formControlName="role" class="form-select" (change)="onFilterChange()">
+          <option value="">All</option>
+          <option *ngFor="let role of roles" [value]="role">{{ role }}</option>
+        </select>
+      </div>
+    </form>
+    <div class="row">
+      <div class="col-12 col-md-6 col-lg-4 mb-4" *ngFor="let user of users" [@fadeInAnimation]>
+        <app-user-card [user]="user"></app-user-card>
+      </div>
+    </div>
+  </div>
+</div>

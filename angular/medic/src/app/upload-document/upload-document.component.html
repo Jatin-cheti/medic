@@ -1,0 +1,19 @@
+<div class="container mt-5" [@fadeInAnimation]>
+  <div class="card">
+    <div class="card-header bg-primary text-white">
+      <h5>Upload Additional Documents</h5>
+    </div>
+    <div class="card-body">
+      <form [formGroup]="uploadForm" (ngSubmit)="onSubmit()">
+        <div class="mb-3">
+          <label for="file" class="form-label">Choose File</label>
+          <input type="file" id="file" class="form-control" (change)="onFileChange($event)" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" />
+          <div class="form-text">Supported formats: PDF, DOC, DOCX, JPG, JPEG, PNG</div>
+        </div>
+        <div *ngIf="uploadError" class="alert alert-danger">{{ uploadError }}</div>
+        <div *ngIf="uploadSuccess" class="alert alert-success">Upload successful!</div>
+        <button type="submit" class="btn btn-primary" [disabled]="uploadForm.invalid">Upload</button>
+      </form>
+    </div>
+  </div>
+</div>

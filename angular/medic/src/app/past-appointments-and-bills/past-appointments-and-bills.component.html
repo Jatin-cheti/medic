@@ -1,0 +1,20 @@
+<div class="container mt-4" [@fadeInAnimation]>
+  <h2 class="text-primary">Past Appointments and Bills</h2>
+  <form [formGroup]="searchForm" class="mb-3">
+    <input type="text" formControlName="searchTerm" class="form-control" placeholder="Search by date or doctor name" (input)="filterAppointments()">
+  </form>
+  <div class="row">
+    <div class="col-md-4 mb-3" *ngFor="let appointment of appointments">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">{{ appointment.doctorName }}</h5>
+          <p class="card-text">Date: {{ appointment.date }}</p>
+          <p class="card-text">Type: {{ appointment.type }}</p>
+          <p class="card-text">Bill Amount: {{ appointment.billAmount | currency }}</p>
+          <p class="card-text">Payment Status: {{ appointment.paymentStatus }}</p>
+          <button class="btn btn-primary" (click)="downloadBill(appointment.id)">Download Bill</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

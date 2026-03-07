@@ -1,0 +1,9 @@
+<div class="card mb-3 shadow-sm fade-in">
+  <div class="card-body">
+    <h5 class="card-title">{{ appointment.doctorName }}</h5>
+    <p class="card-text">Date: {{ appointment.date | date:'shortDate' }}</p>
+    <p class="card-text">Time: {{ appointment.time }}</p>
+    <p class="card-text">Status: <span [ngClass]="{'text-success': appointment.status === 'upcoming', 'text-secondary': appointment.status === 'past'}">{{ appointment.status }}</span></p>
+    <a [routerLink]="['/appointments', appointment.id]" class="btn btn-primary">View Details</a>
+  </div>
+</div>

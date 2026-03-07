@@ -1,0 +1,22 @@
+<div class="container mt-4">
+  <h2 class="text-primary">Past Appointments</h2>
+  <div *ngIf="loading" class="text-center">
+    <p>Loading appointments...</p>
+  </div>
+  <div class="row">
+    <div class="col-sm-12 col-md-6 col-lg-4" *ngFor="let appointment of appointments" [@fadeInAnimation]>
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">{{ appointment.doctorName }}</h5>
+          <p class="card-text">Date: {{ appointment.date | date }}</p>
+          <p class="card-text">Type: {{ appointment.type }}</p>
+          <p class="card-text">Bill Amount: ${{ appointment.billAmount }}</p>
+          <div *ngIf="appointment.prescription">
+            <a [href]="appointment.prescription.url" class="btn btn-secondary" target="_blank">View Prescription</a>
+          </div>
+          <button class="btn btn-primary" (click)="savePrescription(appointment.id)">Save Prescription</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

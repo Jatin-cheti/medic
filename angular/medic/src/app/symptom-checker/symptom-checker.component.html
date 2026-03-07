@@ -1,0 +1,30 @@
+<div class="container mt-5" [@fadeInAnimation]>
+  <h2 class="text-primary text-center">AI Symptom Checker</h2>
+  <form [formGroup]="symptomForm" (ngSubmit)="onSubmit()" class="mt-4">
+    <div class="mb-3">
+      <label for="symptoms" class="form-label">Enter your symptoms</label>
+      <input id="symptoms" type="text" formControlName="symptoms" class="form-control" placeholder="e.g., headache, fever" aria-label="Symptoms input">
+      <div *ngIf="symptomForm.get('symptoms')?.invalid && symptomForm.get('symptoms')?.touched" class="text-danger">
+        Symptoms are required.
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary" [disabled]="symptomForm.invalid || loading">Check Symptoms</button>
+  </form>
+
+  <div *ngIf="loading" class="mt-3 text-center">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <div *ngIf="results" class="mt-4">
+    <h4>Recommended Actions:</h4>
+    <ul>
+      <li *ngFor="let action of results.actions">{{ action }}</li>
+    </ul>
+  </div>
+
+  <div *ngIf="errorMessage" class="mt-4 text-danger">
+    {{ errorMessage }}
+  </div>
+</div>

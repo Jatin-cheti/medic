@@ -1,0 +1,20 @@
+<div class="card mb-3 fade-in" aria-labelledby="reminder-card-title">
+  <div class="card-body">
+    <h5 class="card-title" id="reminder-card-title">Appointment Reminder</h5>
+    <p class="card-text">Date: {{ appointment.date }}</p>
+    <p class="card-text">Patient: {{ appointment.patientName }}</p>
+    <p class="card-text">Doctor: {{ appointment.doctorName }}</p>
+
+    <form [formGroup]="reminderForm" (ngSubmit)="sendReminder()">
+      <div class="mb-3">
+        <label for="message" class="form-label">Reminder Message</label>
+        <textarea id="message" class="form-control" formControlName="message" rows="3" aria-describedby="messageHelp"></textarea>
+        <div *ngIf="reminderForm.get('message')?.invalid && reminderForm.get('message')?.touched" class="text-danger">
+          <small *ngIf="reminderForm.get('message')?.errors?.required">Message is required.</small>
+          <small *ngIf="reminderForm.get('message')?.errors?.maxlength">Message cannot exceed 250 characters.</small>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary">Send Reminder</button>
+    </form>
+  </div>
+</div>

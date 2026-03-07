@@ -1,0 +1,25 @@
+.container {
+  background-color: #f0f0f2;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.card {
+  transition: transform 0.2s;
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+.text-primary {
+  color: #154e99;
+}
+
+.modal-header {
+  background-color: #154e99;
+  color: white;
+}
+
+.modal-body {
+  background-color: #ffffff;
+}

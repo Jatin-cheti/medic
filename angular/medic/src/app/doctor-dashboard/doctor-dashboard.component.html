@@ -1,0 +1,46 @@
+<div class="container mt-4">
+  <h1 class="text-primary">Doctor Dashboard</h1>
+  <div class="row">
+    <div class="col-md-4">
+      <div class="card mb-4 fade-in">
+        <div class="card-header">Upcoming Appointments</div>
+        <div class="card-body">
+          <ul class="list-group">
+            <li *ngFor="let appointment of appointments" class="list-group-item">
+              {{ appointment.date }} - {{ appointment.patientName }}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card mb-4 fade-in">
+        <div class="card-header">Past Appointments</div>
+        <div class="card-body">
+          <ul class="list-group">
+            <li *ngFor="let appointment of appointments" class="list-group-item">
+              {{ appointment.date }} - {{ appointment.patientName }}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card mb-4 fade-in">
+        <div class="card-header">Symptom Checker</div>
+        <div class="card-body">
+          <form [formGroup]="symptomCheckerForm" (ngSubmit)="submitSymptomChecker()">
+            <div class="mb-3">
+              <label for="symptoms" class="form-label">Enter Symptoms</label>
+              <input type="text" id="symptoms" formControlName="symptoms" class="form-control" aria-label="Symptoms input">
+              <div *ngIf="symptomCheckerForm.get('symptoms')?.invalid && symptomCheckerForm.get('symptoms')?.touched" class="text-danger">
+                Symptoms are required.
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Check Symptoms</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,28 @@
+<div class="container mt-5" [@fadeInAnimation]>
+  <h2 class="text-center mb-4">Multi-role Authentication</h2>
+  <form [formGroup]="authForm" (ngSubmit)="onSubmit()">
+    <div class="mb-3">
+      <label for="role" class="form-label">Select Role</label>
+      <select id="role" formControlName="role" class="form-select" aria-label="Select role">
+        <option value="" disabled selected>Select your role</option>
+        <option value="patient">Patient</option>
+        <option value="doctor">Doctor</option>
+        <option value="admin">Admin</option>
+        <option value="super-admin">Super Admin</option>
+      </select>
+    </div>
+    <div class="mb-3">
+      <label for="username" class="form-label">Username</label>
+      <input type="text" id="username" formControlName="username" class="form-control" aria-label="Username">
+    </div>
+    <div class="mb-3">
+      <label for="password" class="form-label">Password</label>
+      <input type="password" id="password" formControlName="password" class="form-control" aria-label="Password">
+    </div>
+    <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+    <button type="submit" class="btn btn-primary" [disabled]="loading">Login</button>
+    <div *ngIf="loading" class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </form>
+</div>

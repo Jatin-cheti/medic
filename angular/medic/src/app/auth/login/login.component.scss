@@ -1,46 +1,90 @@
-@import '../auth-styles.scss';
-
-.patient-login-link {
-  margin-top: 16px;
-  text-align: center;
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(to bottom, var(--light), var(--background));
 }
 
-.login-as-patient {
-  display: inline-block;
-  color: #154E99;
-  font-weight: 600;
-  text-decoration: none;
-  padding: 8px 14px;
-  border: 1px solid #C2DCFF;
-  border-radius: 999px;
-  background: #F0F0F2;
-  transition: all 0.2s ease-in-out;
+.login-card {
+  background: var(--white);
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  animation: fade-in 0.3s ease-in-out;
 
-  &:hover {
-    color: #fff;
-    background: #154E99;
-    border-color: #154E99;
+  .header {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.5rem;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
   }
-}
 
-// Responsive adjustments for smaller screens
-@media (max-height: 800px) {
+  .subtext {
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+  }
+
   .form-group {
-    margin-bottom: 18px;
+    margin-bottom: 1rem;
+
+    label {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+
+    .form-control,
+    .form-select {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      border: 1px solid var(--border-color);
+      transition: border-color 0.3s;
+
+      &:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 0.2rem rgba(21, 78, 153, 0.25);
+      }
+
+      &.is-invalid {
+        border-color: var(--danger);
+      }
+    }
+
+    .invalid-feedback {
+      font-size: 0.8rem;
+      color: var(--danger);
+    }
   }
 
-  .login-title {
-    margin-bottom: 22px !important;
+  .btn {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+
+    &:hover {
+      background-color: var(--primary-dark);
+    }
+  }
+
+  .alert {
+    font-size: 0.9rem;
   }
 }
 
-@media (max-width: 768px) {
-  .patient-login-link {
-    margin-top: 12px;
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
-
-  .login-as-patient {
-    font-size: 13px;
-    padding: 7px 12px;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

@@ -1,0 +1,24 @@
+<div class="container mt-4">
+  <h2 class="text-primary">User Management</h2>
+  <form [formGroup]="filterForm" class="mb-4">
+    <div class="form-group">
+      <label for="role" class="form-label">Filter by Role</label>
+      <select id="role" formControlName="role" class="form-select">
+        <option *ngFor="let role of roles" [value]="role">{{ role }}</option>
+      </select>
+    </div>
+  </form>
+  <div class="row">
+    <div class="col-12 col-md-6 col-lg-4 mb-3" *ngFor="let user of (users$ | async)">
+      <div class="card shadow-sm fade-in">
+        <div class="card-body">
+          <h5 class="card-title">{{ user.name }}</h5>
+          <p class="card-text">Role: {{ user.role }}</p>
+          <p class="card-text">Email: {{ user.email }}</p>
+          <button class="btn btn-primary">View</button>
+          <button class="btn btn-danger">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,32 @@
+.container {
+  background-color: var(--background);
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.card {
+  transition: transform 0.2s;
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  border: none;
+
+  &:hover {
+    background-color: darken(var(--primary), 10%);
+  }
+}
+
+.btn-secondary {
+  background-color: var(--secondary);
+  border: none;
+
+  &:hover {
+    background-color: darken(var(--secondary), 10%);
+  }
+}

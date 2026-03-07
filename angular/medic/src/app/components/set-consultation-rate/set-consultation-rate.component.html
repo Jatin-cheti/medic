@@ -1,0 +1,35 @@
+<div class="container mt-4" [@fadeInAnimation]>
+  <div class="card">
+    <div class="card-header">
+      <h5 class="card-title">Set Consultation Rates</h5>
+    </div>
+    <div class="card-body">
+      <form [formGroup]="consultationRateForm" (ngSubmit)="onSubmit()">
+        <div class="mb-3">
+          <label for="rate" class="form-label">Consultation Rate</label>
+          <input type="number" id="rate" class="form-control" formControlName="rate" />
+          <div *ngIf="consultationRateForm.get('rate')?.invalid && consultationRateForm.get('rate')?.touched" class="text-danger">
+            Rate is required and must be a positive number.
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="type" class="form-label">Consultation Type</label>
+          <select id="type" class="form-select" formControlName="type">
+            <option value="" disabled selected>Select type</option>
+            <option value="Video">Video</option>
+            <option value="Audio">Audio</option>
+            <option value="Physical">Physical</option>
+          </select>
+          <div *ngIf="consultationRateForm.get('type')?.invalid && consultationRateForm.get('type')?.touched" class="text-danger">
+            Consultation type is required.
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <button type="button" class="btn btn-secondary" (click)="consultationRateForm.reset()">Cancel</button>
+      </form>
+      <div *ngIf="successMessage" class="alert alert-success mt-3" [@slideUpAnimation>
+        {{ successMessage }}
+      </div>
+    </div>
+  </div>
+</div>

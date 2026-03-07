@@ -1,17 +1,17 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component } from '@angular/core';
+import { SymptomCheckerService } from '../services/symptom-checker.service';
+import { Observable } from 'rxjs';
 
 @Component({
-  selector: 'app-dashboard.component',
-  imports: [],
+  selector: 'app-dashboard',
+  standalone: true,
   templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.scss',
+  styleUrls: ['./dashboard.component.scss'],
 })
-export class DashboardComponent implements OnInit {
-  constructor(private router: Router) {}
+export class DashboardComponent {
+  symptomData$: Observable<any>;
 
-  ngOnInit() {
-    // Redirect to home which has the actual dashboard logic
-    this.router.navigate(['/home'], { replaceUrl: true });
+  constructor(private symptomCheckerService: SymptomCheckerService) {
+    this.symptomData$ = this.symptomCheckerService.getSymptomData();
   }
 }

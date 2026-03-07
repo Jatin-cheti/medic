@@ -1,0 +1,21 @@
+.container {
+  background-color: #F0F0F2;
+}
+
+.card {
+  border: 1px solid #e5e7eb;
+}
+
+.btn-primary {
+  background-color: #154E99;
+  border-color: #154E99;
+
+  &:hover {
+    background-color: #0d3a6d;
+    border-color: #0d3a6d;
+  }
+}
+
+.alert-success {
+  animation: fadeIn 0.5s ease-in-out;
+}

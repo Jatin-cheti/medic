@@ -1,0 +1,44 @@
+<div class="container mt-4">
+  <h1 class="text-primary">Super Admin Dashboard</h1>
+  <div class="row">
+    <div class="col-md-4 mb-3">
+      <div class="card shadow-sm fade-in">
+        <div class="card-body">
+          <h5 class="card-title">Total Doctors</h5>
+          <p class="card-text">{{ totalDoctors }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="card shadow-sm fade-in">
+        <div class="card-body">
+          <h5 class="card-title">Total Patients</h5>
+          <p class="card-text">{{ totalPatients }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="card shadow-sm fade-in">
+        <div class="card-body">
+          <h5 class="card-title">Total Admins</h5>
+          <p class="card-text">{{ totalAdmins }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <h2 class="mt-4">User Management</h2>
+  <div class="row">
+    <div class="col-12">
+      <div class="card shadow-sm fade-in">
+        <div class="card-body">
+          <h5 class="card-title">Users</h5>
+          <ul class="list-group">
+            <li *ngFor="let user of users$ | async" class="list-group-item">
+              {{ user.name }} - {{ user.role }}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

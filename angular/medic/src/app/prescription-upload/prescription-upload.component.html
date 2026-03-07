@@ -1,0 +1,24 @@
+<div class="container mt-4" [@fadeInAnimation]>
+  <div class="card">
+    <div class="card-body">
+      <h2 class="card-title">Upload Prescription</h2>
+      <p class="card-text">Please upload your prescription as an image or enter the text below.</p>
+      <form [formGroup]="prescriptionForm" (ngSubmit)="onSubmit()">
+        <div class="mb-3">
+          <label for="prescriptionText" class="form-label">Prescription Text</label>
+          <textarea id="prescriptionText" formControlName="prescriptionText" class="form-control" rows="3" required></textarea>
+        </div>
+        <div class="mb-3">
+          <label for="prescriptionImage" class="form-label">Upload Image</label>
+          <input type="file" id="prescriptionImage" (change)="onImageSelected($event)" class="form-control" accept="image/*" />
+        </div>
+        <div *ngIf="selectedImage" class="mb-3">
+          <h5>Image Preview:</h5>
+          <img [src]="selectedImage ? URL.createObjectURL(selectedImage) : ''" alt="Image Preview" class="img-thumbnail" />
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="button" class="btn btn-secondary" (click)="prescriptionForm.reset()">Cancel</button>
+      </form>
+    </div>
+  </div>
+</div>
