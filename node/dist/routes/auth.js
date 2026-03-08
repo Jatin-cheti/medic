@@ -41,6 +41,7 @@ const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jwt = __importStar(require("jsonwebtoken"));
 const sequelize_1 = require("sequelize");
 const uuid_1 = require("uuid");
+const passport_1 = __importDefault(require("passport"));
 const sequelize_2 = require("../services/sequelize");
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
@@ -95,7 +96,7 @@ async function findUserByEmail(email) {
     });
     return rows[0] || null;
 }
-async function createUser(params) {
+async function createUser(params, transaction) {
     const roleId = await getRoleId(params.role);
     const passwordHash = params.password ? await bcryptjs_1.default.hash(params.password, 10) : null;
     const now = new Date();
@@ -124,6 +125,7 @@ async function createUser(params) {
             updatedAt: now,
         },
         type: sequelize_1.QueryTypes.INSERT,
+        transaction,
     });
     const insertedId = Array.isArray(result) ? result[0] : result;
     const users = await sequelize_2.sequelize.query(`SELECT id, uuid, role_id, email, phone, first_name, last_name
@@ -131,6 +133,7 @@ async function createUser(params) {
      WHERE id = :id LIMIT 1`, {
         replacements: { id: insertedId },
         type: sequelize_1.QueryTypes.SELECT,
+        transaction,
     });
     return users[0];
 }
@@ -178,50 +181,80 @@ router.post('/refresh-token', async (req, res) => {
     }
 });
 // Google OAuth GET endpoint - initiates OAuth flow
-router.get('/google', (req, res) => {
+router.get('/google', passport_1.default.authenticate('google', {
+    scope: ['profile', 'email'],
+    session: false
+}));
+// Google OAuth callback - handles response from Google
+router.get('/google/callback', passport_1.default.authenticate('google', {
+    session: false,
+    failureRedirect: `${process.env.FRONTEND_ORIGIN || 'http://localhost:4200'}/patient-login?error=auth_failed`
+}), async (req, res) => {
     try {
-        // For development - simulate Google OAuth by opening Google Sign-In popup
-        // In production, integrate with actual Google OAuth 2.0 flow
-        const isProduction = process.env.NODE_ENV === 'production';
-        const clientId = process.env.GOOGLE_CLIENT_ID || 'GOOGLE_CLIENT_ID_PLACEHOLDER';
-        const redirectUri = isProduction
-            ? `${process.env.FRONTEND_ORIGIN}/auth/patient-login?action=google-callback`
-            : `http://localhost:4200/auth/patient-login?action=google-callback`;
-        // Google OAuth authorization URL
-        const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
-            `client_id=${clientId}&` +
-            `redirect_uri=${encodeURIComponent(redirectUri)}&` +
-            `response_type=code&` +
-            `scope=profile email&` +
-            `access_type=offline&` +
-            `prompt=consent`;
-        res.redirect(googleAuthUrl);
-    }
-    catch (err) {
-        console.error('Google OAuth error:', err);
-        return res.status(500).json({ error: 'Google OAuth initialization failed' });
-    }
-});
-// Google OAuth callback for production
-router.get('/google/callback', async (req, res) => {
-    try {
-        const { code, error } = req.query;
-        if (error) {
-            // User cancelled login
-            return res.redirect(`${process.env.FRONTEND_ORIGIN || 'http://localhost:4200'}/auth/patient-login?error=${error}`);
+        const googleUser = req.user;
+        if (!googleUser || !googleUser.googleId || !googleUser.email) {
+            const redirectUrl = `${process.env.FRONTEND_ORIGIN || 'http://localhost:4200'}/patient-login?error=invalid_user_data`;
+            return res.redirect(redirectUrl);
         }
-        if (!code) {
-            return res.status(400).json({ error: 'Authorization code not provided' });
+        const { googleId, email, firstName, lastName } = googleUser;
+        // Check if user exists with this google ID
+        let user = await sequelize_2.sequelize.query(`SELECT id, uuid, role_id, email, phone, first_name, last_name FROM users WHERE google_id = :googleId LIMIT 1`, {
+            replacements: { googleId },
+            type: sequelize_1.QueryTypes.SELECT,
+        });
+        // If not, check if email exists
+        if (!user.length) {
+            user = await sequelize_2.sequelize.query(`SELECT id, uuid, role_id, email, phone, first_name, last_name FROM users WHERE email = :email LIMIT 1`, {
+                replacements: { email: normalizeEmail(email) },
+                type: sequelize_1.QueryTypes.SELECT,
+            });
+            // If email exists but no google ID, link the account
+            if (user.length) {
+                await sequelize_2.sequelize.query(`UPDATE users SET google_id = :googleId, updated_at = :updatedAt WHERE id = :userId`, {
+                    replacements: {
+                        googleId,
+                        userId: user[0].id,
+                        updatedAt: new Date(),
+                    },
+                    type: sequelize_1.QueryTypes.UPDATE,
+                });
+                // Reload user data
+                user = await sequelize_2.sequelize.query(`SELECT id, uuid, role_id, email, phone, first_name, last_name FROM users WHERE id = :userId LIMIT 1`, {
+                    replacements: { userId: user[0].id },
+                    type: sequelize_1.QueryTypes.SELECT,
+                });
+            }
+            else {
+                // Create new patient account with Google
+                const newUser = await createUser({
+                    role: 'patient',
+                    email: normalizeEmail(email),
+                    phone: null,
+                    firstName: firstName || 'User',
+                    lastName: lastName || '',
+                    googleId,
+                });
+                user = [newUser];
+            }
         }
-        // Exchange code for tokens - implement your Google token exchange here
-        // For now, redirect to patient login with placeholder data
-        const redirectUrl = `${process.env.FRONTEND_ORIGIN || 'http://localhost:4200'}/auth/patient-login?` +
-            `googleId=placeholder&email=user@example.com&firstName=User&lastName=`;
+        if (!user.length) {
+            const redirectUrl = `${process.env.FRONTEND_ORIGIN || 'http://localhost:4200'}/patient-login?error=user_creation_failed`;
+            return res.redirect(redirectUrl);
+        }
+        const roleRows = await sequelize_2.sequelize.query('SELECT name FROM roles WHERE id = :roleId LIMIT 1', {
+            replacements: { roleId: user[0].role_id },
+            type: sequelize_1.QueryTypes.SELECT,
+        });
+        const role = roleRows[0]?.name || 'patient';
+        const tokens = signToken(user[0], role);
+        // Redirect to frontend with tokens
+        const redirectUrl = `${process.env.FRONTEND_ORIGIN || 'http://localhost:4200'}/auth/google-success?token=${encodeURIComponent(tokens.token)}&refreshToken=${encodeURIComponent(tokens.refreshToken)}&role=${role}`;
         res.redirect(redirectUrl);
     }
     catch (err) {
         console.error('Google callback error:', err);
-        return res.status(500).json({ error: 'Google authentication failed' });
+        const redirectUrl = `${process.env.FRONTEND_ORIGIN || 'http://localhost:4200'}/patient-login?error=server_error`;
+        res.redirect(redirectUrl);
     }
 });
 // Google OAuth callback
@@ -366,13 +399,36 @@ router.post('/patient/signup', async (req, res) => {
             preferredLanguage,
         });
         const tokens = signToken(user, 'patient');
-        return res.status(201).json({ user, ...tokens });
+        return res.status(201).json({ user, role: 'patient', ...tokens });
     }
     catch (err) {
         console.error(err);
         return res.status(500).json({ error: 'server error' });
     }
 });
+/** Ensure the document_types table has DEGREE and SPEC_CERT rows (idempotent). */
+async function ensureDocumentTypes() {
+    const requiredTypes = [
+        { code: 'DEGREE', name: 'Medical Degree', description: 'Medical degree certificate (MBBS, BDS, etc.)', is_required: 1 },
+        { code: 'SPEC_CERT', name: 'Specialization Certificate', description: 'Certificate for medical specialization', is_required: 0 },
+    ];
+    for (const dt of requiredTypes) {
+        const existing = await sequelize_2.sequelize.query('SELECT id FROM document_types WHERE code = :code LIMIT 1', { replacements: { code: dt.code }, type: sequelize_1.QueryTypes.SELECT });
+        if (!existing.length) {
+            await sequelize_2.sequelize.query(`INSERT INTO document_types (uuid, name, code, description, is_required, is_active, created_at, updated_at)
+         VALUES (:uuid, :name, :code, :description, :is_required, 1, :now, :now)`, {
+                replacements: { uuid: (0, uuid_1.v4)(), ...dt, now: new Date() },
+                type: sequelize_1.QueryTypes.INSERT,
+            });
+        }
+    }
+    const rows = await sequelize_2.sequelize.query(`SELECT id, code FROM document_types WHERE code IN ('DEGREE', 'SPEC_CERT')`, { type: sequelize_1.QueryTypes.SELECT });
+    const degreeRow = rows.find(r => r.code === 'DEGREE');
+    const experienceRow = rows.find(r => r.code === 'SPEC_CERT') || degreeRow;
+    if (!degreeRow)
+        throw new Error('Failed to ensure DEGREE document type');
+    return { degreeId: degreeRow.id, experienceId: experienceRow.id };
+}
 router.post('/doctor/signup', async (req, res) => {
     const email = normalizeEmail(req.body?.email);
     const phone = normalizePhone(req.body?.phone);
@@ -415,71 +471,74 @@ router.post('/doctor/signup', async (req, res) => {
         if (existingReg.length) {
             return res.status(409).json({ error: 'registration number already exists' });
         }
-        const user = await createUser({
-            role: 'doctor',
-            email,
-            phone,
-            password,
-            firstName,
-            lastName,
-            gender,
-            preferredLanguage,
+        // Ensure document types exist before starting the transaction
+        const { degreeId, experienceId } = await ensureDocumentTypes();
+        // Wrap the entire user + doctor profile + documents creation in a transaction
+        // so a failure in any step rolls everything back (no orphaned users).
+        const result = await sequelize_2.sequelize.transaction(async (t) => {
+            const user = await createUser({
+                role: 'doctor',
+                email,
+                phone,
+                password,
+                firstName,
+                lastName,
+                gender,
+                preferredLanguage,
+            }, t);
+            const now = new Date();
+            const doctorInsert = await sequelize_2.sequelize.query(`INSERT INTO doctor_profiles (
+          uuid, user_id, registration_number, years_of_experience,
+          consultation_fee, is_verified, is_approved, is_suspended,
+          rating, total_consultations, created_at, updated_at
+        ) VALUES (
+          :uuid, :userId, :registrationNumber, :yearsOfExperience,
+          :consultationFee, 0, 0, 0,
+          0, 0, :createdAt, :updatedAt
+        )`, {
+                replacements: {
+                    uuid: (0, uuid_1.v4)(),
+                    userId: user.id,
+                    registrationNumber,
+                    yearsOfExperience: Number.isFinite(yearsOfExperience) ? yearsOfExperience : 0,
+                    consultationFee: Number.isFinite(consultationFee) ? consultationFee : 0,
+                    createdAt: now,
+                    updatedAt: now,
+                },
+                type: sequelize_1.QueryTypes.INSERT,
+                transaction: t,
+            });
+            const doctorProfileId = Array.isArray(doctorInsert) ? doctorInsert[0] : doctorInsert;
+            await sequelize_2.sequelize.query(`INSERT INTO doctor_documents (
+          uuid, doctor_id, document_type_id, file_url, file_name,
+          status, created_at, updated_at
+        ) VALUES
+        (:degreeUuid, :doctorId, :degreeTypeId, :degreeFileUrl, :degreeFileName, 'pending', :createdAt, :updatedAt),
+        (:experienceUuid, :doctorId, :experienceTypeId, :experienceFileUrl, :experienceFileName, 'pending', :createdAt, :updatedAt)`, {
+                replacements: {
+                    degreeUuid: (0, uuid_1.v4)(),
+                    experienceUuid: (0, uuid_1.v4)(),
+                    doctorId: doctorProfileId,
+                    degreeTypeId: degreeId,
+                    experienceTypeId: experienceId,
+                    degreeFileUrl,
+                    degreeFileName,
+                    experienceFileUrl,
+                    experienceFileName,
+                    createdAt: now,
+                    updatedAt: now,
+                },
+                type: sequelize_1.QueryTypes.INSERT,
+                transaction: t,
+            });
+            return { user, doctorProfileId };
         });
-        const now = new Date();
-        const doctorInsert = await sequelize_2.sequelize.query(`INSERT INTO doctor_profiles (
-        uuid, user_id, registration_number, years_of_experience,
-        consultation_fee, is_verified, is_approved, is_suspended,
-        rating, total_consultations, created_at, updated_at
-      ) VALUES (
-        :uuid, :userId, :registrationNumber, :yearsOfExperience,
-        :consultationFee, 0, 0, 0,
-        0, 0, :createdAt, :updatedAt
-      )`, {
-            replacements: {
-                uuid: (0, uuid_1.v4)(),
-                userId: user.id,
-                registrationNumber,
-                yearsOfExperience: Number.isFinite(yearsOfExperience) ? yearsOfExperience : 0,
-                consultationFee: Number.isFinite(consultationFee) ? consultationFee : 0,
-                createdAt: now,
-                updatedAt: now,
-            },
-            type: sequelize_1.QueryTypes.INSERT,
-        });
-        const doctorProfileId = Array.isArray(doctorInsert) ? doctorInsert[0] : doctorInsert;
-        const documentTypes = await sequelize_2.sequelize.query(`SELECT id, code FROM document_types WHERE code IN ('DEGREE', 'SPEC_CERT')`, { type: sequelize_1.QueryTypes.SELECT });
-        const degreeType = documentTypes.find((d) => d.code === 'DEGREE');
-        const experienceType = documentTypes.find((d) => d.code === 'SPEC_CERT') || degreeType;
-        if (!degreeType) {
-            return res.status(500).json({ error: 'document type DEGREE not found' });
-        }
-        await sequelize_2.sequelize.query(`INSERT INTO doctor_documents (
-        uuid, doctor_id, document_type_id, file_url, file_name,
-        status, created_at, updated_at
-      ) VALUES
-      (:degreeUuid, :doctorId, :degreeTypeId, :degreeFileUrl, :degreeFileName, 'pending', :createdAt, :updatedAt),
-      (:experienceUuid, :doctorId, :experienceTypeId, :experienceFileUrl, :experienceFileName, 'pending', :createdAt, :updatedAt)
-      `, {
-            replacements: {
-                degreeUuid: (0, uuid_1.v4)(),
-                experienceUuid: (0, uuid_1.v4)(),
-                doctorId: doctorProfileId,
-                degreeTypeId: degreeType.id,
-                experienceTypeId: experienceType?.id || degreeType.id,
-                degreeFileUrl,
-                degreeFileName,
-                experienceFileUrl,
-                experienceFileName,
-                createdAt: now,
-                updatedAt: now,
-            },
-            type: sequelize_1.QueryTypes.INSERT,
-        });
-        const token = signToken(user, 'doctor');
+        const token = signToken(result.user, 'doctor');
         return res.status(201).json({
-            user,
+            user: result.user,
+            role: 'doctor',
             doctorProfile: {
-                id: doctorProfileId,
+                id: result.doctorProfileId,
                 registrationNumber,
                 yearsOfExperience,
                 consultationFee,
@@ -511,7 +570,7 @@ router.post('/patient/login', async (req, res) => {
         if (!ok)
             return res.status(401).json({ error: 'invalid credentials' });
         const tokens = signToken(user, 'patient');
-        return res.json({ user, ...tokens });
+        return res.json({ user, role: 'patient', ...tokens });
     }
     catch (err) {
         console.error(err);
@@ -544,7 +603,7 @@ router.post('/doctor/login', async (req, res) => {
             type: sequelize_1.QueryTypes.SELECT,
         });
         const tokens = signToken(user, 'doctor');
-        return res.json({ user, doctorProfile: doctorProfiles[0] || null, ...tokens });
+        return res.json({ user, role: 'doctor', doctorProfile: doctorProfiles[0] || null, ...tokens });
     }
     catch (err) {
         console.error(err);
@@ -576,7 +635,7 @@ router.post('/register', async (req, res) => {
             preferredLanguage: 'en',
         });
         const tokens = signToken(user, 'patient');
-        res.status(201).json({ user, ...tokens });
+        res.status(201).json({ user, role: 'patient', ...tokens });
     }
     catch (err) {
         console.error(err);

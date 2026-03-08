@@ -8,10 +8,8 @@ const router = (0, express_1.Router)();
 // Dashboard data for patients
 router.get('/dashboard', auth_1.verifyToken, (0, auth_1.verifyRole)(['patient']), async (req, res) => {
     try {
-        console.log('Dashboard route handler called');
         const user = req.user;
         const userId = user?.userId;
-        console.log('User in dashboard:', { userId, email: user?.email });
         // Get upcoming appointments
         const appointments = await sequelize_2.sequelize.query(`SELECT 
         a.id, a.uuid, a.scheduled_at as appointment_date, a.status,

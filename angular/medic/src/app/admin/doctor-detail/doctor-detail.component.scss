@@ -1,4 +1,4 @@
-@import '../admin-styles';
+@use '../admin-styles' as *;
 
 .detail-page {
   max-width: 960px;

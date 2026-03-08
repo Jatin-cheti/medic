@@ -1,4 +1,4 @@
-@import '../admin-styles';
+@use '../admin-styles' as *;
 
 .create-admin-page {
   max-width: 640px;

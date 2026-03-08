@@ -1,4 +1,4 @@
-@import '../admin-styles';
+@use '../admin-styles' as *;
 
 .sa-dashboard {
   padding: 2rem 1.5rem;

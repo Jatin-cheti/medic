@@ -1,6 +1,6 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document as MongoDocument } from 'mongoose';
 
-export interface IDocument extends Document {
+export interface IDocument extends MongoDocument {
   userId: number;
   type: 'Certificate' | 'Degree' | 'Prescription';
   filePath: string;
@@ -15,3 +15,4 @@ const DocumentSchema: Schema = new Schema({
 });
 
 export const Document = mongoose.model<IDocument>('Document', DocumentSchema);
+export default Document;

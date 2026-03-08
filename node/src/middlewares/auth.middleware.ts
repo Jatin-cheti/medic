@@ -13,7 +13,7 @@ export const authenticate = (roles: string[]) => {
 
     try {
       const decoded = verifyToken(token);
-      if (!roles.includes(decoded.role)) {
+      if (roles.length > 0 && !roles.includes(decoded.role)) {
         return res.status(403).json({ message: 'Forbidden' });
       }
       req.user = decoded;
@@ -22,4 +22,24 @@ export const authenticate = (roles: string[]) => {
       return res.status(401).json({ message: 'Invalid token' });
     }
   };
+};
+
+// Pre-made role-specific middlewares
+export const validateAdmin = authenticate(['admin', 'Admin', 'superadmin', 'SuperAdmin']);
+export const validateSuperAdmin = authenticate(['superadmin', 'SuperAdmin']);
+
+// JWT-only middleware (no role restriction)
+export const authenticateJWT = (req: Request, res: Response, next: NextFunction) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+  const token = authHeader.split(' ')[1];
+  try {
+    const decoded = verifyToken(token);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    return res.status(401).json({ message: 'Invalid token' });
+  }
 };

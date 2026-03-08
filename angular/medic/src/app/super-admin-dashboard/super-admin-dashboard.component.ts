@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { SuperAdminService } from './super-admin.service';
 import { Observable } from 'rxjs';
 import { User } from '../models/user.model';
@@ -6,6 +7,7 @@ import { User } from '../models/user.model';
 @Component({
   selector: 'app-super-admin-dashboard',
   standalone: true,
+  imports: [CommonModule],
   templateUrl: './super-admin-dashboard.component.html',
   styleUrls: ['./super-admin-dashboard.component.scss']
 })

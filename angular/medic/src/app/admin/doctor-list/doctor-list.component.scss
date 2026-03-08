@@ -1,4 +1,4 @@
-@import '../admin-styles';
+@use '../admin-styles' as *;
 
 .name-cell {
   display: flex;

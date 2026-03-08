@@ -1,4 +1,4 @@
-@import '../auth-styles.scss';
+@use '../auth-styles.scss' as *;
 
 .doctor-login-link {
   margin-top: 16px;

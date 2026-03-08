@@ -1,4 +1,4 @@
-@import '../admin-styles';
+@use '../admin-styles' as *;
 
 .status-tabs {
   display: flex;

@@ -44,14 +44,12 @@ const JWT_SECRET = (process.env.JWT_SECRET || 'please_change_me');
 const verifyToken = (req, res, next) => {
     const authReq = req;
     const token = req.headers.authorization?.split(' ')[1] || req.cookies?.token;
-    console.log('verifyToken called, token present:', !!token, 'token length:', token?.length);
     if (!token) {
         res.status(401).json({ error: 'token required' });
         return;
     }
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
-        console.log('Token verified successfully, decoded:', Object.keys(decoded));
         authReq.user = decoded;
         next();
     }
