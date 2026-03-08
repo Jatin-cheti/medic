@@ -1,6 +1,7 @@
 {
   "framework": "angular",
-  "buildCommand": "npm install --legacy-peer-deps && npx ng build --configuration=production",
+  "installCommand": "npm install --legacy-peer-deps",
+  "buildCommand": "npx ng build --configuration=production",
   "outputDirectory": "dist/medic/browser",
   "rewrites": [
     {
