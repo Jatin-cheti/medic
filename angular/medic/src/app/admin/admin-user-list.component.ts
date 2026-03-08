@@ -1,17 +1,19 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { CommonModule, AsyncPipe } from '@angular/common';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { UserService } from '../services/user.service';
 import { User } from '../models/user.model';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 @Component({
   selector: 'app-admin-user-list',
   standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, AsyncPipe],
   templateUrl: './admin-user-list.component.html',
   styleUrls: ['./admin-user-list.component.scss']
 })
 export class AdminUserListComponent implements OnInit {
-  users$: Observable<User[]>;
+  users$: Observable<User[]> = of([]);
   roles = ['All', 'Patients', 'Doctors', 'Admins'];
   selectedRole: string = 'All';
   filterForm: FormGroup;

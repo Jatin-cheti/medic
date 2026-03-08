@@ -1,10 +1,12 @@
 import { Component, Input } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-appointment-modal',
   standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './appointment-modal.component.html',
   styleUrls: ['./appointment-modal.component.scss']
 })

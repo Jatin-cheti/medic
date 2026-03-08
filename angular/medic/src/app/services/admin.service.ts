@@ -26,4 +26,8 @@ export class AdminService {
   deleteAdmin(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+
+  removeAdmin(id: number): Observable<void> {
+    return this.deleteAdmin(id);
+  }
 }

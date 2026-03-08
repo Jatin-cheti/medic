@@ -1,11 +1,13 @@
 import { Component, Input } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AppointmentService } from '../../services/appointment.service';
 import { fadeInAnimation } from '../../animations/fade-in.animation';
 
 @Component({
   selector: 'app-appointment-reminder-card',
   standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './appointment-reminder-card.component.html',
   styleUrls: ['./appointment-reminder-card.component.scss'],
   animations: [fadeInAnimation]

@@ -7,7 +7,7 @@
           <form [formGroup]="authForm" (ngSubmit)="onSubmit()">
             <div class="mb-3">
               <label for="role" class="form-label">Select Role</label>
-              <select id="role" class="form-select" (change)="onRoleChange($event.target.value)">
+              <select id="role" class="form-select" (change)="onRoleChange($any($event.target).value)">
                 <option *ngFor="let role of roles" [value]="role">{{ role }}</option>
               </select>
             </div>

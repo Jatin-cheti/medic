@@ -14,4 +14,8 @@ export class DoctorService {
   getDoctors(): Observable<Doctor[]> {
     return this.http.get<Doctor[]>(this.apiUrl);
   }
+
+  getAppointments(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/appointments`);
+  }
 }

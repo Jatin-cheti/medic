@@ -27,7 +27,7 @@ export class AppointmentReminderComponent implements OnInit {
 
   onSubmit(): void {
     if (this.reminderForm.valid) {
-      this.appointmentService.sendReminder(this.reminderForm.value).subscribe({
+      this.appointmentService.sendReminder(this.reminderForm.value.appointmentId, this.reminderForm.value.reminderMethod).subscribe({
         next: (response) => {
           console.log('Reminder sent successfully', response);
           // Handle success (e.g., show a success message)

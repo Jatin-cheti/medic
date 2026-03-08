@@ -4,10 +4,10 @@
   </div>
   <div class="card-body">
     <p><strong>Document Type:</strong> {{ document.type }}</p>
-    <p><strong>Upload Date:</strong> {{ document.uploadDate | date }}</p>
-    <button class="btn btn-primary" (click)="approveDocument()" *ngIf="document.status === 'Pending'">Approve</button>
-    <button class="btn btn-danger" (click)="rejectDocument()" *ngIf="document.status === 'Pending'">Reject</button>
-    <button class="btn btn-warning" (click)="requestChanges()" *ngIf="document.status === 'Pending'">Request Changes</button>
+    <p><strong>Upload Date:</strong> {{ document.uploadedDate | date }}</p>
+    <button class="btn btn-primary" (click)="approveDocument()" *ngIf="document.status === 'pending'">Approve</button>
+    <button class="btn btn-danger" (click)="rejectDocument()" *ngIf="document.status === 'pending'">Reject</button>
+    <button class="btn btn-warning" (click)="requestChanges()" *ngIf="document.status === 'pending'">Request Changes</button>
     <button class="btn btn-secondary" (click)="viewDocument()">Preview</button>
   </div>
 </div>

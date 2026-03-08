@@ -1,11 +1,13 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DoctorOnboardingService } from '../../services/doctor-onboarding.service';
 
 @Component({
   selector: 'app-doctor-onboarding',
   standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './doctor-onboarding.component.html',
   styleUrls: ['./doctor-onboarding.component.scss']
 })

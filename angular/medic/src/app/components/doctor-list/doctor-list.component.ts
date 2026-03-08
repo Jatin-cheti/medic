@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { DoctorService } from '../../services/doctor.service';
 import { Doctor } from '../../models/doctor.model';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -8,6 +9,7 @@ import { fadeInAnimation } from '../../animations/fade-in.animation';
 @Component({
   selector: 'app-doctor-list',
   standalone: true,
+  imports: [CommonModule],
   templateUrl: './doctor-list.component.html',
   styleUrls: ['./doctor-list.component.scss'],
   animations: [fadeInAnimation]

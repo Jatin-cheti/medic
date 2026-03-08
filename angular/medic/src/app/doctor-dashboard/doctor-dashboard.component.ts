@@ -1,14 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { DoctorService } from '../services/doctor.service';
-import { fadeInAnimation, slideInAnimation } from '../animations';
+import { fadeInAnimation, slideUpAnimation } from '../animations';
 
 @Component({
   selector: 'app-doctor-dashboard',
   standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './doctor-dashboard.component.html',
   styleUrls: ['./doctor-dashboard.component.scss'],
-  animations: [fadeInAnimation, slideInAnimation]
+  animations: [fadeInAnimation, slideUpAnimation]
 })
 export class DoctorDashboardComponent implements OnInit {
   appointments: any[] = [];

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { CommonModule, DatePipe } from '@angular/common';
 import { AppointmentService } from '../../services/appointment.service';
 import { Appointment } from '../../models/appointment.model';
 import { fadeInAnimation } from '../../animations/fade-in.animation';
@@ -7,6 +7,7 @@ import { fadeInAnimation } from '../../animations/fade-in.animation';
 @Component({
   selector: 'app-appointment-list',
   standalone: true,
+  imports: [CommonModule, DatePipe],
   templateUrl: './appointment-list.component.html',
   styleUrls: ['./appointment-list.component.scss'],
   animations: [fadeInAnimation]
@@ -23,7 +24,7 @@ export class AppointmentListComponent implements OnInit {
 
   fetchAppointments(): void {
     this.appointmentService.getAppointments().subscribe({
-      next: (data) => {
+      next: (data: Appointment[]) => {
         this.appointments = data;
         this.loading = false;
       },

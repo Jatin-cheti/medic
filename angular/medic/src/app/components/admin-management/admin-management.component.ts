@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AdminService } from '../../services/admin.service';
 import { Admin } from '../../models/admin.model';
 import { fadeInAnimation } from '../../animations/fade-in.animation';
@@ -7,6 +8,7 @@ import { fadeInAnimation } from '../../animations/fade-in.animation';
 @Component({
   selector: 'app-admin-management',
   standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './admin-management.component.html',
   styleUrls: ['./admin-management.component.scss'],
   animations: [fadeInAnimation]

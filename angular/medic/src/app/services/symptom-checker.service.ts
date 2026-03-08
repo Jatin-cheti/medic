@@ -13,4 +13,8 @@ export class SymptomCheckerService {
   getSymptomData(): Observable<any> {
     return this.http.get<any>(this.apiUrl);
   }
+
+  checkSymptoms(symptoms: string[]): Observable<any> {
+    return this.http.post<any>(this.apiUrl, { symptoms });
+  }
 }

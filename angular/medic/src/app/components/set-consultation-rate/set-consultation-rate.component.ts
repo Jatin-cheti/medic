@@ -1,14 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ConsultationRateService } from '../../services/consultation-rate.service';
 import { fadeInAnimation, slideUpAnimation } from '../../animations';
 
 @Component({
   selector: 'app-set-consultation-rate',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './set-consultation-rate.component.html',
   styleUrls: ['./set-consultation-rate.component.scss'],
-  animations: [fadeInAnimation, slideUpAnimation],
-  standalone: true
+  animations: [fadeInAnimation, slideUpAnimation]
 })
 export class SetConsultationRateComponent implements OnInit {
   consultationRateForm: FormGroup;

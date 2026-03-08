@@ -1,11 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommonModule, CurrencyPipe } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { PatientService } from '../services/patient.service';
 import { fadeInAnimation } from '../animations/fade-in.animation';
 
 @Component({
   selector: 'app-patient-dashboard',
   standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, CurrencyPipe, RouterModule],
   templateUrl: './patient-dashboard.component.html',
   styleUrls: ['./patient-dashboard.component.scss'],
   animations: [fadeInAnimation]

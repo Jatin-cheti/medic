@@ -18,7 +18,7 @@
   border: none;
 
   &:hover {
-    background-color: darken(var(--primary), 10%);
+    background-color: #0d3a6d;
   }
 }
 
@@ -27,6 +27,6 @@
   border: none;
 
   &:hover {
-    background-color: darken(var(--secondary), 10%);
+    background-color: #5a9be0;
   }
 }

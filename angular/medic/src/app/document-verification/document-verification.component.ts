@@ -1,19 +1,21 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { DocumentService } from '../services/document.service';
 import { Document } from '../models/document.model';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { fadeInAnimation } from '../animations/fade-in.animation';
 
 @Component({
   selector: 'app-document-verification',
   standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './document-verification.component.html',
   styleUrls: ['./document-verification.component.scss'],
   animations: [fadeInAnimation]
 })
 export class DocumentVerificationComponent implements OnInit {
-  documents$: Observable<Document[]>;
+  documents$: Observable<Document[]> = of([]);
   approvalForm: FormGroup;
 
   constructor(private documentService: DocumentService, private fb: FormBuilder) {

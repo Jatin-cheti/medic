@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule, DatePipe } from '@angular/common';
 import { PastAppointmentsService } from './past-appointments.service';
 import { Appointment } from './appointment.model';
 import { fadeInAnimation } from '../animations/fade-in.animation';
@@ -6,6 +7,7 @@ import { fadeInAnimation } from '../animations/fade-in.animation';
 @Component({
   selector: 'app-past-appointments',
   standalone: true,
+  imports: [CommonModule, DatePipe],
   templateUrl: './past-appointments.component.html',
   styleUrls: ['./past-appointments.component.scss'],
   animations: [fadeInAnimation]

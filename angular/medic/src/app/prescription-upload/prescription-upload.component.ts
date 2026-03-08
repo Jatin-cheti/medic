@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { PrescriptionService } from './prescription.service';
 import { fadeInAnimation } from '../animations/fade-in.animation';
 
 @Component({
   selector: 'app-prescription-upload',
   standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './prescription-upload.component.html',
   styleUrls: ['./prescription-upload.component.scss'],
   animations: [fadeInAnimation]
@@ -13,6 +15,10 @@ import { fadeInAnimation } from '../animations/fade-in.animation';
 export class PrescriptionUploadComponent implements OnInit {
   prescriptionForm: FormGroup;
   selectedImage: File | null = null;
+
+  getObjectUrl(file: File): string {
+    return URL.createObjectURL(file);
+  }
 
   constructor(private fb: FormBuilder, private prescriptionService: PrescriptionService) {
     this.prescriptionForm = this.fb.group({

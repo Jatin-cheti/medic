@@ -10,6 +10,22 @@ export class AppointmentService {
 
   constructor(private http: HttpClient) {}
 
+  getAppointments(): Observable<any[]> {
+    return this.http.get<any[]>(this.apiUrl);
+  }
+
+  getUpcomingAppointments(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/upcoming`);
+  }
+
+  getPastAppointments(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/past`);
+  }
+
+  bookAppointment(data: any): Observable<any> {
+    return this.http.post(this.apiUrl, data);
+  }
+
   sendReminder(appointmentId: string, message: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/${appointmentId}/send-reminder`, { message });
   }

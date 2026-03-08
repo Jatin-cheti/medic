@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { DoctorService } from '../services/doctor.service';
 import { Doctor } from '../models/doctor.model';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -7,6 +8,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 @Component({
   selector: 'app-doctor-list',
   standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './doctor-list.component.html',
   styleUrls: ['./doctor-list.component.scss'],
 })

@@ -18,4 +18,16 @@ export class DocumentService {
   updateDocumentStatus(documentId: string, action: string, comment?: string): Observable<void> {
     return this.http.patch<void>(`${this.apiUrl}/${documentId}`, { action, comment });
   }
+
+  approveDocument(documentId: string): Observable<void> {
+    return this.updateDocumentStatus(documentId, 'approve');
+  }
+
+  rejectDocument(documentId: string): Observable<void> {
+    return this.updateDocumentStatus(documentId, 'reject');
+  }
+
+  requestChanges(documentId: string): Observable<void> {
+    return this.updateDocumentStatus(documentId, 'request-changes');
+  }
 }

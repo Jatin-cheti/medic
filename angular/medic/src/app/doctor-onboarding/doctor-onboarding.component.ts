@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { DoctorOnboardingService } from './doctor-onboarding.service';
 import { fadeInAnimation } from '../animations/fade-in.animation';
 
 @Component({
   selector: 'app-doctor-onboarding',
   standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './doctor-onboarding.component.html',
   styleUrls: ['./doctor-onboarding.component.scss'],
   animations: [fadeInAnimation]

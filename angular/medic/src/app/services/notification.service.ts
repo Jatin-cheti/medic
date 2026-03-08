@@ -21,4 +21,12 @@ export class NotificationService {
   getNotifications(): Observable<Notification[]> {
     return this.http.get<Notification[]>(this.apiUrl);
   }
+
+  showSuccess(message: string): void {
+    console.log('[SUCCESS]', message);
+  }
+
+  showError(message: string): void {
+    console.error('[ERROR]', message);
+  }
 }

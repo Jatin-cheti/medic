@@ -10,7 +10,7 @@ import { User } from '../models/user.model';
   styleUrls: ['./super-admin-dashboard.component.scss']
 })
 export class SuperAdminDashboardComponent implements OnInit {
-  users$: Observable<User[]>;
+  users$!: Observable<User[]>;
   totalDoctors: number = 0;
   totalPatients: number = 0;
   totalAdmins: number = 0;

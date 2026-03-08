@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { SymptomCheckerService } from './symptom-checker.service';
 import { fadeInAnimation } from '../animations/fade-in.animation';
 
 @Component({
   selector: 'app-symptom-checker',
   standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './symptom-checker.component.html',
   styleUrls: ['./symptom-checker.component.scss'],
   animations: [fadeInAnimation]

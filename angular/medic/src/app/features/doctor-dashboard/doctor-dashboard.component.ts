@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { SymptomCheckerService } from '../../services/symptom-checker.service';
 
 @Component({
   selector: 'app-doctor-dashboard',
   standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './doctor-dashboard.component.html',
   styleUrls: ['./doctor-dashboard.component.scss']
 })
