@@ -35,8 +35,8 @@ export class PastAppointmentsAndBillsComponent implements OnInit {
 
   filterAppointments(): void {
     const searchTerm = this.searchForm.get('searchTerm')?.value.toLowerCase();
-    this.appointments = this.appointments.filter(appointment => 
-      appointment.doctorName.toLowerCase().includes(searchTerm) || 
+    this.appointments = this.appointments.filter(appointment =>
+      appointment.doctorName.toLowerCase().includes(searchTerm) ||
       appointment.date.includes(searchTerm)
     );
   }

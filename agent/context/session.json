@@ -295,7 +295,7 @@
     "backend/routes/auth.routes.spec.ts"
   ],
   "testsPassed": true,
-  "deployedFrontendUrl": "",
+  "deployedFrontendUrl": "https://medic-eonwy5u4y-jatin-chetis-projects.vercel.app",
   "deployedBackendUrl": "",
   "errors": [],
   "completedSteps": [
