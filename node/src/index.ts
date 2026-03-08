@@ -20,18 +20,27 @@ dotenv.config();
 const app = express();
 
 // CORS middleware
+const staticOrigins = [
+  'https://medic-cf1u6bwpy-jatin-chetis-projects.vercel.app',
+  'https://medic-inky.vercel.app',
+  'http://localhost:4200',
+  'http://localhost:3000',
+];
+const envOrigins = [
+  process.env.FRONTEND_ORIGIN,
+  ...(process.env.CORS_ORIGINS || '').split(',').map((o) => o.trim()),
+].filter(Boolean) as string[];
+const allowedOrigins = new Set([...staticOrigins, ...envOrigins]);
+
 app.use((req: Request, res: Response, next: NextFunction) => {
-  const allowedOrigins = [
-    'https://medic-cf1u6bwpy-jatin-chetis-projects.vercel.app',
-    'http://localhost:4200',
-    'http://localhost:3000',
-  ];
   const origin = req.headers.origin as string;
-  if (allowedOrigins.includes(origin)) {
+  const isVercelPreview = origin && /^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(origin);
+  if (origin && (allowedOrigins.has(origin) || isVercelPreview)) {
     res.header('Access-Control-Allow-Origin', origin);
   }
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
